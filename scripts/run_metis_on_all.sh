@@ -7,6 +7,13 @@ LOG () {
 		# date, name of the script, and the message
 		echo -e "${BLUE}$(date +"%Y-%m-%d %H:%M:%S") ${0}:${NC} ${1}"
 }
+
+RUN_METIS_SH=./run_metis.sh
+if [ ! -f $RUN_METIS_SH ]; then
+	LOG "run_metis.sh not found; place it in the same directory as this script"
+	exit 1
+fi
+
 # 1st arg is the number of partitions
 # 2nd arg is the number of iterations per partition (default is 1)
 
@@ -75,7 +82,9 @@ total_metis_files=$(echo "$METIS_FILES" | wc -l)
 count=1
 for file in $METIS_FILES; do
 		LOG "Running metis on ${file} ($count/$total_metis_files)"
+
 		OUTPUT_FILE="${file}"
-		./scripts/run_metis.sh $file $OUTPUT_FILE $NUM_PARTITIONS $NUM_ITERATIONS -y
+		$RUN_METIS_SH $file $OUTPUT_FILE $NUM_PARTITIONS $NUM_ITERATIONS -y
+
 		count=$((count+1))
 done
