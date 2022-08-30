@@ -11,7 +11,7 @@ LOG () {
 		TEXT=$1
 
 		if [ -z $COLOR ]; then
-			COLOR=$GREY
+				COLOR=$GREY
 		fi
 
 		# date time format + message 
@@ -58,18 +58,34 @@ write_to_file () {
 
 # 1st arg is the output file name 
 # last arg is -y to overwrite
-if [ $# -lt 1 ]; then
+if [ $# -lt 2 ]; then
 		LOG "Given args: $@"
-		LOG "Usage: $0 <output file name> [-y]"
+		LOG "Usage: $0 <search directory for metis output> <output file name> [-y]"
+		LOG "Example: $0 /home/user/metis_output/ /home/user/metis_output/metis_output.csv: searches for all .output files, which are Metis output data, and writes them to the output file"
 		exit 1
 fi
 
-output_file=$1
+TARGET_DIR=$1
+if [ ! -d $TARGET_DIR ]; then
+		LOG "Target directory $TARGET_DIR does not exist" ${RED}
+		exit 1
+fi
+
+# if there are no files, then exit
+if [ -z "$(find $TARGET_DIR -name "*.output")" ]; then
+		LOG "No .output files found in $TARGET_DIR" ${RED}
+		exit 1
+fi
+
+LOG "Total number of files to process: $(find $TARGET_DIR -name "*.output" | wc -l)"
+LOG "Processing files in $TARGET_DIR directory"
+
+output_file=$2
 
 if [ -f $output_file ]; then
 		LOG "Output file $output_file exists. Overwrite? [y/n]"
 		read -n 1 -s answer
-		
+
 		if [ $answer != "y" ]; then
 				LOG "Exiting"
 				exit 1
@@ -83,8 +99,7 @@ fi
 
 write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "io_time" "max_mem_used" "rusage_ru_maxrss" $output_file
 
-LOG "Total number of files to process: $(find . -name "*.output" | wc -l)"
-LOG "Processing files in current directory"
+find $TARGET_DIR -name "*.output"  | while read file; do process_file "$file"; done
 
-find . -name "*.output" | while read file; do process_file "$file"; done
-LOG "Successfully processed files" ${GREEN}
+LOG "Successfully processed files." ${GREEN}
+LOG "Output file: $output_file" ${GREEN}
