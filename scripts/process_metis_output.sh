@@ -27,6 +27,10 @@ process_file () {
 		num_edges=$(echo $file | grep -Po "#Edges: \K[^,]*")
 		num_parts=$(echo $file | grep -Po "#Parts: \K[^,\n ]*")
 
+		# communication volume and edge-cut for each partition 
+		comm_vol=$(echo $file | grep -Po "communication volume: \K[^,.]*")
+		edge_cut=$(echo $file | grep -Po "Edgecut: \K[^,.]*")
+
 		# timing information 
 		part_time=$(echo $file | grep -Po "Partitioning:[ ]*\K[0-9]*.[0-9]*")
 		io_time=$(echo $file | grep -Po "I/O:[ ]*\K[0-9]*.[0-9]*")
@@ -36,23 +40,23 @@ process_file () {
 		rusage_ru_maxrss=$(echo $file | grep -Po "rusage\.ru_maxrss:[ ]*\K[0-9]*.[0-9]*")
 
 		# if any of these are empty, then the file is not valid
-		if [ -z "$name" ] || [ -z "$num_vertices" ] || [ -z "$num_edges" ] || [ -z "$num_parts" ] || [ -z "$part_time" ] || [ -z "$io_time" ] || [ -z "$max_mem_used" ] || [ -z "$rusage_ru_maxrss" ]; then
+		if [ -z $comm_vol ] || [ -z $edge_cut ] || [ -z "$name" ] || [ -z "$num_vertices" ] || [ -z "$num_edges" ] || [ -z "$num_parts" ] || [ -z "$part_time" ] || [ -z "$io_time" ] || [ -z "$max_mem_used" ] || [ -z "$rusage_ru_maxrss" ]; then
 				LOG "File $1 is not valid (missing fields, empty files, truncated, ... ) - Skipped" ${YELLOW}
 				return 1
 		fi
 
 
 		# if the file is valid, then we can print the results
-		write_to_file $name $num_parts $num_vertices $num_edges $part_time $io_time $max_mem_used $rusage_ru_maxrss $output_file 
+		write_to_file $name $num_parts $num_vertices $num_edges $part_time $io_time $comm_vol $edge_cut $max_mem_used $rusage_ru_maxrss $output_file 
 }
 
 write_to_file () {
 		# write to a csv file 
-		echo "$1,$2,$3,$4,$5,$6,$7,$8" >> $9
+		echo "$1,$2,$3,$4,$5,$6,$7,$8,$9,${10}" >> ${11}
 		# if there is an error, print it
 		if [ $? -ne 0 ]; then
-				echo "Error writing to file $9"
-				echo "$1,$2,$3,$4,$5,$6,$7,$8" 
+				echo "Error writing to file ${11}"
+				echo "fields: $1,$2,$3,$4,$5,$6,$7,$8,$9,${10}" 
 		fi
 }
 
@@ -97,7 +101,7 @@ else
 		touch $output_file
 fi
 
-write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "io_time" "max_mem_used" "rusage_ru_maxrss" $output_file
+write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "io_time" "comm_vol" "edge_cut" "max_mem_used" "rusage_ru_maxrss" $output_file
 
 find $TARGET_DIR -name "*.output"  | while read file; do process_file "$file"; done
 
