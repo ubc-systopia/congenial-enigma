@@ -336,4 +336,5 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# 
+# misc 
+*.csv
