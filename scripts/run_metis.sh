@@ -13,8 +13,8 @@ LOG () {
 METIS_PARTITIONER=$(which gpmetis)
 
 if [ -z "$METIS_PARTITIONER" ]; then
-	LOG "gpmetis not found; check if it is installed (run 'which gpmetis')"
-	exit 1
+		LOG "gpmetis not found; check if it is installed (run 'which gpmetis')"
+		exit 1
 fi
 
 # 1st arg: path to the input file
@@ -109,6 +109,8 @@ do
 				LOG "Metis succeeded"
 		fi
 done
-		count=$((count+1))
+count=$((count+1))
 done
 
+LOG "If there is any error, it is logged to ./error.log"
+LOG "DONE"
