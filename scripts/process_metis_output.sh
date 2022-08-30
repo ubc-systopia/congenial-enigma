@@ -20,7 +20,13 @@ LOG () {
 
 process_file () {
 		file=$(cat $1 | tr -s '[ \t]*' ' ')
-
+		
+		# if file is empty, skip it
+		if [ -z "$file" ]; then
+				LOG "File $1 is empty, skipping" $YELLOW
+				return
+		fi
+		
 		name=$(echo $file | grep -Po "Name: \K[^,]*")
 
 		num_vertices=$(echo $file | grep -Po "#Vertices: \K[^,]*")
@@ -101,6 +107,7 @@ else
 		touch $output_file
 fi
 
+LOG "Starting processing"
 write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "io_time" "comm_vol" "edge_cut" "max_mem_used" "rusage_ru_maxrss" $output_file
 
 find $TARGET_DIR -name "*.output"  | while read file; do process_file "$file"; done
