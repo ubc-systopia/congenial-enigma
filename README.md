@@ -28,6 +28,6 @@ python main.py \
 	--initialize \
 	--graph-names petster-hamster-household opsahl-powergrid \
 	--download \
-	--preproces sb \
+	--preprocess sb \
 	--plot
 ```
