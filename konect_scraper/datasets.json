@@ -1,0 +1,109 @@
+{
+  "datasets": [
+    {
+      "name": "youtube-links",
+      "konect-url": "http://konect.cc/networks/youtube-links/",
+      "data-url": "http://konect.cc/files/download.tsv.youtube-links.tar.bz2"
+    },
+    {
+      "name": "dimacs9-CAL",
+      "konect-url": "http://konect.cc/networks/dimacs9-CAL/",
+      "data-url": "http://konect.cc/files/download.tsv.dimacs9-CAL.tar.bz2"
+    },
+    {
+      "name": "petster-cat-friend",
+      "konect-url": "http://konect.cc/networks/petster-cat-friend/",
+      "data-url": "http://konect.cc/files/download.tsv.petster-cat-friend.tar.bz2"
+    },
+    {
+      "name": "prosper-loans",
+      "konect-url": "http://konect.cc/networks/prosper-loans/",
+      "data-url": "http://konect.cc/files/download.tsv.prosper-loans.tar.bz2"
+    },
+    {
+      "name": "ca-cit-HepPh",
+      "konect-url": "http://konect.cc/networks/ca-cit-HepPh/",
+      "data-url": "http://konect.cc/files/download.tsv.ca-cit-HepPh.tar.bz2"
+    },
+    {
+      "name": "web-BerkStan",
+      "konect-url": "http://konect.cc/networks/web-BerkStan/",
+      "data-url": "http://konect.cc/files/download.tsv.web-BerkStan.tar.bz2"
+    },
+    {
+      "name": "petster-friendships-dog",
+      "konect-url": "http://konect.cc/networks/petster-friendships-dog/",
+      "data-url": "http://konect.cc/files/download.tsv.petster-friendships-dog.tar.bz2"
+    },
+    {
+      "name": "dimacs9-LKS",
+      "konect-url": "http://konect.cc/networks/dimacs9-LKS/",
+      "data-url": "http://konect.cc/files/download.tsv.dimacs9-LKS.tar.bz2"
+    },
+    {
+      "name": "flixster",
+      "konect-url": "http://konect.cc/networks/flixster/",
+      "data-url": "http://konect.cc/files/download.tsv.flixster.tar.bz2"
+    },
+    {
+      "name": "petster-hamster-household",
+      "konect-url": "http://konect.cc/networks/petster-hamster-household/",
+      "data-url": "http://konect.cc/files/download.tsv.petster-hamster-household.tar.bz2"
+    },
+    {
+      "name": "web-Google",
+      "konect-url": "http://konect.cc/networks/web-Google/",
+      "data-url": "http://konect.cc/files/download.tsv.web-Google.tar.bz2"
+    },
+    {
+      "name": "sx-stackoverflow",
+      "konect-url": "http://konect.cc/networks/sx-stackoverflow/",
+      "data-url": "https://snap.stanford.edu/data/sx-stackoverflow.txt.gz"
+    },
+    {
+      "name": "soc-LiveJournal1",
+      "konect-url": "http://konect.cc/networks/soc-LiveJournal1/",
+      "data-url": "https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz"
+    },
+    {
+      "name": "zhishi-all",
+      "konect-url": "http://konect.cc/networks/zhishi-all/",
+      "data-url": "http://konect.cc/files/download.tsv.zhishi-all.tar.bz2"
+    },
+    {
+      "name": "dimacs9-USA",
+      "konect-url": "http://konect.cc/networks/dimacs9-USA/",
+      "data-url": "http://konect.cc/files/download.tsv.dimacs9-USA.tar.bz2"
+    },
+    {
+      "name": "flickr-growth",
+      "konect-url": "http://konect.cc/networks/flickr-growth/",
+      "data-url": "http://konect.cc/files/download.tsv.flickr-growth.tar.bz2"
+    },
+    {
+      "name": "dblp_coauthor",
+      "konect-url": "http://konect.cc/networks/dblp_coauthor/",
+      "data-url": "http://konect.cc/files/download.tsv.dblp_coauthor.tar.bz2"
+    },
+    {
+      "name": "dbpedia-link",
+      "konect-url": "http://konect.cc/networks/dbpedia-link/",
+      "data-url": "http://konect.cc/files/download.tsv.dbpedia-link.tar.bz2"
+    },
+    {
+      "name": "dimacs10-uk-2002",
+      "konect-url": "http://konect.cc/networks/dimacs10-uk-2002/",
+      "data-url": "http://konect.cc/files/download.tsv.dimacs10-uk-2002.tar.bz2"
+    },
+    {
+      "name": "orkut-links",
+      "konect-url": "http://konect.cc/networks/orkut-links/",
+      "data-url": "http://konect.cc/files/download.tsv.orkut-links.tar.bz2"
+    },
+    {
+      "name": "opsahl-powergrid",
+      "konect-url": "http://konect.cc/networks/opsahl-powergrid/",
+      "data-url": "http://konect.cc/files/download.tsv.opsahl-powergrid.tar.bz2"
+    }
+  ]
+}
