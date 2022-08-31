@@ -5,16 +5,25 @@ import sqlite3
 import konect_scraper.column_names as column_names
 from konect_scraper import scrape_konect_stats, download_and_extract
 from konect_scraper.util import \
-    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists
+    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
+    create_log_dir_if_not_exists, init_logger
+from datetime import datetime
+import logging
+import os
 
 
 def main(args):
+    create_log_dir_if_not_exists()
     init = args.initialize
     plot = args.plot
     preprocess = args.preprocess
     download = args.download
     konect_internal_names = args.graph_names
-
+    log_dir = config.settings['logging']['log_dir']
+    curr_time = datetime.now().strftime("%H_%M_%d_%m_%Y")
+    log_path = f"{config.settings['app_name']}_{curr_time}"
+    log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
+    init_logger(log_file_name)
     if konect_internal_names:
         assert verify_graphs_in_json(konect_internal_names)
         datasets = get_datasets(konect_internal_names)
@@ -97,4 +106,3 @@ if __name__ == '__main__':
                         help='Whether to plot the adjacency matrices or not.', required=True)
 
     main(parser.parse_args())
-

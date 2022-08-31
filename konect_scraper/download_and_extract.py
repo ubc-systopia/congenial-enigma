@@ -14,7 +14,7 @@ import gzip
 
 from konect_scraper import config
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, is_directed, set_n, set_m
-
+import logging
 
 def get_edge_list_filename(directory):
     fs = []
@@ -86,7 +86,7 @@ def download_graph(url, directory):
     fname = os.path.basename(urlparse(url).path)
     tmp_file = os.path.join(directory, fname)
 
-    print(f"Downloading edge list from {url} to {tmp_file}..")
+    logging.info(f"Downloading edge list from {url} to {tmp_file}..")
 
     urllib.request.urlretrieve(url, tmp_file)
     suffixes = Path(tmp_file).suffixes
@@ -99,7 +99,7 @@ def download_graph(url, directory):
             mode = 'r:bz2'
         if '.gz' in suffixes:
             mode = 'r:gz'
-        print(f"Extracting {tmp_file} - mode: {mode}..")
+        logging.info(f"Extracting {tmp_file} - mode: {mode}..")
 
         tar = tarfile.open(tmp_file, mode)
         tar.extractall(tmp_dir)
@@ -111,7 +111,7 @@ def download_graph(url, directory):
         with gzip.open(tmp_file, 'rb') as f_in:
             tmp_txt = os.path.splitext(tmp_file)[0]
             with open(tmp_txt, 'wb') as f_out:
-                print(f"Extracting {tmp_file} into {tmp_txt} mode: gzip..")
+                logging.info(f"Extracting {tmp_file} into {tmp_txt} mode: gzip..")
                 shutil.copyfileobj(f_in, f_out)
         edge_list_filename = tmp_txt
         shutil.copyfile(edge_list_filename, graph_path)
@@ -161,7 +161,7 @@ def run_graph_preprocess(input_path, output_path, directed, n, m):
         '-o', output_path
     ]
 
-    print(' '.join(args))
+    logging.info(f"Executing: " + ' '.join(args))
 
     res = subprocess.check_output(args)
     # parse the output of the simplify program to get the number of vertices and edges
@@ -223,9 +223,6 @@ def main(datasets):
         directed = bool(is_directed(graph_name))
         sz = get_size(graph_name)
         vol = get_volume(graph_name)
-        print(f"{sz=}")
-        print(f"{vol=}")
-        print(f"{directed=}")
         n, m = compress(graph_dir, directed, sz, vol)
         set_n(graph_name, n)
         set_m(graph_name, m)

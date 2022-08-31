@@ -5,6 +5,7 @@ def init():
     global settings
     # TODO update repo home
     repo_root = "/home/atrostan/Workspace/repos/congenial-enigma/"
+    app_name = "graph_preprocess"
     repo_home = os.path.join(repo_root, "konect_scraper")
     data_dir = os.path.join(repo_home, "data")
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
@@ -16,8 +17,12 @@ def init():
     compressed_el_file_name = "comp.net"
     cmake_build_dir = "cmake-build-debug"
     graph_preprocess_executable = os.path.join(repo_root, "graph_preprocess", cmake_build_dir, "graph_preprocess")
+
+    log_dir = os.path.join(repo_root, "logs")
+
     settings = {
         "repo_home": repo_home,
+        "app_name": app_name,
         "sqlite3": {
             # "tables": {
             #     ["metadata", "statistics"]
@@ -41,5 +46,8 @@ def init():
             'hc': "hubcluster",
             'hs': "hubsort",
             'dbg': "degree-based-grouping"
+        },
+        "logging": {
+            "log_dir": log_dir
         }
     }

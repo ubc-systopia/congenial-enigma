@@ -2,6 +2,7 @@ import sqlite3
 import os
 import json
 from pathlib import Path
+import logging
 
 from konect_scraper import config
 
@@ -47,11 +48,18 @@ def single_val_numeric_get(col_name, table_name, graph_name):
 
 def delete_graphs_db():
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    print(f"Deleting {db_path}..")
+    logging.info(f"Deleting {db_path}..")
     try:
         os.remove(db_path)
     except OSError:
         pass
+
+
+def create_log_dir_if_not_exists():
+    data_dirs = [config.settings['logging']['log_dir']]
+
+    for data_dir in data_dirs:
+        Path(data_dir).mkdir(parents=True, exist_ok=True)
 
 def create_data_dirs_if_not_exists():
     data_dir_names = [
@@ -63,6 +71,7 @@ def create_data_dirs_if_not_exists():
     data_dirs = [
         config.settings[n] for n in data_dir_names
     ]
+
     for data_dir in data_dirs:
         Path(data_dir).mkdir(parents=True, exist_ok=True)
 
@@ -102,6 +111,12 @@ def get_datasets(graph_names=[]):
         return [e for e in datasets['datasets'] if e['name'] in graph_names]
     else:
         return datasets['datasets']
+
+def init_logger(log_file_name):
+    fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(fmt)
+
+    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt)
 
 
 def single_val_numeric_set(col_name, table_name, graph_name, val):
