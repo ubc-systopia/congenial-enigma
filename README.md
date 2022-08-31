@@ -9,9 +9,10 @@ output: three files
 
 
 # Requirements
-- cmake
-  - 
+- [cmake](https://cmake.org/install/)
 - ninja
+	- ```sudo apt update && sudo apt install ninja-build```
+- (If using an intellij ide (e.g. PyCharm, Clion), cmake, ninja should be included)
 ## Python
 ## C++
 - [Boost](https://www.boost.org/)
