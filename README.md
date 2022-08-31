@@ -19,3 +19,15 @@ output: three files
   - `sudo apt-get install libboost-all-dev`
 - [igraph](https://igraph.org/c/)
 - [oneDPL](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html)
+
+# Examples
+
+1. Download and compress `petster-hamster-household` and `opsahl-powergrid` graphs from konect, compute the `slashburn` order of those graphs, and plot the spy plots of the results.
+```
+python main.py \
+	--initialize \
+	--graph-names petster-hamster-household opsahl-powergrid \
+	--download \
+	--preproces sb \
+	--plot
+```

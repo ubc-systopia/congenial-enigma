@@ -5,7 +5,7 @@ import sqlite3
 import konect_scraper.column_names as column_names
 from konect_scraper import scrape_konect_stats, download_and_extract
 from konect_scraper.util import \
-    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets
+    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists
 
 
 def main(args):
@@ -22,6 +22,9 @@ def main(args):
         datasets = get_datasets()
 
     if init:
+        # create data dirs (if not exists)
+        create_data_dirs_if_not_exists()
+
         # remove any existing sqlite3 db
         delete_graphs_db()
 
@@ -95,11 +98,3 @@ if __name__ == '__main__':
 
     main(parser.parse_args())
 
-"""
---initialize --graph-name petster-hamster-household opsahl-powergrid --download --plot
-
---initialize --download --plot
-
---initialize --graph-name soc-LiveJournal1 --download --plot --preprocess
-
-"""

@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import json
+from pathlib import Path
 
 from konect_scraper import config
 
@@ -47,7 +48,24 @@ def single_val_numeric_get(col_name, table_name, graph_name):
 def delete_graphs_db():
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     print(f"Deleting {db_path}..")
-    os.remove(db_path)
+    try:
+        os.remove(db_path)
+    except OSError:
+        pass
+
+def create_data_dirs_if_not_exists():
+    data_dir_names = [
+        "data_dir",
+        "dataframes_dir",
+        "graphs_dir",
+        "plots_dir",
+    ]
+    data_dirs = [
+        config.settings[n] for n in data_dir_names
+    ]
+    for data_dir in data_dirs:
+        Path(data_dir).mkdir(parents=True, exist_ok=True)
+
 
 def verify_graphs_in_json(konect_names):
     settings = config.settings
