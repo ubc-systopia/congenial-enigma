@@ -1,7 +1,9 @@
 import sqlite3
-import config
 import os
 import json
+
+from konect_scraper import config
+
 
 def __init__(self):
     config.init()

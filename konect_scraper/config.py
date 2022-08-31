@@ -12,7 +12,8 @@ def init():
     graphs_dir = os.path.join(data_dir, "graphs")
     orig_el_file_name = "orig.net"
     compressed_el_file_name = "comp.net"
-    graph_simplify_executable = "/home/atrostan/CLionProjects/graph-simplify/cmake-build-debug/graph_simplify"
+    cmake_build_dir = "cmake-build-debug"
+    graph_preprocess_executable = os.path.join(repo_home, "graph_preprocess", cmake_build_dir, "graph_preprocess")
     settings = {
         "repo_home": repo_home,
         "sqlite3": {
@@ -26,7 +27,7 @@ def init():
         "graphs_dir": graphs_dir,
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
-        "graph_simplify_executable": graph_simplify_executable,
+        "graph_preprocess_executable": graph_preprocess_executable,
         "orderings": {
             'rnd': "random",
             'rbt': "rabbit",

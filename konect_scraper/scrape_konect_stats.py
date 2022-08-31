@@ -1,15 +1,13 @@
 import ast
 
-from bs4 import BeautifulSoup
-import json
 import requests
 import pandas as pd
-import column_names
-import config
 import numpy as np
 import sqlite3
 import os.path
 from sqlalchemy.dialects.sqlite import insert
+
+from konect_scraper import column_names, config
 
 
 def insert_on_duplicate(table, conn, keys, data_iter):

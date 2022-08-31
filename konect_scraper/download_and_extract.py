@@ -1,7 +1,6 @@
 import os.path
 from os import listdir
 from os.path import isfile, join
-import config
 import json
 from pathlib import Path
 import urllib.request
@@ -10,9 +9,12 @@ import tarfile
 import shutil
 import os
 import sqlite3
-from util import *
 import subprocess
 import gzip
+
+from konect_scraper import config
+from konect_scraper.util import single_val_numeric_set, get_size, get_volume, is_directed, set_n, set_m
+
 
 def get_edge_list_filename(directory):
     fs = []
@@ -145,9 +147,9 @@ def update_meta_dir(directory, name):
     return
 
 
-def run_graph_simplify(input_path, output_path, directed, n, m):
+def run_graph_preprocess(input_path, output_path, directed, n, m):
     settings = config.settings
-    executable = settings['graph_simplify_executable']
+    executable = settings['graph_preprocess_executable']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
     args = [executable]
     if directed:
@@ -182,7 +184,7 @@ def compress(directory, directed, n, m):
     settings = config.settings
     graph_path = os.path.join(directory, settings["orig_el_file_name"])
     compressed_graph_path = os.path.join(directory, settings["compressed_el_file_name"])
-    comp_n, comp_m = run_graph_simplify(graph_path, compressed_graph_path, directed, n, m)
+    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m)
 
     # TODO record the compressed raw text file in db
 
