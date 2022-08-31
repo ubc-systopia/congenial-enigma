@@ -1,15 +1,11 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import argparse
 from argparse import RawTextHelpFormatter
-import download_and_extract
-import scrape_konect_stats
-import config
+import konect_scraper.config as config
 import sqlite3
-import column_names
-from util import create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets
+import konect_scraper.column_names as column_names
+from konect_scraper import scrape_konect_stats, download_and_extract
+from konect_scraper.util import \
+    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets
 
 
 def main(args):

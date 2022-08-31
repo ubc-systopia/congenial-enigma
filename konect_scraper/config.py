@@ -3,8 +3,8 @@ import os.path
 
 def init():
     global settings
-    repo_home = "./"
-    repo_home = "/home/atrostan/PycharmProjects/tmp/konect_scraper"
+    # TODO update repo home
+    repo_home = "/home/atrostan/Workspace/repos/congenial-enigma"
     data_dir = os.path.join(repo_home, "data")
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
     datasets_json_path = os.path.join(repo_home, "datasets.json")

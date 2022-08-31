@@ -9,6 +9,9 @@ output: three files
 
 
 # Requirements
+- cmake
+  - 
+- ninja
 ## Python
 ## C++
 - [Boost](https://www.boost.org/)
