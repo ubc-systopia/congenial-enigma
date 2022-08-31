@@ -31,8 +31,6 @@ int main(int argc, char *argv[]) {
 			case 'b':
 				sqlite_db_path = optarg;
 				break;
-			case 'n':
-				break;
 			case 'm':
 				num_edges = atoi(optarg);
 				break;

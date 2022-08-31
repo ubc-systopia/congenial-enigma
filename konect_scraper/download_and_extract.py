@@ -157,7 +157,6 @@ def run_graph_preprocess(input_path, output_path, directed, n, m):
     args += [
         '-g', input_path,
         '-b', sqlite3_db_path,
-        '-n', str(n),
         '-m', str(m),
         '-o', output_path
     ]
