@@ -14,6 +14,7 @@ output: three files
 	- ```sudo apt update && sudo apt install ninja-build```
 - (If using an intellij ide (e.g. PyCharm, Clion), cmake, ninja should be included)
 ## Python
+See [requirements.txt](./requirements.txt)
 ## C++
 - [Boost](https://www.boost.org/)
   - `sudo apt-get install libboost-all-dev`
