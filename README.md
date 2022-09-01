@@ -28,6 +28,16 @@ python main.py \
 	--initialize \
 	--graph-names petster-hamster-household opsahl-powergrid \
 	--download \
-	--preprocess sb \
+	--reorder sb \
+	--plot
+```
+
+2. Compute the `slashburn` order of `petster-hamster-household` and `opsahl-powergrid` graphs and plot the spy plots of the results.
+```
+python main.py \
+	--no-initialize \
+	--graph-names petster-hamster-household opsahl-powergrid \
+	--no-download \
+	--reorder sb \
 	--plot
 ```

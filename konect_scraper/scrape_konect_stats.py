@@ -9,8 +9,10 @@ import numpy as np
 import sqlite3
 import os.path
 from sqlalchemy.dialects.sqlite import insert
-
+from bs4 import BeautifulSoup
+import urllib.request
 from konect_scraper import column_names, config
+import re
 
 
 def insert_on_duplicate(table, conn, keys, data_iter):
@@ -27,6 +29,35 @@ def get_feature_labels(url, meta_df, stats_df, graph_name):
     stats_df = parse_stats_table(tables[1], stats_df, graph_name, directed)
 
     return meta_df, stats_df
+
+
+def get_data_url(konect_url):
+    tables = pd.read_html(konect_url)
+    html_page = urllib.request.urlopen(konect_url)
+    soup = BeautifulSoup(html_page, "html.parser")
+    tables = soup.find(lambda tag: tag.name == 'table')
+    tds = soup.findAll('td')
+    for td in tds:
+        if 'Availability' in td.text:
+            print(f"BOOYA {td.text=}")
+
+
+def fill_konect_table():
+    settings = config.settings
+    all_networks_url = settings['all_networks_url']
+    tables = pd.read_html(all_networks_url)
+    html_page = urllib.request.urlopen(all_networks_url)
+    soup = BeautifulSoup(html_page, "html.parser")
+    urls = []
+    i = 1
+    for link in soup.findAll('a')[2:-2]:
+        if i % 2 == 0:
+            urls.append(all_networks_url + link.get('href'))
+        i += 1
+    for url in urls[:1]:
+        print(url)
+        print(get_data_url(url))
+    return
 
 
 def parse_numeric(s):

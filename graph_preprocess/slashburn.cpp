@@ -12,6 +12,7 @@
 #include <cstdlib>      // std::rand, std::srand
 #include <cassert>
 #include <igraph.h>
+#include <boost/filesystem/path.hpp>
 #include "order_slashburn.h"
 
 
@@ -24,8 +25,9 @@ int main(int argc, char *argv[]) {
 	bool directed = false;
 	std::string input_path;
 	std::string output_path;
+	std::string sqlite_db_path;
 
-	while ((opt = getopt(argc, argv, "dn:m:p:g:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "dn:m:p:g:b:o:")) != -1) {
 		switch (opt) {
 			case 'd':
 				directed = !directed;
@@ -41,6 +43,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'g':
 				input_path = optarg;
+				break;
+			case 'b':
+				sqlite_db_path = optarg;
 				break;
 			case 'o':
 				output_path = optarg;
@@ -99,6 +104,7 @@ int main(int argc, char *argv[]) {
 
 	prev = &g;
 
+	auto start = std::chrono::high_resolution_clock::now();
 	while (prev->n >= k) {
 		fmt::print("gcc.n: {}, hub_idx: {}, spokes_end_idx: {}\n", prev->n, hub_idx, spokes_end_idx);
 		res = order_igraph_slashburn(*prev, k, rank, hub_idx, spokes_end_idx);
@@ -119,7 +125,14 @@ int main(int argc, char *argv[]) {
 				++hub_idx;
 			}
 		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto slashburn_time = duration_cast<time_unit>(end - start);
 
+		boost::filesystem::path p(input_path);
+		boost::filesystem::path dir = p.parent_path();
+		std::string graph_name = dir.filename().string();
+
+		single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
 		// destroy the previous gcc and reassign the pointers
 		igraph_destroy(prev);
 		prev = curr;

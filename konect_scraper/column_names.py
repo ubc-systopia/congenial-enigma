@@ -4,6 +4,16 @@ def init():
     global preproc_col_names
     global sqlite3_to_np_dtypes
 
+    konect_col_names = {
+        "graph_name": 'TEXT',
+        "name": 'TEXT',
+        "code": 'TEXT',
+        'n': 'INTEGER',
+        'm': 'INTEGER',
+        'konect_url': 'TEXT',
+        'data_url': 'TEXT'
+    }
+
     preproc_col_names = {
         'graph_name': 'TEXT',
         'compress': 'INTEGER',

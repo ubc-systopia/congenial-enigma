@@ -13,7 +13,7 @@ import subprocess
 import gzip
 
 from konect_scraper import config
-from konect_scraper.util import single_val_numeric_set, get_size, get_volume, is_directed, set_n, set_m
+from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m
 import logging
 
 def get_edge_list_filename(directory):
@@ -220,7 +220,7 @@ def main(datasets):
         single_val_numeric_set('txt_file_size', 'metadata', graph_name, os.path.getsize(graph_path))
 
         # compress the graph's edgelist
-        directed = bool(is_directed(graph_name))
+        directed = bool(get_directed(graph_name))
         sz = get_size(graph_name)
         vol = get_volume(graph_name)
         n, m = compress(graph_dir, directed, sz, vol)

@@ -64,6 +64,13 @@ int main(int argc, char *argv[]) {
 	fmt::print("n: {}\n", n);
 	fmt::print("m: {}\n", m);
 	std::ofstream outfile(output_path);
+
+	// write the compressed, simplified edge list to file
+	for (auto &kv: mapped_edges) {
+		outfile << fmt::format("{} {}\n", kv.first, kv.second);
+	}
+	outfile.close();
+
 	return 0;
 
 }

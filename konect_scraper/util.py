@@ -3,7 +3,7 @@ import os
 import json
 from pathlib import Path
 import logging
-
+import numpy as np
 from konect_scraper import config
 
 
@@ -54,12 +54,37 @@ def delete_graphs_db():
     except OSError:
         pass
 
+def get_graph_dir(graph_name):
+    settings = config.settings
+    graphs_dir = settings['graphs_dir']
+    return os.path.join(graphs_dir, graph_name)
+
+def get_plot_dir(graph_name, plot_type):
+    settings = config.settings
+    plots_dir = config.settings['plots_dir']
+    plot_dir = os.path.join(plots_dir, graph_name)
+    return os.path.join(plot_dir, plot_type)
+
+def get_plotting_dirs(graph_name):
+    graph_dir = get_graph_dir(graph_name)
+
+def create_plot_dirs_if_not_exists(graph_name):
+    plots_dir = config.settings['plots_dir']
+    plot_dir = os.path.join(plots_dir, graph_name)
+    adj_mat_dir = os.path.join(plot_dir, "adj_mat")
+    spy_dir = os.path.join(plot_dir, "spy")
+
+    Path(plot_dir).mkdir(parents=True, exist_ok=True)
+    Path(adj_mat_dir).mkdir(parents=True, exist_ok=True)
+    Path(spy_dir).mkdir(parents=True, exist_ok=True)
+
 
 def create_log_dir_if_not_exists():
     data_dirs = [config.settings['logging']['log_dir']]
 
     for data_dir in data_dirs:
         Path(data_dir).mkdir(parents=True, exist_ok=True)
+
 
 def create_data_dirs_if_not_exists():
     data_dir_names = [
@@ -75,6 +100,17 @@ def create_data_dirs_if_not_exists():
     for data_dir in data_dirs:
         Path(data_dir).mkdir(parents=True, exist_ok=True)
 
+def translate_adj_mat(arr, iso_map):
+    n = arr.shape[0]
+    map_arr = np.zeros((n, n))
+    nnz = np.nonzero(arr)
+    for src, dest in zip(nnz[0], nnz[1]):
+        map_arr[
+            iso_map[src],
+            iso_map[dest]
+        ] = 1
+
+    return map_arr
 
 def verify_graphs_in_json(konect_names):
     settings = config.settings
@@ -88,6 +124,14 @@ def verify_graphs_in_json(konect_names):
     return all([name in graph_names for name in konect_names])
 
 
+def valid_orderings(orders):
+    settings = config.settings
+
+    orderings = settings['orderings']
+    all_orders = set([k for k in orderings.keys()])
+    return all([o in all_orders for o in orders])
+
+
 def get_all_konect_names():
     settings = config.settings
 
@@ -97,6 +141,7 @@ def get_all_konect_names():
     # verify that all graph names exist in datasets.json
 
     return [d['name'] for d in datasets['datasets']]
+
 
 def get_datasets(graph_names=[]):
     settings = config.settings
@@ -112,8 +157,10 @@ def get_datasets(graph_names=[]):
     else:
         return datasets['datasets']
 
+
 def init_logger(log_file_name):
-    fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    fmt = config.settings['logging']['log_format']
+
     formatter = logging.Formatter(fmt)
 
     logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt)
@@ -138,7 +185,7 @@ def single_val_numeric_set(col_name, table_name, graph_name, val):
     return
 
 
-def is_directed(graph_name):
+def get_directed(graph_name):
     """
     Query the statistics table to check whether a graph is directed or not
     :param graph_name:

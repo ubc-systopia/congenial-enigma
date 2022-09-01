@@ -3,12 +3,13 @@ from argparse import RawTextHelpFormatter
 import konect_scraper.config as config
 import sqlite3
 import konect_scraper.column_names as column_names
-from konect_scraper import scrape_konect_stats, download_and_extract
+from konect_scraper import scrape_konect_stats, download_and_extract, reorder
 from konect_scraper.util import \
     create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
-    create_log_dir_if_not_exists, init_logger
+    create_log_dir_if_not_exists, init_logger, valid_orderings
 from datetime import datetime
 import logging
+import konect_scraper.plot as plotting
 import os
 
 
@@ -16,7 +17,7 @@ def main(args):
     create_log_dir_if_not_exists()
     init = args.initialize
     plot = args.plot
-    preprocess = args.preprocess
+    orders = args.reorder
     download = args.download
     konect_internal_names = args.graph_names
     log_dir = config.settings['logging']['log_dir']
@@ -43,15 +44,22 @@ def main(args):
         create_sql_table(conn, 'metadata', column_names.meta_col_names)
         create_sql_table(conn, 'statistics', column_names.stat_col_names)
         create_sql_table(conn, 'preproc', column_names.preproc_col_names)
+        create_sql_table(conn, 'konect', column_names.preproc_col_names)
 
+        scrape_konect_stats.fill_konect_table()
+        return
         scrape_konect_stats.main(datasets)
 
     if download:
         download_and_extract.main(datasets)
 
-    if preprocess:
+    if orders:
         # verify that the requested ordering to compute are supported
-        print(preprocess)
+        assert valid_orderings(orders)
+        reorder.main(datasets, orders)
+
+    if plot:
+        plotting.main(datasets, orders)
 
     return
 
@@ -89,7 +97,7 @@ if __name__ == '__main__':
                         action=argparse.BooleanOptionalAction, required=True,
                         help='Whether to download the graph from konect or not.')
 
-    parser.add_argument('-p', '--preprocess', nargs='+',
+    parser.add_argument('-r', '--reorder', nargs='+',
                         help='A list of orderings to compute, if any.\n'
                              'Possible Orders: {\n'
                              '  `rnd`: Random, \n'
