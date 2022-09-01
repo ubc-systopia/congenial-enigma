@@ -338,3 +338,6 @@ dkms.conf
 
 # misc 
 *.csv
+
+# ignore all intellij 
+.idea/*
