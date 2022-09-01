@@ -14,7 +14,7 @@ def compute_ordering(ord_str):
             compute_rabbit()
         # case ""
 
-def main():
+def main(datasets, orde):
     settings = config.settings
 
     datasets_json_path = settings['datasets_json_path']
