@@ -14,12 +14,22 @@ output: three files
 	- ```sudo apt update && sudo apt install ninja-build```
 - (If using an intellij ide (e.g. PyCharm, Clion), cmake, ninja should be included)
 ## Python
+`>= Python3.10`  
 See [requirements.txt](./requirements.txt)
 ## C++
 - [Boost](https://www.boost.org/)
   - `sudo apt-get install libboost-all-dev`
 - [igraph](https://igraph.org/c/)
 - [oneDPL](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html)
+
+# Build
+`$ cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=ninja -G Ninja -S ./graph_preprocess -B ./graph_preprocess/<cmake build directory name>`
+
+# Install
+- `graph_preprocess`:  
+  `$ cmake --build ./graph_preprocess/<cmake build directory name> --target graph_preprocess -j <num threads>`
+- `slashburn`:  
+  `$ cmake --build ./graph_preprocess/<cmake build directory name> --target slashshburn -j <num threads>`
 
 # Examples
 
