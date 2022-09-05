@@ -28,7 +28,7 @@ if [ $# -lt 4 ]; then
 		echo ""
 		echo -e "\tExample: $0 ./input.txt ./output.txt 10 100"
 		echo ""
-		echo -e "\tThe example above will run the algorithm on the input graph and writes the output result to ./output.txt.part.X.iter.Y where X is the number partitions and Y is the iteration number per number of partition. In this example, X starts from 2 and goes to 2^10, i.e. {2, 2^2, 2^3, ..., 2^10}, and Y starts from 1 and goes to 100"
+		echo -e "\tThe example above will run the algorithm on the ./input.txt for Y times and produces two files: 1- last partitioning results in ./output.txt.part.X where X is the number partitions and 2- ./output.txt.part.X.output which includes all metis output data and perf information. In this example, setting X to 10 means that the number of partitions starts from 2 and goes to 2^10, i.e. {2, 2^2, 2^3, ..., 2^10}, and Y starts from 1 and goes to 100. All repetitions are done by perf tool as 'perf stat -d -d -d --table -r 3'"
 		exit 1 
 fi
 
