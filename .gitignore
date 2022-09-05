@@ -341,3 +341,7 @@ dkms.conf
 
 # ignore all intellij 
 .idea/*
+
+# add venv to gitignore
+# virtualenv
+venv/**
