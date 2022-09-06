@@ -13,6 +13,7 @@ import subprocess
 import gzip
 
 from konect_scraper import config
+from konect_scraper.config import IOMode
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
     single_val_numeric_get
 import logging
@@ -151,7 +152,7 @@ def update_meta_dir(directory, name):
     return
 
 
-def run_graph_preprocess(input_path, output_path, directed, n, m):
+def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes):
     settings = config.settings
     executable = settings['graph_preprocess_executable']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
@@ -159,6 +160,13 @@ def run_graph_preprocess(input_path, output_path, directed, n, m):
     # TODO directedness not required for ingest?
     # if directed:
     #     args += ['-d']
+
+    for io_mode in io_modes:
+        match io_mode:
+            case IOMode.text:
+                args += ['-t']
+            case IOMode.binary:
+                args += ['-i']
 
     args += [
         '-g', input_path,
@@ -180,7 +188,7 @@ def run_graph_preprocess(input_path, output_path, directed, n, m):
     return n, m
 
 
-def compress(directory, directed, n, m):
+def compress(directory, directed, n, m, io_modes):
     """
     use igraph_simplify to compress a graph's edgelist in directory
     :param directory:
@@ -189,14 +197,14 @@ def compress(directory, directed, n, m):
     settings = config.settings
     graph_path = os.path.join(directory, settings["orig_el_file_name"])
     compressed_graph_path = os.path.join(directory, settings["compressed_el_file_name"])
-    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m)
+    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m, io_modes)
 
     # TODO record the compressed raw text file in db
 
     return comp_n, comp_m
 
 
-def main(rows):
+def main(rows, io_modes):
     """
     1. Download graph from urls specified in datasets.json
     2. Extract graph file into graph's directory
@@ -216,8 +224,8 @@ def main(rows):
         if data_url == "none":
             continue
         comp_size = single_val_numeric_get('compressed_txt_file_size', 'metadata', graph_name)
-        if comp_size > 0:  # dataset has been downloaded already
-            continue
+        # if comp_size > 0:  # dataset has been downloaded already
+        #     continue
 
         graph_dir = os.path.join(graphs_dir, graph_name)
         # create directory for the graph (if not exists)
@@ -234,14 +242,14 @@ def main(rows):
         directed = bool(get_directed(graph_name))
         sz = get_size(graph_name)
         vol = get_volume(graph_name)
-        n, m = compress(graph_dir, directed, sz, vol)
+        n, m = compress(graph_dir, directed, sz, vol, io_modes)
         set_n(graph_name, n)
         set_m(graph_name, m)
 
         # update the text file size in the database
         compressed_graph_path = os.path.join(graph_dir, settings["compressed_el_file_name"])
         single_val_numeric_set('compressed_txt_file_size', 'metadata', graph_name,
-                               os.path.getsize(compressed_graph_path))
+                               os.path.getsize(compressed_graph_path + ".net"))
     return
 
 

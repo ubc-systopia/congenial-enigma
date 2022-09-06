@@ -15,7 +15,7 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
-find_package(Boost 1.71.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.71.0 COMPONENTS system filesystem serialization REQUIRED)
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 

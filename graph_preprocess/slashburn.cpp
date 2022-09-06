@@ -65,12 +65,15 @@ int main(int argc, char *argv[]) {
 	/* turn on attribute handling */
 	igraph_set_attribute_table(&igraph_cattribute_table);
 
-	igraph_t g;
-	FILE *f;
-	f = fopen(input_path.c_str(), "r");
-	// TODO slashburn impl ignores graph directedness
-	igraph_read_graph_edgelist(&g, f, num_vertices, 0);
 
+	igraph_t g;
+//	FILE *f;
+//	f = fopen(input_path.c_str(), "r");
+
+	// TODO slashburn impl ignores graph directedness
+//	igraph_read_graph_edgelist(&g, f, num_vertices, 0);
+	std::vector<std::pair<ul, ul>> flat_edges(num_edges);
+	read_binary_edge_list_into_igraph(input_path, flat_edges, &g, num_vertices, num_edges, 0);
 	ul n;
 	ull i, m;
 

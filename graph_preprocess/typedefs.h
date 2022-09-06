@@ -7,9 +7,9 @@
 #ifndef GRAPH_PREPROCESS_TYPEDEFS_H
 #define GRAPH_PREPROCESS_TYPEDEFS_H
 
-typedef unsigned long long ull;
+typedef uint64_t ull;
 
-typedef unsigned long ul;
+typedef uint32_t ul;
 
 using namespace std::chrono;
 typedef std::chrono::duration<long long, std::milli> time_unit;

@@ -28,6 +28,10 @@ def get_all_unipartite_graphs():
     return cursor.fetchall()
 
 
+def row_as_dict(r):
+    return {k: r[k] for k in r.keys()}
+
+
 def get_all_downloadable_graphs(graph_names):
     conn = connect()
     conn.row_factory = sqlite3.Row
@@ -48,6 +52,7 @@ def get_all_rows_by_graph_names(table, graph_names):
 
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
+
 
 def get_all_graphs_by_graph_names_where_stats_between(stats, mins, maxs, graph_names):
     assert len(stats) == len(mins) == len(maxs)

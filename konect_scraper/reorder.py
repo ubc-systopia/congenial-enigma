@@ -2,6 +2,8 @@ from konect_scraper import config
 import os
 import logging
 import subprocess
+
+from konect_scraper.config import IOMode
 from konect_scraper.util import get_directed, get_n, get_m
 
 
@@ -21,6 +23,14 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
 
     if directed:
         args += ['-d']
+
+    # for io_mode in io_modes:
+    #     match io_mode:
+    #         case IOMode.text:
+    #             args += ['-t']
+    #         case IOMode.binary:
+    #             args += ['-i']
+
     args += [
         '-n', str(n),
         '-m', str(m),
@@ -29,6 +39,9 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
         '-b', sqlite3_db_path,
         '-o', order_path,
     ]
+
+    logging.info(f"Executing: " + ' '.join(args))
+
     res = subprocess.check_output(args)
 
     return
@@ -39,7 +52,10 @@ def compute_ordering(graph_name, order):
     orderings = settings['orderings']
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
-    comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'])
+
+    extension = ".bin"
+
+    comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
     print(graph_name)
     directed = bool(get_directed(graph_name))
     n = get_n(graph_name)

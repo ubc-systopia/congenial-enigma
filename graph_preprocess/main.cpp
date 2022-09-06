@@ -22,9 +22,16 @@ int main(int argc, char *argv[]) {
 	std::string input_path;
 	std::string sqlite_db_path;
 	std::string output_path;
+	std::vector<io_mode> io_modes;
 
-	while ((opt = getopt(argc, argv, "g:b:m:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "tig:b:m:o:")) != -1) {
 		switch (opt) {
+			case 't':
+				io_modes.push_back(text);
+				break;
+			case 'i':
+				io_modes.push_back(binary);
+				break;
 			case 'g':
 				input_path = optarg;
 				break;
@@ -49,6 +56,12 @@ int main(int argc, char *argv[]) {
 				abort();
 		}
 	}
+
+	// if no io mode supplied, default to text
+	if (io_modes.empty()) {
+		io_modes.push_back(text);
+	}
+
 	std::vector<std::pair<ul, ul>> edges;
 	std::vector<std::pair<ul, ul>> mapped_edges;
 	edges.resize(num_edges);
@@ -63,13 +76,21 @@ int main(int argc, char *argv[]) {
 	ull m = nm.second;
 	fmt::print("n: {}\n", n);
 	fmt::print("m: {}\n", m);
-	std::ofstream outfile(output_path);
 
-	// write the compressed, simplified edge list to file
-	for (auto &kv: mapped_edges) {
-		outfile << fmt::format("{} {}\n", kv.first, kv.second);
+	for (auto &io_mode: io_modes) {
+		write_edge_list(output_path, mapped_edges, io_mode);
 	}
-	outfile.close();
+
+
+	// DEBUG
+//	std::vector<std::pair<ul, ul>> tmp_edges(m);
+//	read_binary_edge_list(
+//			fmt::format("{}.bin", output_path),
+//			tmp_edges
+//	);
+//	for (auto &e: tmp_edges) {
+//		fmt::print("e: {}\n", e);
+//	}
 
 	return 0;
 

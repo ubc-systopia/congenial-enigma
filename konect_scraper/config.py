@@ -1,9 +1,16 @@
 import os.path
 from pathlib import Path
+from enum import Enum
+
+
+class IOMode(Enum):
+    binary = 1
+    text = 2
 
 
 def init():
     global settings
+
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     app_name = "graph_preprocess"
@@ -16,7 +23,7 @@ def init():
     graphs_dir = os.path.join(data_dir, "graphs")
     plots_dir = os.path.join(data_dir, "plots")
     orig_el_file_name = "orig.net"
-    compressed_el_file_name = "comp.net"
+    compressed_el_file_name = "comp"
     cmake_build_dir = "cmake-build-debug"
 
     # EXECUTABLES

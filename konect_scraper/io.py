@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import logging
 import igraph as ig
+import igraph._igraph
 import numpy as np
 import matplotlib.pyplot as plt
 from konect_scraper import config
@@ -28,7 +29,27 @@ def read_iso_map(path):
 
 
 def get_adj_mat_from_edge_list(path, directed):
-    g = ig.Graph.Read_Edgelist(path, directed=directed)
+    try:
+        g = ig.Graph.Read_Edgelist(path, directed=directed)
+    except igraph._igraph.InternalError:
+        with open(path) as f:
+            line = f.readline()
+            n_values = len(line.split())
+        dtype_cols = []
+        for i in range(n_values):
+            dtype_cols += [(f'c{i}', np.uint32)]
+        arr = np.fromfile(path, sep=' ').astype(np.uint32)
+        reshaped = arr.reshape((int(arr.shape[0] / n_values), n_values))[:, :2]
+
+        max_vid = np.max(reshaped.flatten())
+        adj_mat = np.zeros((max_vid + 1, max_vid + 1))
+
+        for e in reshaped:
+            adj_mat[e[0], e[1]] = 1
+            if not directed:
+                adj_mat[e[1], e[0]] = 1
+
+        return adj_mat
 
     return np.array(g.get_adjacency().data).astype(np.uint32)
 

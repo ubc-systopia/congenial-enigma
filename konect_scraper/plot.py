@@ -58,8 +58,9 @@ def ax_plot_adj_mat(ax, graph_name, directed, label_str, el_file_name, plot_form
     graph_dir = get_graph_dir(graph_name)
     graph_path = os.path.join(graph_dir, settings[el_file_name])
 
+    if settings[el_file_name] == "comp":
+        graph_path += ".net"
     adj_mat = get_adj_mat_from_edge_list(graph_path, directed)
-
     if plot_format == "adj_mat":
         ax.matshow(adj_mat)
     else:
@@ -83,6 +84,9 @@ def ax_plot_order(ax, graph_name, directed, order, plot_format, markersize):
 
     graph_dir = os.path.join(graphs_dir, graph_name)
     graph_path = os.path.join(graph_dir, settings["compressed_el_file_name"])
+
+    graph_path += ".net"
+
     adj_mat = get_adj_mat_from_edge_list(graph_path, directed)
     iso_path = os.path.join(graph_dir, order)
     iso_map = read_iso_map(iso_path)
@@ -151,7 +155,7 @@ def main(rows, orders):
     plot_formats = ["adj_mat", "spy"]
     plot_formats = ["spy"]
     # compute the given orders for each of the datasets
-    for row_idx, row in enumerate(rows[:2]):
+    for row_idx, row in enumerate(rows):
 
         graph_name = row['graph_name']
         logging.info(f"Plotting {graph_name}..")
