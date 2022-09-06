@@ -5,16 +5,66 @@ from pathlib import Path
 import logging
 import numpy as np
 from konect_scraper import config
+import pandas as pd
+
+from konect_scraper.sql import connect
 
 
 def __init__(self):
     config.init()
 
+def column_exists(column, table):
+    """
+    true, if column in table, false otherwise
+    """
+    conn = connect()
+    sql = f"SELECT * FROM pragma_table_info('{table}') WHERE name=?"
+    cursor = conn.cursor()
 
-def connect():
-    db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
-    return conn
+    cursor.execute(sql, (column,))
+    res = cursor.fetchall()
+    return len(res) == 1
+
+
+def cast_np_dtypes(df, dtypes):
+    # TODO imputing with zero - is this appropriate?
+    for col in df.columns:
+        
+        # columns contain large values so cast them using larger dtypes
+        if col in ['wedge_count', 'claw_count', 'cross_count', 'triangle_count']:
+            arr = np \
+                .nan_to_num(df[col].values) \
+                .astype(np.ulonglong)
+            df[col] = pd.to_numeric(arr, errors='coerce').astype(np.ulonglong)
+            # return
+        
+        dtype = dtypes[col]
+        if dtype == 'Int64':
+            arr = np \
+                .nan_to_num(df[col].values) \
+                .astype(np.int64)
+            df[col] = pd.to_numeric(arr, errors='coerce').astype(np.int64)
+        if dtype == 'Float64':
+            arr = np \
+                .nan_to_num(df[col].values) \
+                .astype(np.float64)
+            df[col] = pd.to_numeric(arr, errors='coerce').astype(np.float64)
+
+    return
+
+
+def add_column_if_not_exists(column, table, dtype):
+    # check if column exists in table
+    if column_exists(column, table):
+        return
+    conn = connect()
+    sql = f"alter table {table} add column {column} {dtype} default null"
+    cursor = conn.cursor()
+
+    cursor.execute(sql)
+    conn.close()
+
+    return
 
 
 def create_sql_table(conn, table_name, column_dict):
@@ -54,10 +104,12 @@ def delete_graphs_db():
     except OSError:
         pass
 
+
 def get_graph_dir(graph_name):
     settings = config.settings
     graphs_dir = settings['graphs_dir']
     return os.path.join(graphs_dir, graph_name)
+
 
 def get_plot_dir(graph_name, plot_type):
     settings = config.settings
@@ -65,8 +117,10 @@ def get_plot_dir(graph_name, plot_type):
     plot_dir = os.path.join(plots_dir, graph_name)
     return os.path.join(plot_dir, plot_type)
 
+
 def get_plotting_dirs(graph_name):
     graph_dir = get_graph_dir(graph_name)
+
 
 def create_plot_dirs_if_not_exists(graph_name):
     plots_dir = config.settings['plots_dir']
@@ -100,6 +154,7 @@ def create_data_dirs_if_not_exists():
     for data_dir in data_dirs:
         Path(data_dir).mkdir(parents=True, exist_ok=True)
 
+
 def translate_adj_mat(arr, iso_map):
     n = arr.shape[0]
     map_arr = np.zeros((n, n))
@@ -111,6 +166,7 @@ def translate_adj_mat(arr, iso_map):
         ] = 1
 
     return map_arr
+
 
 def verify_graphs_in_json(konect_names):
     settings = config.settings
@@ -143,6 +199,30 @@ def get_all_konect_names():
     return [d['name'] for d in datasets['datasets']]
 
 
+def delete_all_rows(table):
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute(f'DELETE FROM {table};', );
+    logging.info(f'{c.rowcount} rows deleted from the {table}')
+
+    # commit the changes to db
+    conn.commit()
+    # close the connection
+    conn.close()
+    return
+
+
+def get_all_rows(table):
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    sql = f"select * from {table}"
+    cursor = conn.execute(sql)
+    rows = cursor.fetchall()
+    return rows
+
+
 def get_datasets(graph_names=[]):
     settings = config.settings
 
@@ -164,6 +244,12 @@ def init_logger(log_file_name):
     formatter = logging.Formatter(fmt)
 
     logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt)
+
+
+def get_query_vals_str(n_vals):
+    return '(' + \
+           ','.join(['?'] * n_vals) + \
+           ')'
 
 
 def single_val_numeric_set(col_name, table_name, graph_name, val):

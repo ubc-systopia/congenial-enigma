@@ -345,3 +345,4 @@ dkms.conf
 # add venv to gitignore
 # virtualenv
 venv/**
+./graph_preprocess/.idea/*

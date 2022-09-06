@@ -1,10 +1,11 @@
 import os.path
+from pathlib import Path
 
 
 def init():
     global settings
     # TODO update repo home
-    repo_root = "/home/atrostan/Workspace/repos/congenial-enigma/"
+    repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
@@ -38,6 +39,7 @@ def init():
     ax_size = 8  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     settings = {
+        "repo_root": repo_root,
         "repo_home": repo_home,
         "app_name": app_name,
         "all_networks_url": all_networks_url,

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16)
 project(graph_preprocess CXX)
 
 include(FetchContent)
@@ -15,7 +15,7 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
-find_package(Boost 1.74.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.71.0 COMPONENTS system filesystem REQUIRED)
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 

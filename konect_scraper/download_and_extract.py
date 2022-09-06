@@ -13,7 +13,8 @@ import subprocess
 import gzip
 
 from konect_scraper import config
-from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m
+from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
+    single_val_numeric_get
 import logging
 
 def get_edge_list_filename(directory):
@@ -23,6 +24,9 @@ def get_edge_list_filename(directory):
             fs.append(os.path.join(path, name))
 
     sorted_files = sorted(fs, key=os.path.getsize)
+    for f in sorted_files:
+        if os.path.basename(f).split('.')[0] == 'out':
+            return f
 
     return sorted_files[-1]
 
@@ -152,8 +156,10 @@ def run_graph_preprocess(input_path, output_path, directed, n, m):
     executable = settings['graph_preprocess_executable']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
     args = [executable]
-    if directed:
-        args += ['-d']
+    # TODO directedness not required for ingest?
+    # if directed:
+    #     args += ['-d']
+
     args += [
         '-g', input_path,
         '-b', sqlite3_db_path,
@@ -190,7 +196,7 @@ def compress(directory, directed, n, m):
     return comp_n, comp_m
 
 
-def main(datasets):
+def main(rows):
     """
     1. Download graph from urls specified in datasets.json
     2. Extract graph file into graph's directory
@@ -203,10 +209,15 @@ def main(datasets):
     datasets_json_path = settings['datasets_json_path']
     graphs_dir = settings['graphs_dir']
 
-    for dataset in datasets:
-        graph_name = dataset['name']
-        konect_url = dataset['konect-url']
-        data_url = dataset['data-url']
+    for row in rows:
+        graph_name = row['graph_name']
+        konect_url = row['konect_url']
+        data_url = row['data_url']
+        if data_url == "none":
+            continue
+        comp_size = single_val_numeric_get('compressed_txt_file_size', 'metadata', graph_name)
+        if comp_size > 0:  # dataset has been downloaded already
+            continue
 
         graph_dir = os.path.join(graphs_dir, graph_name)
         # create directory for the graph (if not exists)

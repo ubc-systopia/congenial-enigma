@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import ast
+import logging
+import unicodedata
 
 import requests
 import pandas as pd
@@ -13,6 +15,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 from konect_scraper import column_names, config
 import re
+
+from konect_scraper.util import get_query_vals_str, cast_np_dtypes
 
 
 def insert_on_duplicate(table, conn, keys, data_iter):
@@ -32,14 +36,39 @@ def get_feature_labels(url, meta_df, stats_df, graph_name):
 
 
 def get_data_url(konect_url):
+    def is_unavailable(soup):
+        # find metadata table
+        h2 = soup.find('h2', text='Metadata')
+        table = h2.find_next_sibling('table')
+        rows = table.find('tr')
+        for row in rows:
+            cells = row.find_all("td")
+            rn = cells[0].get_text()
+            if "Availability" in rn:
+                for line in rn.split('\n'):
+                    if 'Availability' in line:
+                        return line.replace('Availability', '') == 'Dataset is not available for download'
+
     tables = pd.read_html(konect_url)
     html_page = urllib.request.urlopen(konect_url)
     soup = BeautifulSoup(html_page, "html.parser")
     tables = soup.find(lambda tag: tag.name == 'table')
-    tds = soup.findAll('td')
-    for td in tds:
-        if 'Availability' in td.text:
-            print(f"BOOYA {td.text=}")
+    hrefs = tables.findAll('a', href=True)
+    konect_files_url = "http://konect.cc/files"
+    files_relative_path = '../../files'
+
+    if is_unavailable(soup):
+        url = "none"
+    else:
+        for a in hrefs:
+            if a.text == 'Dataset is available for download':
+                href = a['href']
+                if href.startswith(files_relative_path):
+                    url = os.path.join(konect_files_url + href.replace(files_relative_path, ''))
+                else:
+                    url = href
+
+    return url
 
 
 def fill_konect_table():
@@ -50,39 +79,81 @@ def fill_konect_table():
     soup = BeautifulSoup(html_page, "html.parser")
     urls = []
     i = 1
-    for link in soup.findAll('a')[2:-2]:
+    links = soup.findAll('a')[2:-2]
+    assert (len(links) - 1) / 2 == tables[0].shape[0]
+    for link in links:
         if i % 2 == 0:
             urls.append(all_networks_url + link.get('href'))
         i += 1
-    for url in urls[:1]:
-        print(url)
-        print(get_data_url(url))
+    rows = []
+    for url, (i, row) in zip(urls, tables[0][1:].iterrows()):
+        internal_name = os.path.basename(os.path.normpath(url))
+        logging.info(f"{internal_name} : {url}")
+
+        internal_code = row[0]
+        name = row[1]
+        n = int(row[3])
+        m = int(row[4])
+
+        rows.append((
+            # graph_name, name, code, n, m, konect_url, data_url
+            internal_name, name, internal_code, n, m, url, get_data_url(url)
+        ))
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    query_vals_str = get_query_vals_str(len(column_names.konect_col_names))
+    query = f"insert into konect values {query_vals_str}"
+    cursor.executemany(query, rows)
+    conn.commit()
+    conn.close()
     return
 
 
+
 def parse_numeric(s):
+
+    utimes = '\u00D7'
+    uminus = '\u2212'
+    uplus = '\u002B'
+
+    def parse_scientific_notation_string(string):
+        line = string.split(utimes)
+        coef = ''.join(line[0].replace(u'\xa0', u''))
+
+        if uminus in coef:
+            coef = ast.literal_eval(coef.replace(uminus, ''))
+            coef = -int(coef)
+        else:
+            coef = ast.literal_eval(coef)
+
+        base = line[1].strip()
+        exp = base.replace('10', '', 1)
+        if uminus in exp:
+            exp = exp.replace(uminus, '')
+            exp = -int(exp)
+        else:
+            exp = int(exp)
+
+
+        return coef * np.float_power(10, exp)
+
+    s = unicodedata.normalize('NFC', s)
     try:
         return ast.literal_eval(s)
     except:
-        if '×' in s:  # string with scientific notation
-            l = s.split('×')
-            a = ast.literal_eval(''.join(l[0].replace(u'\xa0', u'')))
-            b = l[1].strip()
-            if '−' in b:
-                exp = b.replace('10', '')
-                exp = exp.replace('−', '')
-                return a * np.float_power(10, -int(exp))
-            else:
-                exp = int(b.replace('10', ''))
-                return a * np.float_power(10, exp)
-            return 0
-        elif '−' in s:
-            s = s.replace('−', '')
+        if utimes in s:  # string with scientific notation
+            return parse_scientific_notation_string(s)
+        elif uminus in s:
+            s = s.replace(uminus, '')
             return -ast.literal_eval(s.replace(u'\xa0', u''))
-        elif '+' in s:
-            s = s.replace('+', '')
+        elif uplus in s:
+            s = s.replace(uplus, '')
             return ast.literal_eval(s.replace(u'\xa0', u''))
-
+        elif 'Inf' in s:
+            return np.inf
+        elif '-Inf' in s:
+            return np.NINF
         else:
             return ast.literal_eval(''.join(s.replace(u'\xa0', u'')))
 
@@ -167,7 +238,7 @@ def write_to_sqlite3(df, table_name, conn):
     conn.commit()
 
 
-def main(datasets):
+def main(rows):
     settings = config.settings
 
     dataframes_dir = settings['dataframes_dir']
@@ -177,18 +248,40 @@ def main(datasets):
     # meta_df.set_index('graph_name', inplace=True)
     # stats_df.set_index('graph_name', inplace=True)
     # get all konect url for datasets in datasets.json
-    for dataset in datasets:
-        url = dataset['konect-url']
-        graph_name = dataset['name']
-        # aggregate all possible feature labels available for datasets on konect
-        meta_df, stats_df = get_feature_labels(url, meta_df, stats_df, graph_name)
-
-    # populate a dataframe with feature values for datasets
+    logging.info(f"Scraping {len(rows)} graphs from konect.cc/networks..")
+    # for row in rows:
+    #
+    #     url = row['konect_url']
+    #     graph_name = row['graph_name']
+    #     logging.info(f"Scraping {graph_name} at {url}")
+    #     # aggregate all possible feature labels available for datasets on konect
+    #     meta_df, stats_df = get_feature_labels(url, meta_df, stats_df, graph_name)
+    #
+    # # populate a dataframe with feature values for datasets
     meta_df_path = os.path.join(dataframes_dir, "meta.csv")
     stats_df_path = os.path.join(dataframes_dir, "stats.csv")
+    #
+    # meta_df.to_csv(meta_df_path, index=False)
+    # stats_df.to_csv(stats_df_path, index=False)
 
-    meta_df.to_csv(meta_df_path)
-    stats_df.to_csv(stats_df_path)
+    meta_df = pd.read_csv(meta_df_path, index_col=0)
+    stats_df = pd.read_csv(stats_df_path, index_col=0)
+
+    meta_dtypes = {
+        k: column_names.sql_to_np_dtypes[column_names.meta_col_names[k]] for k in
+        meta_df.columns
+    }
+
+    stats_dtypes = {
+        k: column_names.sql_to_np_dtypes[column_names.stat_col_names[k]] for k in
+        stats_df.columns
+    }
+
+    cast_np_dtypes(meta_df, meta_dtypes)
+    cast_np_dtypes(stats_df, stats_dtypes)
+
+    meta_df = meta_df.astype(meta_dtypes)
+    stats_df = stats_df.astype(stats_dtypes)
 
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
