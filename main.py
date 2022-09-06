@@ -4,6 +4,9 @@ import konect_scraper.config as config
 import sqlite3
 import konect_scraper.column_names as column_names
 from konect_scraper import scrape_konect_stats, download_and_extract, reorder
+from konect_scraper.sql import distinct, get_all_graphs_in_categories, get_all_graphs_where_stats_between, \
+    get_all_unipartite_graphs, get_all_graphs_by_graph_names_where_stats_between, get_all_rows_by_graph_names, \
+    get_all_downloadable_graphs
 from konect_scraper.util import \
     create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
     create_log_dir_if_not_exists, init_logger, valid_orderings
@@ -15,51 +18,80 @@ import os
 
 def main(args):
     create_log_dir_if_not_exists()
-    init = args.initialize
     plot = args.plot
     orders = args.reorder
     download = args.download
-    konect_internal_names = args.graph_names
+
     log_dir = config.settings['logging']['log_dir']
     curr_time = datetime.now().strftime("%H_%M_%d_%m_%Y")
     log_path = f"{config.settings['app_name']}_{curr_time}"
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)
-    if konect_internal_names:
-        assert verify_graphs_in_json(konect_internal_names)
-        datasets = get_datasets(konect_internal_names)
-    else:
-        datasets = get_datasets()
 
-    if init:
-        # create data dirs (if not exists)
-        create_data_dirs_if_not_exists()
+    categories = [
+        'Citation network',
+        'Online social network'
+    ]
 
-        # remove any existing sqlite3 db
-        delete_graphs_db()
+    rows = get_all_graphs_in_categories(categories)
+    graphs = [r['graph_name'] for r in rows]
 
-        db_path = config.settings['sqlite3']['sqlite3_db_path']
-        conn = sqlite3.connect(db_path)
+    # get all where 50 < size < 100 and 100 < volume < 1000
+    rows = get_all_graphs_where_stats_between(
+        stats=['size', 'volume'],
+        mins=[50, 100],
+        maxs=[100, 1000]
+    )
 
-        create_sql_table(conn, 'metadata', column_names.meta_col_names)
-        create_sql_table(conn, 'statistics', column_names.stat_col_names)
-        create_sql_table(conn, 'preproc', column_names.preproc_col_names)
-        create_sql_table(conn, 'konect', column_names.preproc_col_names)
+    rows = get_all_unipartite_graphs()
+    graph_names = [r['graph_name'] for r in rows]
+    print(f"{len(graph_names)} unipartite graphs in dataset.")
+    # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
+    rows = get_all_graphs_by_graph_names_where_stats_between(
+        stats=['size', ],
+        mins=[1_000, ],
+        maxs=[2_000, ],
+        graph_names=graph_names
+    )
 
-        scrape_konect_stats.fill_konect_table()
-        return
-        scrape_konect_stats.main(datasets)
+    print(len(rows))
+    graph_names = [r['graph_name'] for r in rows]
 
+
+
+    # now that a selection of relevant graph_names have been identified,
+    # download, reorder, and plot them
+    graph_names = [
+        'arenas-email',
+        'dimacs10-netscience',
+        'dimacs10-polblogs',
+        # 'moreno_blogs',
+        # 'moreno_names',
+        # 'moreno_propro',
+        'opsahl-ucsocial',
+        'opsahl-usairport',
+        'petster-friendships-hamster',
+        'petster-hamster-household',
+        'subelj_euroroad',
+        'wiki_talk_br',
+
+    ]
+
+    rows = get_all_downloadable_graphs(graph_names)
+    print("GRPAHS:")
+    for r in rows:
+        print(r['graph_name'])
+    print("END")
     if download:
-        download_and_extract.main(datasets)
+        download_and_extract.main(rows)
 
     if orders:
         # verify that the requested ordering to compute are supported
         assert valid_orderings(orders)
-        reorder.main(datasets, orders)
+        reorder.main(rows, orders)
 
     if plot:
-        plotting.main(datasets, orders)
+        plotting.main(rows, orders)
 
     return
 
@@ -82,11 +114,6 @@ if __name__ == '__main__':
         5.1.    The runtime of each experiment is persisted.
     """
     parser = argparse.ArgumentParser(description=argparse_desc, formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-i', '--initialize',
-                        action=argparse.BooleanOptionalAction, required=True,
-                        help='Whether to initialize the sqlite database or not. '
-                             'If true, existing sqlite db in the path specified by '
-                             'config.settings.sqlite3.sqlite3_db_path will be deleted')
 
     parser.add_argument('-g', '--graph-names', nargs='+',
                         help='If specified, only download and scrape these graphs '

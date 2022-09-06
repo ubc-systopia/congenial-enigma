@@ -40,7 +40,7 @@ def compute_ordering(graph_name, order):
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
     comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'])
-
+    print(graph_name)
     directed = bool(get_directed(graph_name))
     n = get_n(graph_name)
     m = get_m(graph_name)
@@ -58,13 +58,13 @@ def compute_ordering(graph_name, order):
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""
 
-def main(datasets, orders):
+def main(rows, orders):
     settings = config.settings
 
 
     # compute the given orders for each of the datasets
-    for dataset in datasets:
-        graph_name = dataset['name']
+    for row in rows:
+        graph_name = row['graph_name']
 
         for order in orders:
             compute_ordering(graph_name, order)

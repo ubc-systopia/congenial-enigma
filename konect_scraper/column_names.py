@@ -1,8 +1,20 @@
+import numpy as np
+
 def init():
     global meta_col_names
     global stat_col_names
     global preproc_col_names
+    global konect_col_names
     global sqlite3_to_np_dtypes
+    global sql_to_np_dtypes
+
+    sql_to_np_dtypes = {
+        'TEXT': str,
+        'STRING': str,
+        'INTEGER': "Int64",
+        'REAL': "Float64",
+        'BIGINT': "Int64"
+    }
 
     konect_col_names = {
         "graph_name": 'TEXT',
@@ -56,6 +68,12 @@ def init():
         'orientation': 'TEXT',
         'multiplicity': 'TEXT',
         'connectedness': 'TEXT',
+        'zero_weights': 'TEXT',
+        'skew_symmetry': 'TEXT',
+        'complete': 'TEXT',
+        'k_core': 'TEXT',
+        'tournament': 'TEXT',
+        'paths': 'TEXT',
         'txt_file_size': 'INTEGER',
         'compressed_txt_file_size': 'INTEGER',
     }
@@ -69,10 +87,10 @@ def init():
         'm': 'INTEGER',
         'unique_edge_count': 'INTEGER',
         'loop_count': 'INTEGER',
-        'wedge_count': 'INTEGER',
-        'claw_count': 'INTEGER',
-        'cross_count': 'INTEGER',
-        'triangle_count': 'INTEGER',
+        'wedge_count': 'BIGINT',
+        'claw_count': 'BIGINT',
+        'cross_count': 'BIGINT',
+        'triangle_count': 'BIGINT',
         'square_count': 'INTEGER',
         'tour_count_4': 'INTEGER',
         'maximum_degree': 'INTEGER',
@@ -119,5 +137,22 @@ def init():
         'outdegree_p_value': 'REAL',
         'algebraic_connectivity': 'REAL',
         'spectral_separation': 'REAL',
+        'triadic_conflict': 'REAL',
+        'spectral_signed_frustration': 'REAL',
+        'algebraic_conflict': 'REAL',
+        'negativity': 'REAL',
+        # bipartite stats - we don't consider bipartite graphs - but konect stats exist for these
 
+        'left_balanced_inequality_ratio': 'REAL',
+        'average_left_degree': 'INTEGER',
+        'right_size': 'INTEGER',
+        'left_size': 'INTEGER',
+        'maximum_right_degree': 'INTEGER',
+        'maximum_left_degree': 'INTEGER',
+        'right_balanced_inequality_ratio': 'REAL',
+        'right_tail_power_law_exponent_with_p': 'REAL',
+        'left_p_value': 'REAL',
+        'right_p_value': 'REAL',
+        'left_tail_power_law_exponent_with_p': 'REAL',
+        'average_right_degree': 'INTEGER',
     }

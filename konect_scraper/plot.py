@@ -129,7 +129,7 @@ def get_markersize(n):
     return 1
 
 
-def main(datasets, orders):
+def main(rows, orders):
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("PIL").setLevel(logging.WARNING)
     plot_module = sys.modules[__name__]
@@ -140,7 +140,7 @@ def main(datasets, orders):
     else:
         plot_fn = getattr(plot_module, "adj_matshow")
 
-    nrows = len(datasets)
+    nrows = len(rows)
     ncols = len(orders) + 2  # plot all orders + original and compressed isomorphisms
     ax_size = settings['plot']['ax_size']
     figsize = (ncols * ax_size, nrows * ax_size,)
@@ -151,9 +151,10 @@ def main(datasets, orders):
     plot_formats = ["adj_mat", "spy"]
     plot_formats = ["spy"]
     # compute the given orders for each of the datasets
-    for dataset_idx, dataset in enumerate(datasets):
+    for row_idx, row in enumerate(rows[:2]):
 
-        graph_name = dataset['name']
+        graph_name = row['graph_name']
+        logging.info(f"Plotting {graph_name}..")
         create_plot_dirs_if_not_exists(graph_name)
 
         directed = bool(get_directed(graph_name))
@@ -167,19 +168,21 @@ def main(datasets, orders):
         # plot_compressed(plt, graph_name, directed)
         markersize = get_markersize(n)
         for plot_format, axs in zip(plot_formats, all_axs):
-            ax_plot_adj_mat(axs[dataset_idx][0], graph_name, directed, "orig", "orig_el_file_name", plot_format,
+            ax_plot_adj_mat(axs[row_idx][0], graph_name, directed, "orig", "orig_el_file_name", plot_format,
                             markersize)
-            ax_plot_adj_mat(axs[dataset_idx][1], graph_name, directed, "comp", "compressed_el_file_name", plot_format,
+            ax_plot_adj_mat(axs[row_idx][1], graph_name, directed, "comp", "compressed_el_file_name", plot_format,
                             markersize)
 
         for order_idx, order in enumerate(orders):
             # plot_ordering(plt, graph_name, directed, order)
             for plot_format, axs in zip(plot_formats, all_axs):
-                ax_plot_order(axs[dataset_idx][2 + order_idx], graph_name, directed, order, plot_format, markersize)
+                ax_plot_order(axs[row_idx][2 + order_idx], graph_name, directed, order, plot_format, markersize)
+        import gc
+        gc.collect()
 
     orderings = settings['orderings']
 
-    graph_names = [dataset['name'] for dataset in datasets]
+    graph_names = [row['name'] for row in rows]
     order_names = ["Original", "Compressed"] + [orderings[o] for o in orders]
     fmt = settings['plot']['format']
     all_spy_path = os.path.join(settings['plots_dir'], f"all_spy.{fmt}")
