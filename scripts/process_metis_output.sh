@@ -14,8 +14,9 @@ LOG () {
 				COLOR=$GREY
 		fi
 
+		BASENAME=$(basename $0)
 		# date time format + message 
-		echo -e "${COLOR}$(date +"%Y-%m-%d %H:%M:%S") $0: $TEXT ${NC}"
+		echo -e "${COLOR}$(date +"%Y-%m-%d %H:%M:%S") $BASENAME: $TEXT ${NC}"
 }
 
 process_file () {
@@ -70,8 +71,9 @@ write_to_file () {
 # last arg is -y to overwrite
 if [ $# -lt 2 ]; then
 		LOG "Given args: $@"
-		LOG "Usage: $0 <search directory for metis output> <output file name> [-y]"
-		LOG "Example: $0 /home/user/metis_output/ /home/user/metis_output/metis_output.csv: searches for all .output files, which are Metis output data, and writes them to the output file"
+		BASENAME=$(basename $0)
+		LOG "Usage: $BASENAME <search directory for metis output> <output file name> [-y]"
+		LOG "Example: $BASENAME /home/user/metis_output/ /home/user/metis_output/metis_output.csv: searches for all .output files, which are Metis output data, and writes them to the output file"
 		exit 1
 fi
 
