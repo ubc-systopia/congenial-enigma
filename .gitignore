@@ -341,11 +341,8 @@ dkms.conf
 
 # ignore all intellij 
 .idea/*
-<<<<<<< HEAD
 
 # add venv to gitignore
 # virtualenv
 venv/**
-=======
 ./graph_preprocess/.idea/*
->>>>>>> 09f36166f2bc0a36c02b88ec3a5d83be6afb3f1f
