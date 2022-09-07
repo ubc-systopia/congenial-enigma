@@ -15,7 +15,7 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
-find_package(Boost 1.71.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.71.0 COMPONENTS system filesystem graph serialization REQUIRED)
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 
@@ -23,6 +23,7 @@ SET(CMAKE_C_COMPILER icx)
 
 add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h)
 add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h)
+add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h  util.cpp util.h io.cpp io.h)
 
 if (Boost_FOUND)
 
@@ -31,7 +32,10 @@ if (Boost_FOUND)
     message(STATUS "Boost_VERSION: ${Boost_VERSION}")
 
     include_directories(${Boost_INCLUDE_DIRS})
+
     target_link_libraries(graph_preprocess LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
     target_link_libraries(slashburn LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+
+    target_link_libraries(cuthill_mckee LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 endif ()

@@ -6,7 +6,7 @@ import konect_scraper.column_names as column_names
 from konect_scraper import scrape_konect_stats, download_and_extract, reorder
 from konect_scraper.sql import distinct, get_all_graphs_in_categories, get_all_graphs_where_stats_between, \
     get_all_unipartite_graphs, get_all_graphs_by_graph_names_where_stats_between, get_all_rows_by_graph_names, \
-    get_all_downloadable_graphs
+    get_all_downloadable_graphs, row_as_dict
 from konect_scraper.util import \
     create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
     create_log_dir_if_not_exists, init_logger, valid_orderings
@@ -14,12 +14,14 @@ from datetime import datetime
 import logging
 import konect_scraper.plot as plotting
 import os
+from konect_scraper.config import IOMode
 
 
 def main(args):
     create_log_dir_if_not_exists()
     plot = args.plot
     orders = args.reorder
+    io_modes = args.io_modes
     download = args.download
 
     log_dir = config.settings['logging']['log_dir']
@@ -49,41 +51,34 @@ def main(args):
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[1_000, ],
-        maxs=[2_000, ],
+        mins=[15_000, ],
+        maxs=[20_000, ],
         graph_names=graph_names
     )
 
-    print(len(rows))
     graph_names = [r['graph_name'] for r in rows]
-
-
-
     # now that a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
-    graph_names = [
-        'arenas-email',
-        'dimacs10-netscience',
-        'dimacs10-polblogs',
-        # 'moreno_blogs',
-        # 'moreno_names',
-        # 'moreno_propro',
-        'opsahl-ucsocial',
-        'opsahl-usairport',
-        'petster-friendships-hamster',
-        'petster-hamster-household',
-        'subelj_euroroad',
-        'wiki_talk_br',
 
-    ]
+    # if io mode is unspecified, use text as default
+    if not io_modes:
+        io_modes = [IOMode.text]
+    else:
+        modes = []
+        for mode in io_modes:
+            match mode:
+                case 'binary':
+                    modes.append(IOMode.binary)
+                case 'text':
+                    modes.append(IOMode.text)
+                case _:
+                    logging.error(f"{mode}: Unsupported IO mode!")
+        io_modes = modes
 
-    rows = get_all_downloadable_graphs(graph_names)
-    print("GRPAHS:")
-    for r in rows:
-        print(r['graph_name'])
-    print("END")
+    rows = get_all_downloadable_graphs(graph_names)[:]
+    print([r['graph_name'] for r in rows])
     if download:
-        download_and_extract.main(rows)
+        download_and_extract.main(rows, io_modes)
 
     if orders:
         # verify that the requested ordering to compute are supported
@@ -119,6 +114,10 @@ if __name__ == '__main__':
                         help='If specified, only download and scrape these graphs '
                              'from dataset (must exist in datasets.json). '
                              'Otherwise, download ALL graphs in datasets.json.', )
+
+    parser.add_argument('-m', '--io-modes', nargs='+',
+                        help='The IO mode that the graphs and isomorphisms will be saved as.'
+                             'At least one of [binary, text] should be specified', )
 
     parser.add_argument('-d', '--download',
                         action=argparse.BooleanOptionalAction, required=True,

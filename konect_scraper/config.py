@@ -1,9 +1,16 @@
 import os.path
 from pathlib import Path
+from enum import Enum
+
+
+class IOMode(Enum):
+    binary = 1
+    text = 2
 
 
 def init():
     global settings
+
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     app_name = "graph_preprocess"
@@ -16,12 +23,13 @@ def init():
     graphs_dir = os.path.join(data_dir, "graphs")
     plots_dir = os.path.join(data_dir, "plots")
     orig_el_file_name = "orig.net"
-    compressed_el_file_name = "comp.net"
+    compressed_el_file_name = "comp"
     cmake_build_dir = "cmake-build-debug"
-
+    graph_preprocess_dir = os.path.join(repo_root, "graph_preprocess")
     # EXECUTABLES
-    graph_preprocess_executable = os.path.join(repo_root, "graph_preprocess", cmake_build_dir, "graph_preprocess")
-    slashburn_executable = os.path.join(repo_root, "graph_preprocess", cmake_build_dir, "slashburn")
+    graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
+    slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
+    cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
@@ -36,7 +44,7 @@ def init():
     markersize = .5
     plot_format = 'png'
     dpi = 200
-    ax_size = 8  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
+    ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     settings = {
         "repo_root": repo_root,
@@ -58,13 +66,18 @@ def init():
         "compressed_el_file_name": compressed_el_file_name,
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
+        "cuthill_mckee_executable": cuthill_mckee_executable,
         "plot": {
             "marker": marker,
             "markersize": markersize,
             "format": plot_format,
             "dpi": dpi,
             "adj_mat_format": "spy",  # or matshow,
-            "ax_size": ax_size
+            "ax_size": ax_size,
+            "bbox_inches": 'tight',
+            "pad_inches": 0,
+            "max_rows_per_agg_spy_plot": 4,  # the number of graphs to show per aggregated spy plot,
+            "max_n": 20_000,  # the largest graph size that is plottable as as adjacency matrix
         },
         "orderings": {
             'rnd': "random",

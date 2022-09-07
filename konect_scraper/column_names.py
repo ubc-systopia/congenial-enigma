@@ -96,6 +96,8 @@ def init():
         'maximum_degree': 'INTEGER',
         'maximum_outdegree': 'INTEGER',
         'maximum_indegree': 'INTEGER',
+        #
+
         'average_degree': 'REAL',
         'fill': 'REAL',
         'average_edge_multiplicity': 'REAL',
@@ -141,8 +143,8 @@ def init():
         'spectral_signed_frustration': 'REAL',
         'algebraic_conflict': 'REAL',
         'negativity': 'REAL',
-        # bipartite stats - we don't consider bipartite graphs - but konect stats exist for these
 
+        # bipartite stats - we don't consider bipartite graphs - but konect stats exist for these
         'left_balanced_inequality_ratio': 'REAL',
         'average_left_degree': 'INTEGER',
         'right_size': 'INTEGER',
@@ -155,4 +157,9 @@ def init():
         'right_p_value': 'REAL',
         'left_tail_power_law_exponent_with_p': 'REAL',
         'average_right_degree': 'INTEGER',
+
+        # computed stats - results of running slashburn, cuthill-mckee
+        'orig_bandwidth': 'INTEGER',
+        'cm_bandwidth': 'INTEGER',
+        'wing_width_ratio': 'REAL',
     }

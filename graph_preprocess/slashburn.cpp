@@ -15,7 +15,6 @@
 #include <boost/filesystem/path.hpp>
 #include "order_slashburn.h"
 
-
 int main(int argc, char *argv[]) {
 	opterr = 0;
 	int opt;
@@ -65,12 +64,15 @@ int main(int argc, char *argv[]) {
 	/* turn on attribute handling */
 	igraph_set_attribute_table(&igraph_cattribute_table);
 
-	igraph_t g;
-	FILE *f;
-	f = fopen(input_path.c_str(), "r");
-	// TODO slashburn impl ignores graph directedness
-	igraph_read_graph_edgelist(&g, f, num_vertices, 0);
 
+	igraph_t g;
+//	FILE *f;
+//	f = fopen(input_path.c_str(), "r");
+
+	// TODO slashburn impl ignores graph directedness
+//	igraph_read_graph_edgelist(&g, f, num_vertices, 0);
+	std::vector<std::pair<ul, ul>> flat_edges(num_edges);
+	read_binary_edge_list_into_igraph(input_path, flat_edges, &g, num_vertices, num_edges, 0);
 	ul n;
 	ull i, m;
 
@@ -103,10 +105,10 @@ int main(int argc, char *argv[]) {
 	igraph_t *curr;
 
 	prev = &g;
-
+	ul iter = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 	while (prev->n >= k) {
-		fmt::print("gcc.n: {}, hub_idx: {}, spokes_end_idx: {}\n", prev->n, hub_idx, spokes_end_idx);
+//		fmt::print("gcc.n: {}, hub_idx: {}, spokes_end_idx: {}\n", prev->n, hub_idx, spokes_end_idx);
 		res = order_igraph_slashburn(*prev, k, rank, hub_idx, spokes_end_idx);
 
 		curr = get<0>(res);
@@ -125,18 +127,24 @@ int main(int argc, char *argv[]) {
 				++hub_idx;
 			}
 		}
-		auto end = std::chrono::high_resolution_clock::now();
-		auto slashburn_time = duration_cast<time_unit>(end - start);
 
-		boost::filesystem::path p(input_path);
-		boost::filesystem::path dir = p.parent_path();
-		std::string graph_name = dir.filename().string();
-
-		single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
 		// destroy the previous gcc and reassign the pointers
 		igraph_destroy(prev);
 		prev = curr;
+		iter += 1;
 	}
+
+	double wing_width_ratio = (k * iter) / n;
+	boost::filesystem::path p(input_path);
+	boost::filesystem::path dir = p.parent_path();
+	std::string graph_name = dir.filename().string();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto slashburn_time = duration_cast<time_unit>(end - start);
+
+	single_val_set_int(sqlite_db_path, "wing_width_ratio", "statistics", graph_name, wing_width_ratio);
+	single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
+
 
 	// all vertices have been assigned an index in the slashburn ordering
 	assert(std::none_of(rank.begin(), rank.end(), [](ul v) {

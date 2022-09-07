@@ -12,7 +12,10 @@
 #include "io.h"
 #include <boost/algorithm/string.hpp>
 #include <chrono>
-
+#include <boost/serialization/vector.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/utility.hpp>
 
 void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m) {
 	std::ofstream outfile(path);
@@ -24,6 +27,114 @@ void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m) {
 	}
 
 	outfile.close();
+}
+
+
+void write_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
+	std::ofstream outfile(path);
+// write the compressed, simplified edge list to file
+	for (auto &kv: edges) {
+		outfile << fmt::format("{} {}\n", kv.first, kv.second);
+	}
+	outfile.close();
+}
+
+
+void write_binary_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
+	std::ofstream ofs(path, std::ios::binary);
+	boost::archive::binary_oarchive oa(ofs);
+	oa << edges;
+}
+
+void
+read_binary_edge_list_into_igraph(std::string path, std::vector<std::pair<ul, ul>> &edges, igraph_t *g, ul n, ull m,
+                                  int directed) {
+	std::ifstream ifs(path, std::ios::binary);
+	boost::archive::binary_iarchive ia(ifs);
+	ia >> edges;
+	ull i = 0;
+	igraph_vector_t es;
+	igraph_vector_init(&es, m * 2);
+	for (auto &kv: edges) {
+		fmt::print("{} {}\n", kv.first, kv.second);
+		VECTOR(es)[i] = kv.first;
+		VECTOR(es)[i + 1] = kv.second;
+		i += 2;
+	}
+	igraph_create(g, &es, n, 0);
+	igraph_vector_destroy(&es);
+}
+
+void read_binary_edge_list(std::string path, std::vector<ul> &edges) {
+	// edges' size has been preallocated and initialized
+	std::ifstream ifs(path, std::ios::binary);
+	boost::archive::binary_iarchive ia(ifs);
+	ia >> edges;
+}
+
+void read_binary_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
+	// edges' size has been preallocated and initialized
+	std::ifstream ifs(path, std::ios::binary);
+	boost::archive::binary_iarchive ia(ifs);
+	ia >> edges;
+}
+
+
+void read_text_edge_list(std::string path, std::vector<ul> &edges) {
+	std::string line;
+	ull i = 0;
+	// flat edges' size has been preallocated and initialized
+	std::ifstream input_file(path);
+	if (input_file.is_open()) {
+		while (getline(input_file, line)) {
+			std::stringstream linestream(line);
+			ul src;
+			ul dest;
+			linestream >> src >> dest;
+			edges[i] = src;
+			edges[i + 1] = dest;
+			i += 2;
+		}
+		input_file.close();
+	} else std::cout << "Unable to open file";
+}
+
+
+void read_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
+	std::string line;
+	ull i = 0;
+	// flat edges' size has been preallocated and initialized
+	std::ifstream input_file(path);
+	if (input_file.is_open()) {
+		while (getline(input_file, line)) {
+			std::stringstream linestream(line);
+			ul src;
+			ul dest;
+			linestream >> src >> dest;
+			edges[i].first = src;
+			edges[i].second = dest;
+			i += 1;
+		}
+		input_file.close();
+	} else std::cout << "Unable to open file";
+}
+
+
+void write_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges, io_mode &mode) {
+	std::string output_path;
+	std::string file_extension;
+	switch (mode) {
+		case binary:
+			file_extension = "bin";
+			output_path = fmt::format("{}.{}", path, file_extension);
+			write_binary_edge_list(output_path, edges);
+			return;
+		case text:
+			file_extension = "net";
+			output_path = fmt::format("{}.{}", path, file_extension);
+			write_text_edge_list(output_path, edges);
+			return;
+	}
 }
 
 
@@ -50,7 +161,7 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 			ul src;
 			ul dest;
 			linestream >> src >> dest;
-			if (src == dest) continue; // skip over self-directed edges
+			if (src == dest) continue;
 			flat_edges[i] = src;
 			flat_edges[i + 1] = dest;
 			edges[j] = std::make_pair(src, dest);
@@ -58,7 +169,12 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 			i += 2;
 		}
 		input_file.close();
-	} else std::cout << "Unable to open file";
+	} else std::cout << "Unable to open file\n";
+	// truncate the flattened edge vector so that it contains only valid edges ingested
+	flat_edges.resize(i);
+	edges.resize(j);
+	mapped_edges.resize(j);
+
 	auto end = std::chrono::high_resolution_clock::now();
 	auto ingest_time = duration_cast<time_unit>(end - start);
 	// Step 2: Sort Vertices
@@ -73,7 +189,6 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 	end = std::chrono::high_resolution_clock::now();
 	auto unique_vs_time = duration_cast<time_unit>(end - start);
 
-
 	ul max_uncompressed_vid = flat_edges.back();
 	// construct a vector whose size is the max vertex id in the uncompressed repr
 	// this will act as the map between uncompressed vertex ids -> vertex ids
@@ -83,7 +198,6 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 		p[orig_vid] = new_id;
 		new_id += 1;
 	}
-
 	// remap the edges
 	ull eid = 0;
 	for (auto &edge: edges) {
@@ -123,6 +237,7 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 			"sort_es",
 			"unique_es",
 	};
+
 
 	insert_graph_into_preproc_table(graph_name, sqlite_db_path, times, col_labels);
 	return std::make_pair(flat_edges.size(), mapped_edges.size());
@@ -165,7 +280,8 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 }
 
 
-void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name, std::string graph_name, int val) {
+void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
+                        std::string graph_name, int val) {
 
 	sqlite3 *db;
 	sqlite3_stmt *st;
