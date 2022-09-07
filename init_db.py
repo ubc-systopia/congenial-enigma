@@ -66,6 +66,10 @@ def main():
         dtype = column_names.meta_col_names[col]
         add_column_if_not_exists(col, 'metadata', dtype)
 
+    for col in column_names.stat_col_names:
+        dtype = column_names.stat_col_names[col]
+        add_column_if_not_exists(col, 'statistics', dtype)
+
     # scrape_konect_stats.fill_konect_table() TODO add argument for conditional first exection
 
     # remove any existing rows scraped from konect

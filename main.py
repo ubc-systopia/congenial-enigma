@@ -51,13 +51,12 @@ def main(args):
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[9_000, ],
-        maxs=[10_000, ],
+        mins=[15_000, ],
+        maxs=[20_000, ],
         graph_names=graph_names
     )
 
     graph_names = [r['graph_name'] for r in rows]
-    print(f"{graph_names=}")
     # now that a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
 
@@ -75,25 +74,8 @@ def main(args):
                 case _:
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
-    
-    # graph_names = [
-    #     # 'arenas-email',
-    #     # 'dimacs10-netscience',
-    #     # 'dimacs10-polblogs',
-    #     # 'maayan-Stelzl',
-    #     # 'maayan-faa',
-    #     # 'moreno_blogs',
-    #     # 'moreno_names',
-    #     # 'moreno_propro',
-    #     # 'opsahl-ucsocial',
-    #     'opsahl-usairport',
-    #     'petster-friendships-hamster',
-    #     'petster-hamster-household',
-    #     'subelj_euroroad',
-    #     'wiki_talk_br',
-    # ]
-    
-    rows = get_all_downloadable_graphs(graph_names)
+
+    rows = get_all_downloadable_graphs(graph_names)[:]
     print([r['graph_name'] for r in rows])
     if download:
         download_and_extract.main(rows, io_modes)

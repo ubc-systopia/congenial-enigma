@@ -47,7 +47,26 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
     res = subprocess.check_output(args)
 
     return
+def compute_cuthill_mckee(graph_path, n, m):
+    settings = config.settings
+    percent = settings['hyperparameters']['slashburn']['percent']
+    sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
 
+    executable = settings['cuthill_mckee_executable']
+    args = [executable]
+
+    args += [
+        '-n', str(n),
+        '-m', str(m),
+        '-g', graph_path,
+        '-b', sqlite3_db_path,
+    ]
+
+    logging.info(f"Executing: " + ' '.join(args))
+
+    res = subprocess.check_output(args)
+
+    return
 def compute_ordering(graph_name, order):
     settings = config.settings
 
@@ -67,6 +86,7 @@ def compute_ordering(graph_name, order):
     order_path = os.path.join(graph_dir, order)
 
     if Path(order_path).is_file():  # if already computed, skip
+        logging.info(f"{graph_name}-{order_str} already computed; skipping.")
         return
     match order:
         case "rnd":
@@ -75,6 +95,8 @@ def compute_ordering(graph_name, order):
             compute_rabbit(comp_graph_path)
         case "sb":
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
+        case "cm":
+            compute_cuthill_mckee(comp_graph_path, n, m)
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""
