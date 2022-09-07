@@ -6,8 +6,12 @@ import matplotlib.pyplot as plt
 import subprocess
 import os
 import sys
+import gc
 
-from konect_scraper.io import get_adj_mat_from_edge_list, read_iso_map, save_spy_plots
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+from konect_scraper.io import get_adj_mat_from_edge_list, read_iso_map, save_spy_plots, read_image
 from konect_scraper import config
 from konect_scraper.util import get_directed, get_n, get_m, create_plot_dirs_if_not_exists, get_graph_dir, get_plot_dir, \
     translate_adj_mat
@@ -60,6 +64,7 @@ def ax_plot_adj_mat(ax, graph_name, directed, label_str, el_file_name, plot_form
 
     if settings[el_file_name] == "comp":
         graph_path += ".net"
+
     adj_mat = get_adj_mat_from_edge_list(graph_path, directed)
     if plot_format == "adj_mat":
         ax.matshow(adj_mat)
@@ -133,12 +138,64 @@ def get_markersize(n):
     return 1
 
 
+def aggregate_plots(graph_names, orders):
+    settings = config.settings
+    orderings = settings['orderings']
+
+    order_names = ["Original", "Compressed"] + [orderings[o] for o in orders]
+    adj_mat_format = settings['plot']['adj_mat_format']
+    plots_dir = settings['plots_dir']
+    fmt = settings['plot']['format']
+    dpi = settings['plot']['dpi']
+    ax_size = settings['plot']['ax_size']
+    n_rows = len(graph_names)
+    n_cols = len(orders) + 2  # include the original and compressed
+    fig_size = (n_cols * ax_size, n_rows * ax_size,)
+
+    image_paths = np.zeros((n_rows, n_cols), dtype=object)
+
+    image_paths[:, 0] = [
+        os.path.join(plots_dir, graph_name, adj_mat_format, f'orig.{fmt}') for graph_name in graph_names
+    ]
+
+    image_paths[:, 1] = [
+        os.path.join(plots_dir, graph_name, adj_mat_format, f'comp.{fmt}') for graph_name in graph_names
+    ]
+
+    for row_idx, graph_name in enumerate(graph_names):
+        for ord_idx, order in enumerate(orders):
+            col_idx = ord_idx + 2
+            image_paths[row_idx][col_idx] = os.path.join(
+                plots_dir, graph_name, adj_mat_format, f'{order}.{fmt}')
+
+    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=fig_size)
+
+    for row_idx in range(n_rows):
+        for col_idx in range(n_cols):
+            im_path = image_paths[row_idx, col_idx]
+            ax = axs[row_idx, col_idx]
+            img = read_image(im_path, fmt)
+            ax.imshow(img)
+
+    all_spy_path = os.path.join(plots_dir, f"all_spy.{fmt}")
+
+    for ax, col in zip(axs[0], order_names):
+        ax.set_title(col)
+
+    for ax, row in zip(axs[:, 0], graph_names):
+        ax.set_ylabel(row, rotation=45, size='large')
+    fig.tight_layout()
+    fig.savefig(all_spy_path, )
+    return
+
+
 def main(rows, orders):
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("PIL").setLevel(logging.WARNING)
     plot_module = sys.modules[__name__]
     settings = config.settings
     adj_mat_format = settings['plot']['adj_mat_format']
+    dpi = settings['plot']['dpi']
     if adj_mat_format == "spy":
         plot_fn = getattr(plot_module, "adj_mat_spy")
     else:
@@ -171,26 +228,54 @@ def main(rows, orders):
         # plot_orig(plt, graph_name, directed)
         # plot_compressed(plt, graph_name, directed)
         markersize = get_markersize(n)
-        for plot_format, axs in zip(plot_formats, all_axs):
-            ax_plot_adj_mat(axs[row_idx][0], graph_name, directed, "orig", "orig_el_file_name", plot_format,
-                            markersize)
-            ax_plot_adj_mat(axs[row_idx][1], graph_name, directed, "comp", "compressed_el_file_name", plot_format,
-                            markersize)
+        plots_dir = settings['plots_dir']
+        plot_format = "spy"
+        # plot the original adjacency matrix
+        figsize = (ax_size, ax_size)
+        fig, ax = plt.subplots(figsize=figsize)
+        ax_plot_adj_mat(ax, graph_name, directed, "orig", "orig_el_file_name", plot_format, markersize)
+        fmt = settings['plot']['format']
+        ax_path = os.path.join(plots_dir, graph_name, plot_format, f"orig.{fmt}")
+        ax.axis('off')
+        plt.tight_layout()
+        fig.savefig(ax_path, dpi=dpi)
+        fig.clear()
+        plt.close(fig)
+
+        # plot the compressed adjacency matrix
+        fig, ax = plt.subplots(figsize=figsize)
+        ax_plot_adj_mat(ax, graph_name, directed, "comp", "compressed_el_file_name", plot_format, markersize)
+        ax_path = os.path.join(plots_dir, graph_name, plot_format, f"comp.{fmt}")
+        ax.axis('off')
+        plt.tight_layout()
+        fig.savefig(ax_path, dpi=dpi)
+        fig.clear()
+
+        plt.close(fig)
+
 
         for order_idx, order in enumerate(orders):
             # plot_ordering(plt, graph_name, directed, order)
             for plot_format, axs in zip(plot_formats, all_axs):
-                ax_plot_order(axs[row_idx][2 + order_idx], graph_name, directed, order, plot_format, markersize)
-        import gc
+                fig, ax = plt.subplots(figsize=figsize)
+
+                ax_plot_order(ax, graph_name, directed, order, plot_format, markersize)
+                ax_path = os.path.join(plots_dir, graph_name, plot_format, f"{order}.{fmt}")
+                ax.axis('off')
+                plt.tight_layout()
+                fig.savefig(ax_path, dpi=dpi)
+                fig.clear()
+
+                plt.close(fig)
         gc.collect()
 
-    orderings = settings['orderings']
+    graph_names = [row['graph_name'] for row in rows]
 
-    graph_names = [row['name'] for row in rows]
-    order_names = ["Original", "Compressed"] + [orderings[o] for o in orders]
-    fmt = settings['plot']['format']
-    all_spy_path = os.path.join(settings['plots_dir'], f"all_spy.{fmt}")
-    save_spy_plots(spy_fig, spy_axs, graph_names, order_names, all_spy_path)
+    logging.info(f"Plotting an aggregate plots of {len(graph_names)} graphs and {len(orders)} orders..")
+    aggregate_plots(graph_names, orders)
+
+    # all_spy_path = os.path.join(plots_dir, f"all_spy.{fmt}")
+    # save_spy_plots(spy_fig, spy_axs, graph_names, order_names, all_spy_path)
     return
 
 

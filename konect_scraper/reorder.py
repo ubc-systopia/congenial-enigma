@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from konect_scraper import config
 import os
 import logging
@@ -56,13 +58,16 @@ def compute_ordering(graph_name, order):
     extension = ".bin"
 
     comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
-    print(graph_name)
     directed = bool(get_directed(graph_name))
     n = get_n(graph_name)
     m = get_m(graph_name)
 
     order_str = orderings[order]
+
     order_path = os.path.join(graph_dir, order)
+
+    if Path(order_path).is_file():  # if already computed, skip
+        return
     match order:
         case "rnd":
             compute_random(comp_graph_path)

@@ -23,19 +23,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/slashburn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/slashburn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/typedefs.h" beforeDir="false" afterPath="$PROJECT_DIR$/typedefs.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/io.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/reorder.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/reorder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +112,7 @@
       <updated>1661966984826</updated>
       <workItem from="1661966986073" duration="31000" />
       <workItem from="1662053717040" duration="619000" />
-      <workItem from="1662490242432" duration="9945000" />
+      <workItem from="1662490242432" duration="10549000" />
     </task>
     <servers />
   </component>

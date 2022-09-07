@@ -51,31 +51,15 @@ def main(args):
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[1_000, ],
-        maxs=[2_000, ],
+        mins=[9_000, ],
+        maxs=[10_000, ],
         graph_names=graph_names
     )
 
-    print(len(rows))
     graph_names = [r['graph_name'] for r in rows]
-
+    print(f"{graph_names=}")
     # now that a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
-    graph_names = [
-        # 'arenas-email',
-        # 'dimacs10-netscience',
-        'dimacs10-polblogs',
-        'moreno_blogs',
-        'moreno_names',
-        'moreno_propro',
-        # 'opsahl-ucsocial',
-        # 'opsahl-usairport',
-        # 'petster-friendships-hamster',
-        # 'petster-hamster-household',
-        # 'subelj_euroroad',
-        # 'wiki_talk_br',
-
-    ]
 
     # if io mode is unspecified, use text as default
     if not io_modes:
@@ -91,13 +75,26 @@ def main(args):
                 case _:
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
-    print(io_modes)
-
+    
+    # graph_names = [
+    #     # 'arenas-email',
+    #     # 'dimacs10-netscience',
+    #     # 'dimacs10-polblogs',
+    #     # 'maayan-Stelzl',
+    #     # 'maayan-faa',
+    #     # 'moreno_blogs',
+    #     # 'moreno_names',
+    #     # 'moreno_propro',
+    #     # 'opsahl-ucsocial',
+    #     'opsahl-usairport',
+    #     'petster-friendships-hamster',
+    #     'petster-hamster-household',
+    #     'subelj_euroroad',
+    #     'wiki_talk_br',
+    # ]
+    
     rows = get_all_downloadable_graphs(graph_names)
-    print("GRPAHS:")
-
-    for r in rows:
-        print(row_as_dict(r))
+    print([r['graph_name'] for r in rows])
     if download:
         download_and_extract.main(rows, io_modes)
 

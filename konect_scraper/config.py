@@ -43,7 +43,7 @@ def init():
     markersize = .5
     plot_format = 'png'
     dpi = 200
-    ax_size = 8  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
+    ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     settings = {
         "repo_root": repo_root,

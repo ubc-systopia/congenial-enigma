@@ -228,6 +228,11 @@ def main(rows, io_modes):
         #     continue
 
         graph_dir = os.path.join(graphs_dir, graph_name)
+        compressed_edge_list_path = os.path.join(graph_dir, f"{settings['compressed_el_file_name']}.net")
+        if Path(compressed_edge_list_path).is_file():
+            logging.info(f"{graph_name} already compressed; skipping.")
+            continue
+
         # create directory for the graph (if not exists)
         Path(graph_dir).mkdir(parents=True, exist_ok=True)
         download_graph(data_url, graph_dir)
