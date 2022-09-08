@@ -8,6 +8,11 @@ input: an edge list (input.txt)
 output: three files
 - input.txt.sorted.uniq: a list of uniq node ids
 
+# Cloning
+
+<`repo-name`> makes use of submodules to compute various vertex reordering. To clone <`repo-name`>:  
+`$ git clone --recurse-submodules git@github.com:ubc-systopia/congenial-enigma.git`
+
 # Requirements
 
 - [cmake](https://cmake.org/install/)
