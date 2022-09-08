@@ -21,9 +21,9 @@ find_package(oneDPL REQUIRED)
 
 SET(CMAKE_C_COMPILER icx)
 
-add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h)
-add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h)
-add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h  util.cpp util.h io.cpp io.h)
+add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h)
+add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h)
+add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h  util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h)
 
 if (Boost_FOUND)
 

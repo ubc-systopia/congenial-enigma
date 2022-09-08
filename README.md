@@ -6,6 +6,7 @@ This repo contains scripts for pre-processing graphs including re-ordering, clea
 
 input: an edge list (input.txt)
 output: three files
+
 - input.txt.sorted.uniq: a list of uniq node ids
 
 # Requirements
@@ -16,6 +17,7 @@ output: three files
 - (If using an intellij ide (e.g. PyCharm, Clion), cmake, ninja should be included)
 
 ## Python
+
 `>= Python3.10`  
 See [requirements.txt](./requirements.txt)
 
@@ -26,10 +28,19 @@ See [requirements.txt](./requirements.txt)
 - [igraph](https://igraph.org/c/)
 - [oneDPL](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html)
 
+### Rabbit Order
+
+- g++ (4.9.2)
+- Boost C++ library (1.58.0)
+- libnuma (2.0.9)
+- libtcmalloc_minimal in google-perftools (2.1)
+
 # Build
+
 `$ cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=ninja -G Ninja -S ./graph_preprocess -B ./graph_preprocess/<cmake build directory name>`
 
 # Install
+
 - `graph_preprocess`:  
   `$ cmake --build ./graph_preprocess/<cmake build directory name> --target graph_preprocess -j <num threads>`
 - `slashburn`:  
@@ -62,7 +73,9 @@ python main.py \
 ```
 
 # SQL
+
 ## All Possible Network Categories
+
 - Affiliation network
 - Animal network
 - Authorship network

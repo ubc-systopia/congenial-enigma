@@ -346,3 +346,7 @@ dkms.conf
 # virtualenv
 venv/**
 ./graph_preprocess/.idea/*
+
+
+# rabbit
+./rabbit_order/demo/reorder
