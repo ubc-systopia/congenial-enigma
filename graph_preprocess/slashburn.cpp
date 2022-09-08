@@ -80,7 +80,9 @@ int main(int argc, char *argv[]) {
 	m = igraph_ecount(&g);
 	igraph_vector_t v = IGRAPH_VECTOR_NULL;
 	ul k = n * percent;
-
+	if (k == 0) {
+		k = 1;
+	}
 	fmt::print("k: {}\n", k);
 	fmt::print("n, m: {} {} \n", n, m);
 
@@ -108,7 +110,7 @@ int main(int argc, char *argv[]) {
 	ul iter = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 	while (prev->n >= k) {
-//		fmt::print("gcc.n: {}, hub_idx: {}, spokes_end_idx: {}\n", prev->n, hub_idx, spokes_end_idx);
+		fmt::print("gcc.n: {}, hub_idx: {}, k: {}, spokes_end_idx: {}\n", prev->n, hub_idx, k, spokes_end_idx);
 		res = order_igraph_slashburn(*prev, k, rank, hub_idx, spokes_end_idx);
 
 		curr = get<0>(res);

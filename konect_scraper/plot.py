@@ -158,6 +158,8 @@ def aggregate_plots(graph_names, orders, all_spy_path):
         n = get_n(graph_name)
         for col_idx in range(n_cols):
             im_path = image_paths[row_idx, col_idx]
+            if len(axs.shape) == 1:  # 1d, reshape to 2d
+                axs = axs.reshape((1, axs.shape[0]))
             ax = axs[row_idx, col_idx]
 
             img = read_image(im_path, fmt)

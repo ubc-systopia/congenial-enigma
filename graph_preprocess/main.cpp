@@ -62,16 +62,18 @@ int main(int argc, char *argv[]) {
 		io_modes.push_back(text);
 	}
 
-	std::vector<std::pair<ul, ul>> edges;
 	std::vector<std::pair<ul, ul>> mapped_edges;
-	edges.resize(num_edges);
 	mapped_edges.resize(num_edges);
 
 	boost::filesystem::path p(input_path);
 	boost::filesystem::path dir = p.parent_path();
 	std::string graph_name = dir.filename().string();
 
+	std::vector<std::pair<ul, ul>> edges;
+	edges.resize(num_edges);
 	std::pair<ul, ull> nm = read_edge_list(input_path, num_edges, edges, mapped_edges, graph_name, sqlite_db_path);
+
+//	std::pair<ul, ull> nm = par_read_edge_list(input_path, mapped_edges, graph_name, sqlite_db_path);
 	ul n = nm.first;
 	ull m = nm.second;
 	fmt::print("n: {}\n", n);

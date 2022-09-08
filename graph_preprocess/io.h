@@ -33,17 +33,20 @@ enum io_mode {
 
 int segment_read(char *buff, const int len, const int count);
 
-void par_read(char *buffer, size_t size);
-
 bool is_comment(std::string line);
 
 int
 insert_into_sqlite_db(std::string table, std::string col, ul val, std::string graph_name, std::string sqlite_db_path,
                       std::vector<time_unit> times, std::vector<std::string> col_labels);
 
+std::pair<ul, ull>
+par_read_edge_list(std::string input_path, std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
+                   std::string sqlite_db_path);
+
 std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std::pair<ul, ul>> &edges,
                                   std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
                                   std::string sqlite_db_path);
+
 
 template<typename T>
 void read_edge_list_by_mode(std::string path, std::vector<T> &edges, io_mode &mode) {

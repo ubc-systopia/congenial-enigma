@@ -16,6 +16,9 @@ def init():
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
+    rabbit_home = os.path.join(repo_root, "rabbit_order")
+    dbg_home = os.path.join(repo_root, "dbg")
+
     data_dir = os.path.join(repo_home, "data")
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
     datasets_json_path = os.path.join(repo_home, "datasets.json")
@@ -30,6 +33,7 @@ def init():
     graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
     slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
     cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
+    rabbit_order_executable = os.path.join(rabbit_home, "demo", "reorder")
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
@@ -64,9 +68,14 @@ def init():
         "plots_dir": plots_dir,
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
+
+        # Executables
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
         "cuthill_mckee_executable": cuthill_mckee_executable,
+        "rabbit_order_executable": rabbit_order_executable,
+
+        "comment_strings": ["%", "#"],
         "plot": {
             "marker": marker,
             "markersize": markersize,
