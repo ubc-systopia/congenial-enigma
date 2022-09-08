@@ -47,7 +47,7 @@ else
 fi
 
 # confirm that all .output and .part.* files will be deleted recursivelly in this directory
-to_be_deleted_extensions=("*.part.*")
+to_be_deleted_extensions=(*.part.*)
 
 # show the first 10 files to be deleted if ther is any 
 for ext in "${to_be_deleted_extensions[@]}"
