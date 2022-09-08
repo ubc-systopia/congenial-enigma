@@ -51,8 +51,8 @@ def main(args):
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[15_000, ],
-        maxs=[20_000, ],
+        mins=[5_00, ],
+        maxs=[1_000, ],
         graph_names=graph_names
     )
 

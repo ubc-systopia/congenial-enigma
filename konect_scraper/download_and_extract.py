@@ -12,11 +12,14 @@ import sqlite3
 import subprocess
 import gzip
 
+import numpy as np
+
 from konect_scraper import config
 from konect_scraper.config import IOMode
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
     single_val_numeric_get
 import logging
+
 
 def get_edge_list_filename(directory):
     fs = []
@@ -59,24 +62,34 @@ def remove_comments_from_edgelist(path):
     """
     n_comment_lines = get_n_comments_at_top_of_file(path)
     i = 0
-    source_file = open(path, 'r')
+    with open(path, 'r') as source_file:
+        while i < n_comment_lines - 1:
+            source_file.readline()
+            i += 1
 
-    while i < n_comment_lines - 1:
-        source_file.readline()
-        i += 1
-
-    tmp_path = path + '.tmp'
-    # this will truncate the file, so need to use a different file name:
-    target_file = open(tmp_path, 'w')
-
-    shutil.copyfileobj(source_file, target_file)
-
+        tmp_path = path + '.tmp'
+        # this will truncate the file, so need to use a different file name:
+        with open(tmp_path, 'w') as target_file:
+            shutil.copyfileobj(source_file, target_file)
     # delete the original file (contains comments) and copy the file (without comments) in its place
     os.remove(path)
     shutil.copyfile(tmp_path, path)
     os.remove(tmp_path)
 
     return
+
+
+def get_n_columns(path):
+    n_comment_lines = get_n_comments_at_top_of_file(path)
+    i = 0
+    with open(path, 'r') as source_file:
+        while i < n_comment_lines + 1:
+            line = source_file.readline()
+            i += 1
+    if ' ' in line:
+        return len(line.split())
+    elif '\t' in line:
+        return len(line.split('\t'))
 
 
 def download_graph(url, directory):
@@ -123,10 +136,14 @@ def download_graph(url, directory):
         os.remove(tmp_txt)
 
     # copy the edgelist from the extracted directory (this should be the largest file in the directory)
-
     # remove all first lines that contain a comment
     remove_comments_from_edgelist(graph_path)
-
+    n_columns = get_n_columns(graph_path)
+    if n_columns > 2:
+        # todo: use np to remove unneeded cols - hacky
+        comments = settings['comment_strings']
+        arr = np.loadtxt(graph_path, comments=comments).astype(np.uint32)
+        np.savetxt(graph_path, arr[:, :2], fmt='%i', )
     # delete the archive and extracted file (only care about the edgelist)
     os.remove(tmp_file)
     shutil.rmtree(tmp_dir, ignore_errors=True)

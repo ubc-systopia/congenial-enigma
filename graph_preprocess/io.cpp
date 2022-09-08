@@ -16,6 +16,13 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <boost/range/algorithm/copy.hpp>
+#include "rabbit_util.h"
+
 
 void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m) {
 	std::ofstream outfile(path);
@@ -140,6 +147,90 @@ void write_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges, io
 
 bool is_comment(std::string line) {
 	return (line.find("%") != std::string::npos) || (line.find("#") != std::string::npos);
+}
+
+std::pair<ul, ull> par_read_edge_list(std::string input_path, std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
+                                      std::string sqlite_db_path) {
+	// Step 1: Parallel INGEST
+	auto start = std::chrono::high_resolution_clock::now();
+	std::vector<std::pair<ul, ul>> edges = par_read(input_path);
+	auto end = std::chrono::high_resolution_clock::now();
+
+	std::vector<ul> flat_edges(edges.size() * 2);
+	ull i = 0;
+	for (auto &kv: edges){
+		flat_edges[i] = kv.first;
+		flat_edges[i + 1] = kv.second;
+		i += 2;
+	}
+	auto ingest_time = duration_cast<time_unit>(end - start);
+
+	// Step 2: Sort Vertices
+	start = std::chrono::high_resolution_clock::now();
+	// sort and remove duplicates to identify the unique vertex ids in the graph
+	std::sort(dpl::execution::par_unseq, flat_edges.begin(), flat_edges.end());
+	end = std::chrono::high_resolution_clock::now();
+	auto sort_vs_time = duration_cast<time_unit>(end - start);
+	// Step 3: Unique Vertex IDs
+	start = std::chrono::high_resolution_clock::now();
+	flat_edges.erase(std::unique(dpl::execution::par_unseq, flat_edges.begin(), flat_edges.end()), flat_edges.end());
+	end = std::chrono::high_resolution_clock::now();
+	auto unique_vs_time = duration_cast<time_unit>(end - start);
+
+	ul max_uncompressed_vid = flat_edges.back();
+	// construct a vector whose size is the max vertex id in the uncompressed repr
+	// this will act as the map between uncompressed vertex ids -> vertex ids
+	std::vector<ul> p(max_uncompressed_vid + 1, -1);
+	ul new_id = 0;
+	for (auto &orig_vid: flat_edges) {
+		p[orig_vid] = new_id;
+		new_id += 1;
+	}
+	// remap the edges
+	ull eid = 0;
+//	fmt::print("num_edges: {}\n", edges.size());
+	for (auto &edge: edges) {
+		ul src = edge.first;
+		ul dest = edge.second;
+		mapped_edges[eid] = std::make_pair(p[src], p[dest]);
+		++eid;
+	}
+
+	// Step 4: Sort Edges
+	start = std::chrono::high_resolution_clock::now();
+	// sort the isomorphic edges and remove duplicates
+	std::sort(dpl::execution::par_unseq, mapped_edges.begin(), mapped_edges.end());
+	end = std::chrono::high_resolution_clock::now();
+	auto sort_es_time = duration_cast<time_unit>(end - start);
+
+	// Step 5: Unique Edges
+	start = std::chrono::high_resolution_clock::now();
+	mapped_edges.erase(std::unique(dpl::execution::par_unseq, mapped_edges.begin(), mapped_edges.end()),
+	                   mapped_edges.end());
+	end = std::chrono::high_resolution_clock::now();
+
+	auto unique_es_time = duration_cast<time_unit>(end - start);
+
+	std::vector<time_unit> times = {
+			ingest_time,
+			sort_vs_time,
+			unique_es_time,
+			sort_es_time,
+			unique_es_time,
+	};
+
+	std::vector<std::string> col_labels = {
+			"ingest",
+			"sort_vs",
+			"unique_vs",
+			"sort_es",
+			"unique_es",
+	};
+
+
+	insert_graph_into_preproc_table(graph_name, sqlite_db_path, times, col_labels);
+	return std::make_pair(flat_edges.size(), mapped_edges.size());
+
 }
 
 std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std::pair<ul, ul>> &edges,
