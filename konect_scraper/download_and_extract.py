@@ -151,7 +151,6 @@ def download_graph(url, directory):
     # update the graph's edgelist size (raw text file) in db
     return
 
-
 def update_meta_dir(directory, name):
     """
     Find the graph in the metadata table and update its directory path

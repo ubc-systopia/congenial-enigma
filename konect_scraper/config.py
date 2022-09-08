@@ -53,7 +53,15 @@ def init():
     settings = {
         "repo_root": repo_root,
         "repo_home": repo_home,
+        "rabbit_home": rabbit_home,
         "app_name": app_name,
+
+        # cmake
+        "graph_preprocess_dir": graph_preprocess_dir,
+        "cmake_build_dir": cmake_build_dir,
+        "cmake_build_type": "Debug",
+        "cmake_make_program": "ninja",
+
         "all_networks_url": all_networks_url,
         "sqlite3": {
             # "tables": {
