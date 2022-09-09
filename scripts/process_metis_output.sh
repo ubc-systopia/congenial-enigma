@@ -63,20 +63,21 @@ process_file () {
 
 		expr_length=${#names[@]}
 		expr_length=$((expr_length-1))
-
+		tail_length=$((expr_length+5))
 		# get the perf output from the last 10 lines 
-		perf_output=$(tail -n 7 $file_name)
+		perf_output=$(tail -n $tail_length $1)
+		# perf_output=$(echo $file | tail -n ${tail_length})
 		all_perf_times=( $(echo $perf_output | tr -s '[ \t]*' ' ' | grep -Po "\K([+-]?\d+.\d+) ") )
 
 		# last index of all_perf_times is the total time
-		echo "Total time: ${all_perf_times[@]}"
+		# echo "Total time: ${all_perf_times[@]}"
 		perf_total_time=${all_perf_times[-2]}
 		perf_std=${all_perf_times[-1]}
 		
-		echo "Total time: $perf_total_time" "std: $perf_std"
+		# echo "Total time: $perf_total_time" "std: $perf_std"
 		# iterate from 0 to the lengthg of names 
 		for i in $(seq 0 ${expr_length}); do 
-				echo ${i}
+				# echo ${i}
 				# if the file is valid, then we can print the results
 				name=$(basename ${names[$i]})
 				write_to_file "${name}" "${num_parts[$i]}" "${num_vertices[$i]}" "${num_edges[$i]}" "${part_times[$i]}" "${io_times[$i]}" "${comm_vols[$i]}" "${edge_cuts[$i]}" "${max_mem_used_list[$i]}" "${rusage_ru_maxrss_list[$i]}" $output_file "${vol_or_cut}" "${reporting_times[$i]}" "${all_perf_times[$i]}" "${perf_total_time}" "${perf_std}"
