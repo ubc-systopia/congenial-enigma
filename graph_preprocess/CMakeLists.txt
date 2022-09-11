@@ -21,9 +21,9 @@ find_package(oneDPL REQUIRED)
 
 SET(CMAKE_C_COMPILER icx)
 
-add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h)
-add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h)
-add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h  util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h)
+add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h)
+add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h)
+add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h  util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h)
 
 if (Boost_FOUND)
 
@@ -33,9 +33,9 @@ if (Boost_FOUND)
 
     include_directories(${Boost_INCLUDE_DIRS})
 
-    target_link_libraries(graph_preprocess LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+    target_link_libraries(graph_preprocess PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
-    target_link_libraries(slashburn LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+    target_link_libraries(slashburn PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
-    target_link_libraries(cuthill_mckee LINK_PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+    target_link_libraries(cuthill_mckee PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 endif ()

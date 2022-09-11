@@ -33,7 +33,7 @@ def init():
     graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
     slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
     cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
-    rabbit_order_executable = os.path.join(rabbit_home, "demo", "reorder")
+    rabbit_order_executable = os.path.join(rabbit_home, "demo", cmake_build_dir, "reorder")
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")

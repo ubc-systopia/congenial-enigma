@@ -51,8 +51,8 @@ def main(args):
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[5_00, ],
-        maxs=[1_000, ],
+        mins=[15_000, ],
+        maxs=[20_000, ],
         graph_names=graph_names
     )
 
@@ -75,7 +75,7 @@ def main(args):
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
 
-    rows = get_all_downloadable_graphs(graph_names)[:]
+    rows = get_all_downloadable_graphs(graph_names)[:5]
     print([r['graph_name'] for r in rows])
     if download:
         download_and_extract.main(rows, io_modes)

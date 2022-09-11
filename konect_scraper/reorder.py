@@ -12,12 +12,13 @@ from konect_scraper.util import get_directed, get_n, get_m
 def compute_random(graph_path):
     return
 
-def compute_rabbit(graph_path, order_path):
+def compute_rabbit(graph_path, order_path, graph_name):
     settings = config.settings
+    sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
 
     executable = settings['rabbit_order_executable']
     args = [executable]
-    args += [graph_path, order_path]
+    args += [graph_path, order_path, graph_name, sqlite3_db_path]
 
     logging.info(f"Executing: " + ' '.join(args))
 
@@ -105,7 +106,7 @@ def compute_ordering(graph_name, order):
             extension = ".net"
 
             comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
-            compute_rabbit(comp_graph_path, order_path)
+            compute_rabbit(comp_graph_path, order_path, graph_name)
         case "sb":
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
         case "cm":
