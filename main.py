@@ -25,7 +25,7 @@ def main(args):
     download = args.download
 
     log_dir = config.settings['logging']['log_dir']
-    curr_time = datetime.now().strftime("%H_%M_%d_%m_%Y")
+    curr_time = datetime.now().strftime("%H_%d_%m_%Y")
     log_path = f"{config.settings['app_name']}_{curr_time}"
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)

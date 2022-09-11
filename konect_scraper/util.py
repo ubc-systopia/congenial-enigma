@@ -248,7 +248,7 @@ def init_logger(log_file_name):
 
     formatter = logging.Formatter(fmt)
 
-    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt)
+    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt, filemode='a')
 
 
 def get_query_vals_str(n_vals):
