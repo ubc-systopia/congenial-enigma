@@ -2,3 +2,7 @@
 	path = rabbit_order
 	url = git@github.com:atrostan/rabbit_order.git
 	branch = output-to-file
+[submodule "dbg"]
+	path = dbg
+	url = git@github.com:atrostan/dbg.git
+	branch = output-to-files

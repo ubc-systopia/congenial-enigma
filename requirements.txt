@@ -22,3 +22,6 @@ pyparsing~=3.0.9
 cycler~=0.11.0
 packaging~=21.3
 kiwisolver~=1.4.4
+psutil~=5.9.2
+igraph~=0.9.11
+PyQt5~=5.15.7
