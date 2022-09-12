@@ -25,7 +25,7 @@ def main(args):
     download = args.download
 
     log_dir = config.settings['logging']['log_dir']
-    curr_time = datetime.now().strftime("%H_%M_%d_%m_%Y")
+    curr_time = datetime.now().strftime("%H_%d_%m_%Y")
     log_path = f"{config.settings['app_name']}_{curr_time}"
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)
@@ -48,16 +48,20 @@ def main(args):
     rows = get_all_unipartite_graphs()
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
+
+    # get_monitor_dpi()
+
     # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['size', ],
-        mins=[15_000, ],
-        maxs=[20_000, ],
+        mins=[20_000, ],
+        maxs=[40_000, ],
         graph_names=graph_names
     )
 
-    graph_names = [r['graph_name'] for r in rows]
-    # now that a selection of relevant graph_names have been identified,
+    graph_rows = sorted(rows, key=lambda r: r['n'], reverse=True)
+    graph_names = [r['graph_name'] for r in graph_rows]
+    # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
 
     # if io mode is unspecified, use text as default
@@ -75,12 +79,16 @@ def main(args):
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
 
-    rows = get_all_downloadable_graphs(graph_names)[:5]
+    rows = get_all_downloadable_graphs(graph_names)[:3]
     print([r['graph_name'] for r in rows])
     if download:
         download_and_extract.main(rows, io_modes)
 
     if orders:
+        print(f"{orders}")
+        if orders == ['all']:
+            orders = config.settings['orderings'].keys()
+            print(f"{orders=}")
         # verify that the requested ordering to compute are supported
         assert valid_orderings(orders)
         reorder.main(rows, orders)
@@ -134,6 +142,7 @@ if __name__ == '__main__':
                              '  `hc`:  HubCluster, \n'
                              '  `hs`:  HubSort, \n'
                              '  `dbg`: Degree Based Grouping,\n'
+                             '  `all:  All the above orderings.\n'
                              '}')
 
     parser.add_argument('-l', '--plot', action=argparse.BooleanOptionalAction,

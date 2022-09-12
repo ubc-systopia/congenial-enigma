@@ -3,8 +3,6 @@
 //
 
 #include "sql.h"
-#include <sqlite3.h>
-
 
 void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_db_path, std::vector<time_unit> times,
                                      std::vector<std::string> col_labels) {

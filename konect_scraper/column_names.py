@@ -41,7 +41,7 @@ def init():
         'hubcluster': 'REAL',
         'hubsort': 'REAL',
         'sort': 'REAL',
-
+        'dbg': 'REAL',
     }
 
     meta_col_names = {

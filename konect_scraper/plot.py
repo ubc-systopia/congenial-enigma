@@ -6,12 +6,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import subprocess
 import os
-import sys
 import gc
 import matplotlib.ticker as plticker
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-
+import sys
+from PyQt5.QtWidgets import QApplication
 from konect_scraper.io import get_adj_mat_from_edge_list, read_iso_map, save_spy_plots, read_image
 from konect_scraper import config
 from konect_scraper.util import get_directed, get_n, get_m, create_plot_dirs_if_not_exists, get_graph_dir, get_plot_dir, \
@@ -163,7 +163,7 @@ def aggregate_plots(graph_names, orders, all_spy_path):
             ax = axs[row_idx, col_idx]
 
             img = read_image(im_path, fmt)
-            ax.imshow(img, interpolation='none', extent=[0, n-1, n - 1, 0])
+            ax.imshow(img, interpolation='none', extent=[0, n - 1, n - 1, 0])
             ax.xaxis.tick_top()
 
     for ax, col in zip(axs[0], order_names):
@@ -178,6 +178,7 @@ def aggregate_plots(graph_names, orders, all_spy_path):
     plt.autoscale()
 
     fig.savefig(all_spy_path, bbox_inches=bbox_inches, pad_inches=pad_inches)
+    plt.close(fig)
     return
 
 
@@ -229,6 +230,7 @@ def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, marker
         logging.info(f"{graph_name}-{label_str} already plotted; skipping.")
         return
     fig, ax = plt.subplots(figsize=figsize)
+    logging.info(f"Plotting {graph_name}-{label_str}")
 
     bbox_inches = settings['plot']['bbox_inches']
     pad_inches = settings['plot']['pad_inches']
@@ -244,6 +246,12 @@ def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, marker
     fig.savefig(ax_path, bbox_inches=bbox_inches, pad_inches=pad_inches, dpi=dpi)
     fig.clear()
     plt.close(fig)
+
+
+def get_figsize(ax_size, n):
+    side_len = int(n * 0.000_2) * ax_size
+
+    return side_len, side_len
 
 
 def main(rows, orders):
@@ -264,11 +272,12 @@ def main(rows, orders):
     max_n = settings['plot']['max_n']
     figsize = (ncols * ax_size, nrows * ax_size,)
 
-    adj_mat_fig, adj_mat_axs = plt.subplots(nrows, ncols, figsize=figsize)
-    spy_fig, spy_axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-    all_axs = [spy_axs]
+    # adj_mat_fig, adj_mat_axs = plt.subplots(nrows, ncols, figsize=figsize)
+    # spy_fig, spy_axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+    # all_axs = [spy_axs]
     plot_types = ["adj_mat", "spy"]
     plot_types = ["spy"]
+
     # compute the given orders for each of the datasets
     for row_idx, row in enumerate(rows):
 
@@ -288,7 +297,8 @@ def main(rows, orders):
         markersize = get_markersize(n)
         plots_dir = settings['plots_dir']
         plot_type = "spy"
-        figsize = (ax_size, ax_size)
+
+        figsize = get_figsize(ax_size, n)
         fmt = settings['plot']['format']
 
         # plot the original adjacency matrix
@@ -301,7 +311,7 @@ def main(rows, orders):
 
         for order_idx, order in enumerate(orders):
             # plot_ordering(plt, graph_name, directed, order)
-            for plot_type, axs in zip(plot_types, all_axs):
+            for plot_type in plot_types:
                 ax_plot_and_clear(graph_name, directed, order, None, fmt, markersize, figsize,
                                   plots_dir,
                                   dpi,

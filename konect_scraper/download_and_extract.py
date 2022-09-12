@@ -168,7 +168,7 @@ def update_meta_dir(directory, name):
     return
 
 
-def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes):
+def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes, graph_name):
     settings = config.settings
     executable = settings['graph_preprocess_executable']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
@@ -196,15 +196,40 @@ def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes):
     res = subprocess.check_output(args)
     # parse the output of the simplify program to get the number of vertices and edges
     # in the compressed, simplified representation
-
     lines = res.decode('ascii').split('\n')
     n = int(lines[0].replace('n: ', ''))
     m = int(lines[1].replace('m: ', ''))
 
+    # convert the graph to a format dbg requires
+    dbg_clean_el_executable = settings['dbg_clean_el_executable']
+    dbg_convert_script = settings['dbg_convert_script']
+    dbg_datasets_dir = settings['dbg_datasets_dir']
+    dbg_home = settings['dbg_home']
+
+    env = {
+        **os.environ,
+        "DBG_ROOT": dbg_home,
+    }
+    args = [
+        dbg_clean_el_executable,
+        f"{output_path}.net", os.path.join(dbg_datasets_dir, f"{graph_name}.el")
+    ]
+    logging.info(f"Executing: " + ' '.join(args))
+    res = subprocess.check_output(args, env=env)
+
+    args = [
+        dbg_convert_script,
+        os.path.join(dbg_datasets_dir, graph_name)
+    ]
+    logging.info(f"Executing: " + ' '.join(args))
+    res = subprocess.check_output(args, env=env)
+
+
+
     return n, m
 
 
-def compress(directory, directed, n, m, io_modes):
+def compress(directory, directed, n, m, io_modes, graph_name):
     """
     use igraph_simplify to compress a graph's edgelist in directory
     :param directory:
@@ -213,10 +238,9 @@ def compress(directory, directed, n, m, io_modes):
     settings = config.settings
     graph_path = os.path.join(directory, settings["orig_el_file_name"])
     compressed_graph_path = os.path.join(directory, settings["compressed_el_file_name"])
-    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m, io_modes)
+    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m, io_modes, graph_name)
 
     # TODO record the compressed raw text file in db
-
     return comp_n, comp_m
 
 
@@ -263,7 +287,7 @@ def main(rows, io_modes):
         directed = bool(get_directed(graph_name))
         sz = get_size(graph_name)
         vol = get_volume(graph_name)
-        n, m = compress(graph_dir, directed, sz, vol, io_modes)
+        n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
         set_n(graph_name, n)
         set_m(graph_name, m)
 

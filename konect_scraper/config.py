@@ -1,6 +1,17 @@
 import os.path
+import sys
 from pathlib import Path
 from enum import Enum
+
+from PyQt5.QtWidgets import QApplication
+
+
+def get_monitors_dpi():
+    app = QApplication(sys.argv)
+    screens = app.screens()
+    dpis = [screen.physicalDotsPerInch() for screen in screens]
+    app.quit()
+    return dpis
 
 
 class IOMode(Enum):
@@ -18,6 +29,11 @@ def init():
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
     dbg_home = os.path.join(repo_root, "dbg")
+    dbg_apps_dir = os.path.join(dbg_home, "apps")
+    dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")
+    dbg_clean_el_executable = os.path.join(dbg_convert_dir, "clean_edgelist.py")
+    dbg_convert_script = os.path.join(dbg_convert_dir, "convert.sh")
+    dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
     data_dir = os.path.join(repo_home, "data")
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
@@ -33,7 +49,9 @@ def init():
     graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
     slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
     cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
-    rabbit_order_executable = os.path.join(rabbit_home, "demo", cmake_build_dir, "reorder")
+
+    rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
+    rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
@@ -47,18 +65,28 @@ def init():
     marker = ','
     markersize = .5
     plot_format = 'png'
-    dpi = 200
+    dpi = max(list(map(int, get_monitors_dpi())))
     ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     settings = {
         "repo_root": repo_root,
         "repo_home": repo_home,
         "rabbit_home": rabbit_home,
+        "dbg_home": dbg_home,
         "app_name": app_name,
+        "dbg_apps_dir": dbg_apps_dir,
+        "dbg_convert_dir": dbg_convert_dir,
+        "dbg_clean_el_executable": dbg_clean_el_executable,
+        "dbg_convert_script": dbg_convert_script,
+        "dbg_datasets_dir": dbg_datasets_dir,
+
+        "make_executable": "make",
+        "cmake_executable": "cmake",
 
         # cmake
         "graph_preprocess_dir": graph_preprocess_dir,
         "cmake_build_dir": cmake_build_dir,
+        "rabbit_cmake_build_dir": rabbit_cmake_build_dir,
         "cmake_build_type": "Debug",
         "cmake_make_program": "ninja",
 
@@ -93,8 +121,8 @@ def init():
             "ax_size": ax_size,
             "bbox_inches": 'tight',
             "pad_inches": 0,
-            "max_rows_per_agg_spy_plot": 4,  # the number of graphs to show per aggregated spy plot,
-            "max_n": 20_000,  # the largest graph size that is plottable as as adjacency matrix
+            "max_rows_per_agg_spy_plot": 5,  # the number of graphs to show per aggregated spy plot,
+            "max_n": 50_000,  # the largest graph size that is plottable as as adjacency matrix
         },
         "orderings": {
             'rnd': "random",
@@ -104,7 +132,7 @@ def init():
             'srt': "sort",
             'hc': "hubcluster",
             'hs': "hubsort",
-            'dbg': "degree-based-grouping"
+            'dbg': "degree-based-grouping",
         },
         "logging": {
             "log_dir": log_dir,
@@ -117,5 +145,24 @@ def init():
             "cuthill-mckeee": {
 
             }
+        },
+        "dbg": {
+            "order_idx_dict": {
+                'Random': 1,
+                'Sort': 2,
+                'HubSort': 3,
+                'HubCluster': 4,
+                'DBG': 5,
+            },
+            "order_str_dict": {
+                'rnd': 'Random',
+                'srt': 'Sort',
+                'hs': 'HubSort',
+                'hc': 'HubCluster',
+                'dbg': 'DBG',
+            },
+            "degree_used_for_reordering": 0,
+            'max_iters': 1,  # only run 1 iteration of PR - since we're interested in the ordering, not the PR
+
         }
     }

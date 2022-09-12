@@ -58,6 +58,13 @@ def cast_np_dtypes(df, dtypes):
     return
 
 
+def update_table_schema(table, col_names):
+    for col in col_names:
+        dtype = col_names[col]
+        add_column_if_not_exists(col, table, dtype)
+
+    return
+
 def add_column_if_not_exists(column, table, dtype):
     # check if column exists in table
     if column_exists(column, table):
@@ -248,7 +255,7 @@ def init_logger(log_file_name):
 
     formatter = logging.Formatter(fmt)
 
-    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt)
+    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt, filemode='a')
 
 
 def get_query_vals_str(n_vals):

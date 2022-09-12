@@ -24,15 +24,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/sql.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sql.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../dbg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitmodules" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitmodules" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sql.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql.h" beforeDir="false" afterPath="$PROJECT_DIR$/sql.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../init_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/../init_db.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/plot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/reorder.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/reorder.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rabbit_order" beforeDir="false" afterPath="$PROJECT_DIR$/../rabbit_order" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,9 +85,9 @@
   }
 }</component>
   <component name="RunManager" selected="CMake Application.graph_preprocess">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="cuthill_mckee" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 1133 -m 5451 -g $PROJECT_DIR$/../konect_scraper/data/graphs/arenas-email/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cuthill_mckee" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cuthill_mckee">
@@ -126,7 +131,8 @@
       <workItem from="1662582732809" duration="9627000" />
       <workItem from="1662655118050" duration="6979000" />
       <workItem from="1662924243651" duration="2779000" />
-      <workItem from="1662929212939" duration="9000" />
+      <workItem from="1662929212939" duration="1228000" />
+      <workItem from="1663004069871" duration="708000" />
     </task>
     <servers />
   </component>
