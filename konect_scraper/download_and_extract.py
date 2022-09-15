@@ -17,7 +17,7 @@ import numpy as np
 from konect_scraper import config
 from konect_scraper.config import IOMode
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
-    single_val_numeric_get
+    single_val_get, get_size_in_memory
 import logging
 
 
@@ -263,7 +263,7 @@ def main(rows, io_modes):
         data_url = row['data_url']
         if data_url == "none":
             continue
-        comp_size = single_val_numeric_get('compressed_txt_file_size', 'metadata', graph_name)
+        comp_size = single_val_get('compressed_txt_file_size', 'metadata', graph_name)
         # if comp_size > 0:  # dataset has been downloaded already
         #     continue
 
@@ -290,6 +290,9 @@ def main(rows, io_modes):
         n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
         set_n(graph_name, n)
         set_m(graph_name, m)
+
+        # update the PageRank experiments structs size in db
+        get_size_in_memory(n, m)
 
         # update the text file size in the database
         compressed_graph_path = os.path.join(graph_dir, settings["compressed_el_file_name"])

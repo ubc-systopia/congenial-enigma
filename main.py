@@ -1,15 +1,18 @@
 import argparse
 from argparse import RawTextHelpFormatter
+
+import numpy as np
+
 import konect_scraper.config as config
 import sqlite3
 import konect_scraper.column_names as column_names
-from konect_scraper import scrape_konect_stats, download_and_extract, reorder
+from konect_scraper import scrape_konect_stats, download_and_extract, reorder, pr_experiments
 from konect_scraper.sql import distinct, get_all_graphs_in_categories, get_all_graphs_where_stats_between, \
     get_all_unipartite_graphs, get_all_graphs_by_graph_names_where_stats_between, get_all_rows_by_graph_names, \
-    get_all_downloadable_graphs, row_as_dict
+    get_all_downloadable_graphs, row_as_dict, get_all_unipartite_directed_graphs
 from konect_scraper.util import \
     create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
-    create_log_dir_if_not_exists, init_logger, valid_orderings
+    create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size
 from datetime import datetime
 import logging
 import konect_scraper.plot as plotting
@@ -23,6 +26,10 @@ def main(args):
     orders = args.reorder
     io_modes = args.io_modes
     download = args.download
+    run_pr_expts = args.run_pr_expts
+    debug = args.debug
+
+    config.settings['debug'] = debug
 
     log_dir = config.settings['logging']['log_dir']
     curr_time = datetime.now().strftime("%H_%d_%m_%Y")
@@ -45,22 +52,23 @@ def main(args):
         maxs=[100, 1000]
     )
 
-    rows = get_all_unipartite_graphs()
+    # rows = get_all_unipartite_graphs()
+    rows = get_all_unipartite_directed_graphs()
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
 
-    # get_monitor_dpi()
 
-    # get all graphs from list where 50 < size < 100 and 100 < volume < 1000
+    # get all graphs that are 10x-?x as big as the l3 cache
+    # 1000 * l3_cache_size
+    # np.inf
+    l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
     rows = get_all_graphs_by_graph_names_where_stats_between(
-        stats=['size', ],
-        mins=[20_000, ],
-        maxs=[40_000, ],
+        stats=['pr_struct_size', ],
+        mins=[5 * l3_cache_size, ],
+        maxs=[2**64 - 1, ],
         graph_names=graph_names
     )
 
-    graph_rows = sorted(rows, key=lambda r: r['n'], reverse=True)
-    graph_names = [r['graph_name'] for r in graph_rows]
     # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
 
@@ -78,23 +86,40 @@ def main(args):
                 case _:
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
+    graph_names = [r['graph_name'] for r in rows]
+    rows = get_all_downloadable_graphs(graph_names)[:]
 
-    rows = get_all_downloadable_graphs(graph_names)[:3]
-    print([r['graph_name'] for r in rows])
+    rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)[:]
+    # print([r['graph_name'] for r in rows])
+
+    graph_name_break_idx = 18 + 17 + 15
+    rows = rows[graph_name_break_idx:43+graph_name_break_idx]
+    for i, row in enumerate(rows):
+        print(f"{i : <5} {row['graph_name'] : <40}"
+              f"{get_pr_struct_size(row['graph_name']): <40}"
+              f"{get_category(row['graph_name']): <40}")
+    # return
     if download:
         download_and_extract.main(rows, io_modes)
 
     if orders:
-        print(f"{orders}")
         if orders == ['all']:
             orders = config.settings['orderings'].keys()
-            print(f"{orders=}")
         # verify that the requested ordering to compute are supported
         assert valid_orderings(orders)
         reorder.main(rows, orders)
 
     if plot:
         plotting.main(rows, orders)
+
+
+    if run_pr_expts:
+        pr_experiments.main(rows, list(orders) + ['orig'])
+        # DEBUG - plot the edge orderings
+        if debug:
+            for vorder_str in orders:
+                plotting.plot_edge_orderings(rows, vorder_str)
+            assert valid_pr(rows)
 
     return
 
@@ -147,5 +172,14 @@ if __name__ == '__main__':
 
     parser.add_argument('-l', '--plot', action=argparse.BooleanOptionalAction,
                         help='Whether to plot the adjacency matrices or not.', required=True)
+
+    parser.add_argument('-e', '--run-pr-expts',
+                        action=argparse.BooleanOptionalAction, required=True,
+                        help='Whether to run Edge-Centric PageRank computation experiments or not.')
+
+    parser.add_argument('--debug',
+                        action=argparse.BooleanOptionalAction, required=True,
+                        help='Run in Debug Mode.'
+                        )
 
     main(parser.parse_args())

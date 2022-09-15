@@ -55,8 +55,8 @@ def compute_dbg_order(graph_name, order_str):
             order_str
         )
     )
-    print(' '.join(args))
-    print(res.decode('ascii'))
+    # print(' '.join(args))
+    # print(res.decode('ascii'))
 
     return
 

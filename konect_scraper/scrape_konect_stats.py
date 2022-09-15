@@ -16,7 +16,7 @@ import urllib.request
 from konect_scraper import column_names, config
 import re
 
-from konect_scraper.util import get_query_vals_str, cast_np_dtypes
+from konect_scraper.util import get_query_vals_str, cast_np_dtypes, get_size_in_memory
 
 
 def insert_on_duplicate(table, conn, keys, data_iter):
@@ -110,9 +110,7 @@ def fill_konect_table():
     return
 
 
-
 def parse_numeric(s):
-
     utimes = '\u00D7'
     uminus = '\u2212'
     uplus = '\u002B'
@@ -134,7 +132,6 @@ def parse_numeric(s):
             exp = -int(exp)
         else:
             exp = int(exp)
-
 
         return coef * np.float_power(10, exp)
 
@@ -266,6 +263,13 @@ def main(rows):
 
     meta_df = pd.read_csv(meta_df_path, index_col=0)
     stats_df = pd.read_csv(stats_df_path, index_col=0)
+
+    # use the (uncompressed) size and volume of the graphs to compute (roughly)
+    # calculate the sizes of the PageRank computation structs
+    stats_df['pr_struct_size'] = stats_df.apply(
+        lambda row: get_size_in_memory(row['size'], row['volume']),
+        axis=1
+    ).astype(np.int64)
 
     meta_dtypes = {
         k: column_names.sql_to_np_dtypes[column_names.meta_col_names[k]] for k in

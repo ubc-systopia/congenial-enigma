@@ -5,7 +5,8 @@ from datetime import datetime
 
 from konect_scraper import config, column_names, scrape_konect_stats
 from konect_scraper.util import delete_graphs_db, create_data_dirs_if_not_exists, create_sql_table, init_logger, \
-    get_datasets, get_all_rows, delete_all_rows, column_exists, add_column_if_not_exists, update_table_schema
+    get_datasets, get_all_rows, delete_all_rows, column_exists, add_column_if_not_exists, update_table_schema, \
+    create_pr_expt_table
 
 
 def main():
@@ -62,6 +63,7 @@ def main():
         create_sql_table(conn, table, cols)
         update_table_schema(table, cols)
 
+    create_pr_expt_table()
     # scrape_konect_stats.fill_konect_table() TODO add argument for conditional first exection
 
     # remove any existing rows scraped from konect

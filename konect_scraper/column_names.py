@@ -5,6 +5,7 @@ def init():
     global stat_col_names
     global preproc_col_names
     global konect_col_names
+    global pr_expts_col_names
     global sqlite3_to_np_dtypes
     global sql_to_np_dtypes
 
@@ -14,6 +15,16 @@ def init():
         'INTEGER': "Int64",
         'REAL': "Float64",
         'BIGINT': "Int64"
+    }
+
+    pr_expts_col_names = {
+        "graph_name": 'TEXT',
+        "datetime": 'TEXT',
+        "expt_num": 'INTEGER',
+        "num_iters": 'INTEGER',
+        "vertex_order": 'TEXT',
+        "edge_order": 'TEXT',
+        "runtime": 'BIGINT'
     }
 
     konect_col_names = {
@@ -162,4 +173,6 @@ def init():
         'orig_bandwidth': 'INTEGER',
         'cm_bandwidth': 'INTEGER',
         'wing_width_ratio': 'REAL',
+        'pr_struct_size': 'BIGINT',
+
     }

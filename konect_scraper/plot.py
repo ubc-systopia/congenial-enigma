@@ -4,9 +4,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import subprocess
 import os
 import gc
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as plticker
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -16,6 +18,7 @@ from konect_scraper.io import get_adj_mat_from_edge_list, read_iso_map, save_spy
 from konect_scraper import config
 from konect_scraper.util import get_directed, get_n, get_m, create_plot_dirs_if_not_exists, get_graph_dir, get_plot_dir, \
     translate_adj_mat, chunks
+import matplotlib.colors
 
 
 def __init__(self):
@@ -240,7 +243,6 @@ def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, marker
             ax_plot_fn(ax, graph_name, directed, plot_type, markersize, label_str, )
         case 'ax_plot_adj_mat':
             ax_plot_fn(ax, graph_name, directed, plot_type, markersize, label_str, el_file_name, )
-
     ax.axis('off')
     plt.tight_layout()
     fig.savefig(ax_path, bbox_inches=bbox_inches, pad_inches=pad_inches, dpi=dpi)
@@ -249,9 +251,66 @@ def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, marker
 
 
 def get_figsize(ax_size, n):
+    if n < 5_000:
+        return (ax_size, ax_size)
     side_len = int(n * 0.000_2) * ax_size
 
     return side_len, side_len
+
+
+def plot_edge_orderings(rows, vorder_str):
+    edge_orderings = config.settings['hyperparameters']['pr-experiments']['edge_orderings']
+    for row in rows:
+        graph_name = row['graph_name']
+        for eorder_str in edge_orderings:
+            plot_edge_ordering(graph_name, vorder_str, eorder_str)
+
+    return
+
+
+def plot_edge_ordering(graph_name, vorder_str, eorder_str):
+    # colour map the adjacency matrix
+
+    fig, ax = plt.subplots()
+
+    n = get_n(graph_name)
+    graphs_dir = config.settings['graphs_dir']
+    plots_dir = config.settings['plots_dir']
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    plot_dir = os.path.join(plots_dir, graph_name)
+    plot_format = config.settings['plot']['format']
+    dpi = config.settings['plot']['dpi']
+    adj_mat_format = config.settings['plot']['adj_mat_format']
+    edgelist_path = os.path.join(graph_dir, f"{vorder_str}.{eorder_str}")
+    plot_path = os.path.join(plot_dir, f"{vorder_str}_{eorder_str}.{plot_format}")
+    sorted_edges = np.loadtxt(edgelist_path).astype(np.uint32)
+    adj_mat = np.zeros((n, n))
+    c = np.zeros(sorted_edges.shape[0])
+    eid = 1
+    for e in sorted_edges:
+        adj_mat[e[0], e[1]] = eid
+        c[eid - 1] = eid;
+
+        eid += 1
+
+    adj_mat = np.ma.masked_where(adj_mat == 0, adj_mat)
+
+    cmap = mpl.cm.get_cmap("plasma").copy()
+    # cmap.set_bad(color='white')
+    # norm = plt.Normalize(1, eid)
+    # plt.spy(adj_mat, cmap=cmap, interpolation='none')
+    # divider = make_axes_locatable(ax)
+    # cax = divider.append_axes('right', size='5%', pad=0.05)
+    plt.scatter(sorted_edges[:, 1], sorted_edges[:, 0], c=c, cmap=cmap, marker='.')
+    # ax.set_extent([0, n - 1, n - 1, 0])
+    plt.gca().invert_yaxis()
+    # plt.gca().invert_xaxis()
+    plt.colorbar()
+    # fig.colorbar(im, cax=cax)
+    plt.savefig(plot_path, figsize=(5, 5), dpi=dpi, )
+    plt.close()
+
+    return
 
 
 def main(rows, orders):

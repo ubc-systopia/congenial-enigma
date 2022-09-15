@@ -150,8 +150,9 @@ bool is_comment(std::string line) {
 	return (line.find("%") != std::string::npos) || (line.find("#") != std::string::npos);
 }
 
-std::pair<ul, ull> par_read_edge_list(std::string input_path, std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
-                                      std::string sqlite_db_path) {
+std::pair<ul, ull>
+par_read_edge_list(std::string input_path, std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
+                   std::string sqlite_db_path) {
 	// Step 1: Parallel INGEST
 	auto start = std::chrono::high_resolution_clock::now();
 	std::vector<std::pair<ul, ul>> edges = par_read(input_path);
@@ -159,7 +160,7 @@ std::pair<ul, ull> par_read_edge_list(std::string input_path, std::vector<std::p
 
 	std::vector<ul> flat_edges(edges.size() * 2);
 	ull i = 0;
-	for (auto &kv: edges){
+	for (auto &kv: edges) {
 		flat_edges[i] = kv.first;
 		flat_edges[i + 1] = kv.second;
 		i += 2;
@@ -333,4 +334,27 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 
 	insert_graph_into_preproc_table(graph_name, sqlite_db_path, times, col_labels);
 	return std::make_pair(flat_edges.size(), mapped_edges.size());
+}
+
+
+void read_map(std::string in_path, std::vector<ul> &mp) {
+	// since vertex ids form the range [0, num_vertices - 1), it's safe to use mp as a vector
+	// to map between original vertex ids to the remapped vertex ids
+	std::ifstream input_file(in_path);
+	std::string line;
+
+	// skip the first two lines - they show the number of nodes + edges
+	// in the edgelist
+	getline(input_file, line);
+	getline(input_file, line);
+
+	if (input_file.is_open()) {
+		while (getline(input_file, line)) {
+			ul orig_id;
+			ul mapped_id;
+			std::stringstream linestream(line);
+			linestream >> orig_id >> mapped_id;
+			mp[orig_id] = mapped_id;
+		}
+	}
 }

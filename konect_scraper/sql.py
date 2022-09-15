@@ -1,5 +1,7 @@
 import sqlite3
 
+import pandas as pd
+
 from konect_scraper import config
 
 
@@ -27,7 +29,12 @@ def get_all_unipartite_graphs():
     cursor = conn.execute(sql)
     return cursor.fetchall()
 
-
+def get_all_unipartite_directed_graphs():
+    conn = connect()
+    conn.row_factory = sqlite3.Row
+    sql = f"select * from metadata where network_format like 'Unipartite, directed%'"
+    cursor = conn.execute(sql)
+    return cursor.fetchall()
 def row_as_dict(r):
     return {k: r[k] for k in r.keys()}
 
@@ -41,6 +48,14 @@ def get_all_downloadable_graphs(graph_names):
 
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
+
+def read_table_as_table(table):
+
+    # Create your connection.
+    cnx = sqlite3.connect(config.settings['sqlite3']['sqlite3_db_path'])
+
+    df = pd.read_sql_query(f"SELECT * FROM {table}", cnx)
+    return df
 
 
 def get_all_rows_by_graph_names(table, graph_names):
