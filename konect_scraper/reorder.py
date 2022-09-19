@@ -55,6 +55,13 @@ def compute_dbg_order(graph_name, order_str):
             order_str
         )
     )
+
+    # remove the duplicate file from the dbg directory
+    try:
+        os.remove(order_file)
+    except OSError:
+        pass
+
     # print(' '.join(args))
     # print(res.decode('ascii'))
 
@@ -168,6 +175,9 @@ def compute_ordering(graph_name, order):
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
         case "cm":
             compute_cuthill_mckee(comp_graph_path, n, m)
+        case "rev_cm":
+            return
+
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""

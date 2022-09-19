@@ -172,7 +172,8 @@ def init():
         # computed stats - results of running slashburn, cuthill-mckee
         'orig_bandwidth': 'INTEGER',
         'cm_bandwidth': 'INTEGER',
-        'wing_width_ratio': 'REAL',
+        'sb_k': 'BIGINT',
+        'sb_n_iters': 'BIGINT',
         'pr_struct_size': 'BIGINT',
 
     }

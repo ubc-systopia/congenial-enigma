@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <sstream>
 #include "util.h"
 #include "omp.h"
 #include "fmt/core.h"
@@ -137,7 +138,7 @@ void par_sort_edges(std::vector<Edge> &edges, Order ord, ul n) {
 			assign_hilbert_keys(edges, n);
 			std::sort(dpl::execution::par_unseq, edges.begin(), edges.end(),
 			          [](const Edge &lhs, const Edge &rhs) {
-									return lhs.idx < rhs.idx;
+				          return lhs.idx < rhs.idx;
 			          });
 
 			break;
@@ -150,8 +151,100 @@ void par_sort_edges(std::vector<Edge> &edges, Order ord, ul n) {
 	}
 }
 
+uint32_t next_largest_multiple(uint32_t n, uint32_t critical_depth) {
+	assert(critical_depth > 0);
+	uint32_t multiple = pow(2, critical_depth);
+	return ((n + multiple - 1) / multiple) * multiple;
+}
+
+
+std::ostream &operator<<(std::ostream &os, Direction ec) {
+	return os << static_cast<int>(ec);
+}
 
 void print_quad(Quadrant &q) {
-	fmt::print("[idx: {:<4} rot: {:<4}] || sx: {:<30} | ex: {:<30} | sy: {:<30} | ey: {:<30} ||\n",
-	           q.idx, q.rot, q.start_x, q.end_x, q.start_y, q.end_y);
+	fmt::print(
+			"[idx: {:<4} rot: {:<4} hidx: {:<4} expected: {:<5}] || sx: {:<20} | ex: {:<20} | sy: {:<20} | ey: {:<20} || {:<15}->{:<15}\n",
+			q.idx, q.rot, q.hidx, dir_str(q.expected_dir), q.start_x, q.end_x, q.start_y, q.end_y, corner_str(q.start),
+			corner_str(q.end));
+}
+
+void print_seperator() {
+	std::ostringstream os;
+	for (int i = 0; i < 86; ++i) {
+		os << "#";
+	}
+	os << "\n";
+	fmt::print("{}\n", os.str());
+}
+
+std::string dir_str(Direction d) {
+	switch (d) {
+		case right:
+			return "Right";
+		case down:
+			return "Down";
+		case left:
+			return "Left";
+		case up:
+			return "Up";
+	}
+}
+
+std::pair<uint32_t, uint32_t> rotate_point(uint32_t cx, uint32_t cy, int angle, uint32_t x, uint32_t y) {
+
+	int s;
+	int c;
+	uint32_t xnew;
+	uint32_t ynew;
+	if (angle == 0) return std::make_pair(x, y);
+	else {
+		if (angle == 90) {
+			c = 0;
+			s = 1;
+			xnew = ((x - cx) * c) - ((cy - y) * s) + cx;
+			ynew = cy - ((cy - y) * c) + ((x - cx) * s);
+		} else if (angle == 180) {
+			c = -1;
+			s = 0;
+
+			xnew = ((x - cx) * c) - ((cy - y) * s) + cx - 1;
+			ynew = cy - ((cy - y) * c) + ((x - cx) * s) - 1;
+		} else if (angle == 270) {
+			c = 0;
+			s = -1;
+			xnew = ((x - cx) * c) - ((cy - y) * s) + cx - 1;
+			ynew = cy - ((cy - y) * c) + ((x - cx) * s) - 1;
+		}
+	}
+
+
+	// translate point back to origin:
+//	x -= cx;
+//	y -= cy;
+
+	// rotate point
+
+	// translate point back:
+//	x = xnew + cx;
+//	y = cy - ynew;
+	return std::make_pair(xnew, ynew);
+}
+
+std::string corner_str(Corner c) {
+	switch (c) {
+		case top_right:
+			return "Top-Right";
+		case top_left:
+			return "Top-Left";
+		case bot_right:
+			return "Bottom-Right";
+		case bot_left:
+			return "Bottom-Left";
+	}
+}
+
+
+uint32_t int_log(int base, uint32_t x) {
+	return (int) (log(x) / log(base));
 }

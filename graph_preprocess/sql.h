@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "fmt/core.h"
+//#include "fmt/core.h"
 
 #ifndef GRAPH_PREPROCESS_SQL_H
 #define GRAPH_PREPROCESS_SQL_H

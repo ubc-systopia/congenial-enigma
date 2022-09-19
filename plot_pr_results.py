@@ -11,45 +11,11 @@ from konect_scraper.sql import read_table_as_table
 from konect_scraper.util import get_n, get_m, get_pr_struct_size, convert_size
 
 
-def main():
-    settings = config.settings
-    pr_df = read_table_as_table('pr_expts')
-    pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
-    filter_datetime = ""  # only look at experiments after this date
-
-    pr_df = pr_df[
-        (pr_df['datetime'] >= pd.to_datetime('14-09-2022 08-23-49', format='%d-%m-%Y %H-%M-%S'))
-    ]
-    pr_df['pr_struct_size'] = pr_df.apply(
-        lambda row: get_pr_struct_size(row['graph_name']),
-        axis=1
-    ).astype(np.int64)
-    pr_df = pr_df.sort_values('pr_struct_size', ascending=True)
-
-    vorders = settings['orderings']
-    eorders = settings['edge_orderings']
-    n_expts = settings['hyperparameters']['pr-experiments']['num_expts']
-    reqd_num_expts = (len(vorders) + 1) * len(eorders) * n_expts
-
-    gdfs = [[name, gdf] for name, gdf in pr_df.groupby('graph_name')]
-
-    gdfs = sorted(gdfs, key=lambda x: get_pr_struct_size(x[0]), reverse=True)
-    for name, gdf in gdfs:
-        print(name)
-
-
-    for name, gdf in gdfs:
-        if gdf.shape[0] != reqd_num_expts:
-            continue
-        plot_pr_results(name, gdf)
-    return
-
-
 def plot_pr_results(graph_name, df):
     num_nodes = get_n(graph_name)
     num_edges = get_m(graph_name)
-    vorder_strs = df.vertex_order.unique()
-    eorder_strs = df.edge_order.unique()
+    vorder_strs = sorted(df.vertex_order.unique())
+    eorder_strs = sorted(df.edge_order.unique())
     vorder_map = config.settings['orderings']
     vorder_map['orig'] = 'original'
     eorder_map = config.settings['edge_orderings']
@@ -105,6 +71,38 @@ def plot_pr_results(graph_name, df):
     plt.tight_layout()
     plt.savefig(plot_path, dpi=dpi)
     plt.close()
+    return
+
+
+def main():
+    settings = config.settings
+    pr_df = read_table_as_table('pr_expts')
+    pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
+    filter_datetime = '16-09-2022 17-36-00'  # only look at experiments after this date
+    pr_df = pr_df[
+        (pr_df['datetime'] >= pd.to_datetime(filter_datetime, format='%d-%m-%Y %H-%M-%S'))
+    ]
+    pr_df['pr_struct_size'] = pr_df.apply(
+        lambda row: get_pr_struct_size(row['graph_name']),
+        axis=1
+    ).astype(np.int64)
+    pr_df = pr_df.sort_values('pr_struct_size', ascending=True)
+
+    vorders = settings['orderings']
+    eorders = settings['edge_orderings']
+    n_expts = settings['hyperparameters']['pr-experiments']['num_expts']
+    reqd_num_expts = (len(vorders) + 1) * len(eorders) * n_expts
+
+    gdfs = [[name, gdf] for name, gdf in pr_df.groupby('graph_name')]
+
+    gdfs = sorted(gdfs, key=lambda x: get_pr_struct_size(x[0]), reverse=True)
+    for name, gdf in gdfs:
+        print(name)
+
+    for name, gdf in gdfs:
+        if gdf.shape[0] != reqd_num_expts:
+            continue
+        plot_pr_results(name, gdf)
     return
 
 

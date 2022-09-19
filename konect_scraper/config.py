@@ -33,7 +33,10 @@ def init():
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
-    dbg_home = os.path.join(repo_root, "dbg")
+
+    dbg_home = os.path.join(repo_root, "dbg")  # todo replace
+    dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
+
     dbg_apps_dir = os.path.join(dbg_home, "apps")
     dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")
     dbg_clean_el_executable = os.path.join(dbg_convert_dir, "clean_edgelist.py")
@@ -42,6 +45,7 @@ def init():
 
     data_dir = os.path.join(repo_home, "data")  # todo replace
     data_dir = "/media/atrostan/patterson_backup/data"
+
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(data_dir, "dataframes")
@@ -148,6 +152,7 @@ def init():
             'rbt': "rabbit",
             'sb': "slashburn",
             'cm': "cuthill-mckee",
+            'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
             'hc': "hubcluster",
             'hs': "hubsort",

@@ -57,15 +57,22 @@ def main(args):
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
 
-
     # get all graphs that are 10x-?x as big as the l3 cache
     # 1000 * l3_cache_size
     # np.inf
-    l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
+    # l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
+    # rows = get_all_graphs_by_graph_names_where_stats_between(
+    #     stats=['pr_struct_size', ],
+    #     mins=[5 * l3_cache_size, ],
+    #     maxs=[2**64 - 1, ],
+    #     graph_names=graph_names
+    # )
+
+    # get all where 50 < size < 100 and 100 < volume < 1000
     rows = get_all_graphs_by_graph_names_where_stats_between(
-        stats=['pr_struct_size', ],
-        mins=[5 * l3_cache_size, ],
-        maxs=[2**64 - 1, ],
+        stats=['size', ],
+        mins=[1000, ],
+        maxs=[2000, ],
         graph_names=graph_names
     )
 
@@ -91,9 +98,10 @@ def main(args):
 
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)[:]
     # print([r['graph_name'] for r in rows])
+    graph_name_start_idx = -2
+    graph_name_end_idx =-1
+    rows = rows[graph_name_start_idx:graph_name_end_idx]
 
-    graph_name_break_idx = 18 + 17 + 15
-    rows = rows[graph_name_break_idx:43+graph_name_break_idx]
     for i, row in enumerate(rows):
         print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"

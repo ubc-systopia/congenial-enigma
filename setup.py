@@ -64,7 +64,7 @@ def main():
 
     print(" ".join(args))
     res = subprocess.check_output(args)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     # install graph_preprocess
     args = [
@@ -75,7 +75,7 @@ def main():
     ]
     print(" ".join(args))
     res = subprocess.check_output(args)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     # install slashburn
     args = [
@@ -86,7 +86,7 @@ def main():
     ]
     print(" ".join(args))
     res = subprocess.check_output(args)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     dbg_home = settings['dbg_home']
     dbg_apps_dir = settings['dbg_apps_dir']
