@@ -9,10 +9,11 @@ import konect_scraper.column_names as column_names
 from konect_scraper import scrape_konect_stats, download_and_extract, reorder, pr_experiments
 from konect_scraper.sql import distinct, get_all_graphs_in_categories, get_all_graphs_where_stats_between, \
     get_all_unipartite_graphs, get_all_graphs_by_graph_names_where_stats_between, get_all_rows_by_graph_names, \
-    get_all_downloadable_graphs, row_as_dict, get_all_unipartite_directed_graphs
+    get_all_downloadable_graphs, row_as_dict, get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names
 from konect_scraper.util import \
     create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
-    create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size
+    create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
+    get_unimputed_features
 from datetime import datetime
 import logging
 import konect_scraper.plot as plotting
@@ -37,44 +38,45 @@ def main(args):
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)
 
-    categories = [
-        'Citation network',
-        'Online social network'
-    ]
-
-    rows = get_all_graphs_in_categories(categories)
-    graphs = [r['graph_name'] for r in rows]
+    # categories = [
+    #     'Citation network',
+    #     'Online social network'
+    # ]
+    #
+    # rows = get_all_graphs_in_categories(categories)
+    # graphs = [r['graph_name'] for r in rows]
 
     # get all where 50 < size < 100 and 100 < volume < 1000
-    rows = get_all_graphs_where_stats_between(
-        stats=['size', 'volume'],
-        mins=[50, 100],
-        maxs=[100, 1000]
-    )
+    # rows = get_all_graphs_where_stats_between(
+    #     stats=['size', 'volume'],
+    #     mins=[50, 100],
+    #     maxs=[100, 1000]
+    # )
 
     # rows = get_all_unipartite_graphs()
     rows = get_all_unipartite_directed_graphs()
+    n_unipartite_graphs = len(rows)
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
 
     # get all graphs that are 10x-?x as big as the l3 cache
     # 1000 * l3_cache_size
     # np.inf
-    # l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
-    # rows = get_all_graphs_by_graph_names_where_stats_between(
-    #     stats=['pr_struct_size', ],
-    #     mins=[5 * l3_cache_size, ],
-    #     maxs=[2**64 - 1, ],
-    #     graph_names=graph_names
-    # )
-
-    # get all where 50 < size < 100 and 100 < volume < 1000
+    l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
     rows = get_all_graphs_by_graph_names_where_stats_between(
-        stats=['size', ],
-        mins=[1000, ],
-        maxs=[2000, ],
+        stats=['pr_struct_size', ],
+        mins=[5 * l3_cache_size, ],
+        maxs=[2**64 - 1, ],
         graph_names=graph_names
     )
+
+    # get all where mn < size < mx and mn < volume < mx
+    # rows = get_all_graphs_by_graph_names_where_stats_between(
+    #     stats=['size', ],
+    #     mins=[1_000, ],
+    #     maxs=[50_000, ],
+    #     graph_names=graph_names
+    # )
 
     # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
@@ -98,15 +100,17 @@ def main(args):
 
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)[:]
     # print([r['graph_name'] for r in rows])
-    graph_name_start_idx = -2
-    graph_name_end_idx =-1
+    graph_name_start_idx = 0
+    graph_name_end_idx = n_unipartite_graphs
     rows = rows[graph_name_start_idx:graph_name_end_idx]
-
     for i, row in enumerate(rows):
         print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}")
-    # return
+
+    graph_names = get_unimputed_features([r['graph_name'] for r in rows])
+    rows = get_all_graphs_by_graph_names(graph_names)
+    return
     if download:
         download_and_extract.main(rows, io_modes)
 
