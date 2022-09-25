@@ -8,12 +8,12 @@ from os import listdir
 from os.path import isfile, join
 from dateutil import parser
 from konect_scraper.sql import read_table_as_table
-from konect_scraper.util import get_n, get_m, get_pr_struct_size, convert_size
+from konect_scraper.util import get_n, get_m, get_pr_struct_size, convert_size, single_val_get, get_additional_stats, \
+    get_stat_dtype, get_n_m
 
 
 def plot_pr_results(graph_name, df):
-    num_nodes = get_n(graph_name)
-    num_edges = get_m(graph_name)
+    num_nodes, num_edges = get_n_m(graph_name)
     vorder_strs = sorted(df.vertex_order.unique())
     eorder_strs = sorted(df.edge_order.unique())
     vorder_map = config.settings['orderings']
@@ -52,23 +52,32 @@ def plot_pr_results(graph_name, df):
         plt.bar(position, value, yerr=std, width=w, label=eorder_str)
 
     vorder_strs = [vorder_map[i] for i in vorder_strs]
-    offset = 3.0
+    offset = 3.375
     plt.xticks(x - offset, vorder_strs, rotation=45)
     plt.ylabel("Runtime (ms)")
     plt.legend()
-
+    fig = plt.gcf()
+    fig.set_size_inches(18.5, 10.5)
     plt.rc('text.latex', preamble=r'\usepackage{amssymb} \usepackage{amsmath}')
-
+    stat_cols = ['fill']
+    stat_dict = get_additional_stats(stat_cols, graph_name)
     title = r"{} - ".format(graph_name) + \
-            r"{} nodes, {} edges, $\approx$ {} {}".format(
+            r"{} nodes, {} edges, $\approx$ {} {}, ".format(
                 "{:,}".format(num_nodes),
                 "{:,}".format(num_edges),
                 size,
                 size_str
             )
+
+    for k, v in stat_dict.items():
+        dtype = get_stat_dtype(k)
+        title += r"{} - ".format(k)
+        if dtype == "Float64":
+            title += r"{}".format(f"{v:.4E}")
     plt.title(title)
     plot_path = os.path.join(results_dir, f"{graph_name}.{plot_format}")
     plt.tight_layout()
+
     plt.savefig(plot_path, dpi=dpi)
     plt.close()
     return
@@ -78,7 +87,8 @@ def main():
     settings = config.settings
     pr_df = read_table_as_table('pr_expts')
     pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
-    filter_datetime = '16-09-2022 17-36-00'  # only look at experiments after this date
+
+    filter_datetime = '24-09-2022 17-34-00'  # only look at experiments after this date
     pr_df = pr_df[
         (pr_df['datetime'] >= pd.to_datetime(filter_datetime, format='%d-%m-%Y %H-%M-%S'))
     ]

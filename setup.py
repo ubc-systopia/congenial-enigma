@@ -52,7 +52,7 @@ def main():
     subprocess.check_output(args, cwd=os.path.join(rabbit_home, 'demo'))
     print(res.decode('ascii'))
 
-    n_threads = psutil.cpu_count()
+    n_threads = config.settings['n_threads']
 
     # install rabbit submodule
     args = [

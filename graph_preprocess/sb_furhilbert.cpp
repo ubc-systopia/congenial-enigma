@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
    * the furhilbert parallel traversal logic
 	 */
 
-	int n_threads = omp_get_max_threads();
+//	int n_threads = omp_get_max_threads();
 //	int n_threads = m;
-//	int n_threads = 5;
+	int n_threads = 4;
 	int n_quads = 1;
 	int critical_depth = 0;
 	while (n_quads < n_threads) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 		n_quads = n_quads * 4;
 	}
 	fmt::print("critical_depth: {}\n", critical_depth);
-	n = next_largest_multiple(n, critical_depth + 2);
+//	n = next_largest_multiple(n, critical_depth + 2);
 	fmt::print("n: {}\n", n);
 	fmt::print("n_threads: {}\n", n_threads);
 	fmt::print("n_quads: {}\n", n_quads);

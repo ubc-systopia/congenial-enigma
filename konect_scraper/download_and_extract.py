@@ -17,7 +17,7 @@ import numpy as np
 from konect_scraper import config
 from konect_scraper.config import IOMode
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
-    single_val_get, get_size_in_memory
+    single_val_get, get_size_in_memory, set_n_m
 import logging
 
 
@@ -288,9 +288,9 @@ def main(rows, io_modes):
         sz = get_size(graph_name)
         vol = get_volume(graph_name)
         n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
-        set_n(graph_name, n)
-        set_m(graph_name, m)
-
+        # set_n(graph_name, n)
+        # set_m(graph_name, m)
+        set_n_m(graph_name, n, m)
         # update the PageRank experiments structs size in db
         get_size_in_memory(n, m)
 

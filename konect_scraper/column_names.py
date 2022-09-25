@@ -7,6 +7,7 @@ def init():
     global konect_col_names
     global pr_expts_col_names
     global sqlite3_to_np_dtypes
+    global n_m_col_names
     global sql_to_np_dtypes
 
     sql_to_np_dtypes = {
@@ -14,7 +15,7 @@ def init():
         'STRING': str,
         'INTEGER': "Int64",
         'REAL': "Float64",
-        'BIGINT': "Int64"
+        'BIGINT': object
     }
 
     pr_expts_col_names = {
@@ -53,6 +54,12 @@ def init():
         'hubsort': 'REAL',
         'sort': 'REAL',
         'dbg': 'REAL',
+    }
+
+    n_m_col_names = {
+        'graph_name': 'TEXT',
+        'n': 'BIGINT',
+        'm': 'BIGINT'
     }
 
     meta_col_names = {

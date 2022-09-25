@@ -162,7 +162,7 @@ void QuadrantCalculator::compute_section(int depth, int rot, uint32_t start_x, u
 
 	if (depth == critical_depth) {
 
-		assert(end_x - start_x == end_y - start_y);
+//		assert(end_x - start_x == end_y - start_y);
 
 		qs[q_idx] = Quadrant{start_x, end_x, start_y, end_y, rot, q_idx, 0, right};
 		++q_idx;

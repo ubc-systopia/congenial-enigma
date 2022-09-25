@@ -8,10 +8,12 @@ import logging
 import igraph
 import networkx as nx
 import numpy as np
+import psutil
+
 from konect_scraper import config, column_names
 import pandas as pd
 import math
-from konect_scraper.sql import connect
+from konect_scraper.sql import connect, single_val_get
 
 
 def __init__(self):
@@ -43,18 +45,23 @@ def cast_np_dtypes(df, dtypes):
 
         # columns contain large values so cast them using larger dtypes
         if col in ['wedge_count', 'claw_count', 'cross_count', 'triangle_count']:
-            arr = np \
-                .nan_to_num(df[col].values) \
-                .astype(np.ulonglong)
-            df[col] = pd.to_numeric(arr, errors='coerce').astype(np.ulonglong)
-            # return
+            # arr = np \
+            #     .nan_to_num(df[col].values) \
+            #     .astype(np.ulonglong)
+            # df[col] = pd.to_numeric(arr, errors='coerce').astype(np.ulonglong)
+            # if count is null, replace with zero
+            df[col] = df[col].fillna(0)
+            df[col] = df[col].astype(object)
+
+            continue
+        #     # return
 
         dtype = dtypes[col]
         if dtype == 'Int64':
             arr = np \
                 .nan_to_num(df[col].values) \
-                .astype(np.int64)
-            df[col] = pd.to_numeric(arr, errors='coerce').astype(np.int64)
+                .astype(int)
+            df[col] = pd.to_numeric(arr, errors='coerce').astype(int)
         if dtype == 'Float64':
             arr = np \
                 .nan_to_num(df[col].values) \
@@ -122,14 +129,16 @@ def create_sql_table(conn, table_name, column_dict):
     return
 
 
-def single_val_get(col_name, table_name, graph_name):
-    conn = connect()
-    cursor = conn.cursor()
-    query = f"select {col_name} from {table_name} where graph_name = ?"
-    cursor.execute(query, [graph_name])
-    res = cursor.fetchone()[0]
-    conn.close()
-    return res
+def get_stat_dtype(col_name):
+    return column_names.sql_to_np_dtypes[column_names.stat_col_names[col_name]]
+
+
+def get_additional_stats(cols, graph_name):
+    d = {}
+    for col in cols:
+        val = single_val_get(col, 'statistics', graph_name)
+        d[col] = val
+    return d
 
 
 def delete_graphs_db():
@@ -288,6 +297,24 @@ def get_query_vals_str(n_vals):
            ')'
 
 
+def set_n(graph_name, val):
+    return single_val_numeric_set('n', 'n_m', graph_name, val)
+
+
+def set_m(graph_name, val):
+    return single_val_numeric_set('m', 'n_m', graph_name, val)
+
+
+def set_n_m(graph_name, n, m):
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    query = f"insert or replace into n_m (graph_name, n, m) values (?,?,?)"
+    cursor.execute(query, [graph_name, n, m])
+    conn.commit()
+    conn.close()
+
+
 def single_val_numeric_set(col_name, table_name, graph_name, val):
     """
     Find the graph row in the corresponding table and update its column value
@@ -334,25 +361,35 @@ def get_size(graph_name):
     return single_val_get('size', 'statistics', graph_name)
 
 
+def get_n_m(graph_name):
+    # TODO get size, volume instead of n, m -- n, m might be empty
+    n = get_n(graph_name)
+    m = get_m(graph_name)
+    if not n:
+        num_nodes = single_val_get('size', 'statistics', graph_name)
+    else:
+        num_nodes = n
+    if not m:
+        num_edges = single_val_get('volume', 'statistics', graph_name)
+    else:
+        num_edges = m
+    return num_nodes, num_edges
+
+
 def get_n(graph_name):
-    return single_val_get('n', 'statistics', graph_name)
+    return single_val_get('n', 'n_m', graph_name)
+
 
 def get_pr_struct_size(graph_name):
     return single_val_get('pr_struct_size', 'statistics', graph_name)
 
+
 def get_category(graph_name):
     return single_val_get('category', 'metadata', graph_name)
 
+
 def get_m(graph_name):
-    return single_val_get('m', 'statistics', graph_name)
-
-
-def set_n(graph_name, val):
-    return single_val_numeric_set('n', 'statistics', graph_name, val)
-
-
-def set_m(graph_name, val):
-    return single_val_numeric_set('m', 'statistics', graph_name, val)
+    return single_val_get('m', 'n_m', graph_name)
 
 
 def get_cache_stats():
@@ -456,3 +493,81 @@ def valid_pr(rows):
         #     print(f"{pr[i]} {igraph_pr[i]} {nx_pr[i]}")
 
         return valid_pagerank
+
+
+def get_critical_depth():
+    n_threads = psutil.cpu_count()
+    n_quads = 1
+    critical_depth = 0
+    while n_quads < n_threads:
+        critical_depth += 1
+        n_quads = n_quads * 4
+    return critical_depth
+
+
+def next_largest_multiple(n, d):
+    """
+
+    Args:
+        n:
+        d:
+
+    Returns:
+
+    """
+    multiple = np.power(2, d)
+    # print(multiple)
+    return int((n + multiple - 1) / multiple) * multiple
+
+
+def get_unimputed_features(graph_names):
+    """
+    Given a set of graph names, return a set of Konect statistics that have been
+    computed for all those graphs (i.e. non-null values)
+    Args:
+        graph_names:
+
+    Returns: a sorted (in order of ascending PageRank struct size) list of graph names to download
+    that contain a substantial (exact definition of 'substantial' tbd) number of features with
+    non-null values
+
+    """
+    conn = connect()
+    conn.row_factory = sqlite3.Row
+    seq = ','.join(['?'] * len(graph_names))
+    graph_name_seq = ','.join([f"\'{g}\'" for g in graph_names])
+    sql = f"select * from statistics where graph_name in ({seq})"
+
+    df = pd \
+        .read_sql(sql, conn, params=graph_names) \
+        .sort_values(by='pr_struct_size', ascending=True)
+
+    zero_cols = df.columns[df.apply(lambda x: np.all(x == 0))]
+    null_cols = df.columns[df.apply(lambda x: np.all(x.isnull()))]
+    valid_cols = set(df.columns) \
+        .difference(
+        set(null_cols).union(set(zero_cols))
+    )
+
+    # get the number of zero entries per column
+    non_zero_val_dict = df \
+        .apply(lambda x: np.count_nonzero(x)) \
+        .sort_values(ascending=False) \
+        .to_dict()
+
+    # filter for features for which we have at least min_n_data_samples
+    min_n_data_samples = config.settings['modelling']['min_n_data_samples']
+    non_zero_val_dict = {k: v for k, v in non_zero_val_dict.items() if v >= min_n_data_samples}
+
+    # ignore all graphs that have zero entries for the filtered features
+    valid_cols_str = ',\n'.join(non_zero_val_dict.keys())
+
+    df = df[non_zero_val_dict.keys()]
+    res = df.sort_values(by='pr_struct_size', ascending=True)['graph_name'].values
+
+    sql_query = f"select {valid_cols_str} from statistics where graph_name in ({graph_name_seq}) order by pr_struct_size"
+    # print(sql_query)
+    # cursor = conn.execute(sql, graph_names)
+    # rows = cursor.fetchall()
+
+    return res

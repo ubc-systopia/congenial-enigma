@@ -1,24 +1,19 @@
 import argparse
+import logging
+import os
 from argparse import RawTextHelpFormatter
+from datetime import datetime
 
-import numpy as np
-
-import konect_scraper.config as config
-import sqlite3
 import konect_scraper.column_names as column_names
-from konect_scraper import scrape_konect_stats, download_and_extract, reorder, pr_experiments
-from konect_scraper.sql import distinct, get_all_graphs_in_categories, get_all_graphs_where_stats_between, \
-    get_all_unipartite_graphs, get_all_graphs_by_graph_names_where_stats_between, get_all_rows_by_graph_names, \
-    get_all_downloadable_graphs, row_as_dict, get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names
+import konect_scraper.config as config
+import konect_scraper.plot as plotting
+from konect_scraper import download_and_extract, reorder, pr_experiments
+from konect_scraper.config import IOMode
+from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between, get_all_downloadable_graphs, \
+    get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names
 from konect_scraper.util import \
-    create_sql_table, delete_graphs_db, verify_graphs_in_json, get_datasets, create_data_dirs_if_not_exists, \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
     get_unimputed_features
-from datetime import datetime
-import logging
-import konect_scraper.plot as plotting
-import os
-from konect_scraper.config import IOMode
 
 
 def main(args):
@@ -66,7 +61,7 @@ def main(args):
     rows = get_all_graphs_by_graph_names_where_stats_between(
         stats=['pr_struct_size', ],
         mins=[5 * l3_cache_size, ],
-        maxs=[2**64 - 1, ],
+        maxs=[2 ** 64 - 1, ],
         graph_names=graph_names
     )
 
@@ -98,18 +93,18 @@ def main(args):
     graph_names = [r['graph_name'] for r in rows]
     rows = get_all_downloadable_graphs(graph_names)[:]
 
-    rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)[:]
-    # print([r['graph_name'] for r in rows])
+    graph_names = get_unimputed_features([r['graph_name'] for r in rows])
+    rows = get_all_graphs_by_graph_names(graph_names)
     graph_name_start_idx = 0
-    graph_name_end_idx = n_unipartite_graphs
+    # graph_name_end_idx = 1
+    graph_name_end_idx = len(rows)
+    rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
+
     rows = rows[graph_name_start_idx:graph_name_end_idx]
     for i, row in enumerate(rows):
         print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}")
-
-    graph_names = get_unimputed_features([r['graph_name'] for r in rows])
-    rows = get_all_graphs_by_graph_names(graph_names)
     return
     if download:
         download_and_extract.main(rows, io_modes)
@@ -123,7 +118,6 @@ def main(args):
 
     if plot:
         plotting.main(rows, orders)
-
 
     if run_pr_expts:
         pr_experiments.main(rows, list(orders) + ['orig'])

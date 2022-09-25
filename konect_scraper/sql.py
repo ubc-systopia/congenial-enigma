@@ -22,6 +22,10 @@ def get_all_graphs_in_categories(categories):
     return rows
 
 
+def is_bipartite(graph_name):
+    return "Bipartite" in single_val_get('network_format', 'metadata', graph_name)
+
+
 def get_all_unipartite_graphs():
     conn = connect()
     conn.row_factory = sqlite3.Row
@@ -29,12 +33,15 @@ def get_all_unipartite_graphs():
     cursor = conn.execute(sql)
     return cursor.fetchall()
 
+
 def get_all_unipartite_directed_graphs():
     conn = connect()
     conn.row_factory = sqlite3.Row
     sql = f"select * from metadata where network_format like 'Unipartite, directed%'"
     cursor = conn.execute(sql)
     return cursor.fetchall()
+
+
 def row_as_dict(r):
     return {k: r[k] for k in r.keys()}
 
@@ -49,8 +56,8 @@ def get_all_downloadable_graphs(graph_names):
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
 
-def read_table_as_table(table):
 
+def read_table_as_table(table):
     # Create your connection.
     cnx = sqlite3.connect(config.settings['sqlite3']['sqlite3_db_path'])
 
@@ -68,7 +75,17 @@ def get_all_rows_by_graph_names(table, graph_names):
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
 
+def get_all_graphs_by_graph_names(graph_names):
+    conn = connect()
+    conn.row_factory = sqlite3.Row
+    seq = ','.join(['?'] * len(graph_names))
 
+    sql = f"select * from konect where "
+
+    sql += f"(graph_name in ({seq}))"
+
+    cursor = conn.execute(sql, graph_names)
+    return cursor.fetchall()
 def get_all_graphs_by_graph_names_where_stats_between(stats, mins, maxs, graph_names):
     assert len(stats) == len(mins) == len(maxs)
     conn = connect()
@@ -106,3 +123,16 @@ def distinct(column, table):
     cursor = conn.execute(sql)
     rows = cursor.fetchall()
     return rows
+
+
+def single_val_get(col_name, table_name, graph_name):
+    conn = connect()
+    cursor = conn.cursor()
+    query = f"select {col_name} from {table_name} where graph_name = ?"
+    cursor.execute(query, [graph_name])
+    try:
+        res = cursor.fetchone()[0]
+    except TypeError:
+        return None
+    conn.close()
+    return res

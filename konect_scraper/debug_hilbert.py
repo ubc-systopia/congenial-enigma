@@ -1,15 +1,23 @@
 import subprocess
 
 import numpy as np
+import psutil
 from matplotlib import pyplot as plt, cm
 from matplotlib.collections import LineCollection
 
+from konect_scraper import config
 
+
+def next_largest_multiple(n, d):
+    multiple = np.power(2, d)
+    # print(multiple)
+    return int((n + multiple - 1) / multiple) * multiple
 def hilbert_debug(n, n_threads):
     hilbert_debug_exec = "/home/atrostan/Workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/sb_furhilbert"
 
     args = [
-        hilbert_debug_exec, "-n", str(n), "-m", str(n_threads),
+        hilbert_debug_exec, "-n", str(n),
+        # "-m", str(n_threads),
     ]
     res = subprocess.check_output(args)
     print(res.decode('ascii'))
@@ -23,10 +31,6 @@ uint32_t next_largest_multiple(uint32_t n, uint32_t critical_depth) {
 }"""
 
 
-def next_largest_multiple(n, d):
-    multiple = np.power(2, d)
-    print(multiple)
-    return int((n + multiple - 1) / multiple) * multiple
 
 
 def plot_hilbert(input_path, output_path, n):
@@ -39,6 +43,7 @@ def plot_hilbert(input_path, output_path, n):
     lines = []
 
     order = np.loadtxt(input_path).astype(np.uint32)
+
 
 
     for previous, current in zip(order, order[1:]):
@@ -63,12 +68,20 @@ def plot_hilbert(input_path, output_path, n):
     fig.savefig(output_path, bbox_inches='tight', pad_inches=0, dpi=200)
     plt.close(fig)
 
-
+def get_critical_depth():
+    n_threads = config.settings['n_threads']
+    n_quads = 1
+    critical_depth = 0
+    while n_quads < n_threads:
+        critical_depth += 1
+        n_quads = n_quads * 4
+    return critical_depth
 def main():
     hilbert_debug_path = "/home/atrostan/Workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/debug/hilbert"
     hilbert_plot_path = "/home/atrostan/Workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/debug/hilbert.png"
-    n = 180
+    n = 14
     critical_depth = 2
+    critical_depth = get_critical_depth()
     n_threads = 2
     n = next_largest_multiple(n, critical_depth + 2)
     print(n)

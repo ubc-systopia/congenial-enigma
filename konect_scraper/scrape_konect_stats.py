@@ -3,19 +3,19 @@
 
 import ast
 import logging
-import unicodedata
-
-import requests
-import pandas as pd
-import numpy as np
-import sqlite3
 import os.path
-from sqlalchemy.dialects.sqlite import insert
-from bs4 import BeautifulSoup
+import sqlite3
+import unicodedata
 import urllib.request
-from konect_scraper import column_names, config
-import re
 
+import numpy as np
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from sqlalchemy.dialects.sqlite import insert
+
+from konect_scraper import column_names, config
+from konect_scraper.stats import verify_stat
 from konect_scraper.util import get_query_vals_str, cast_np_dtypes, get_size_in_memory
 
 
@@ -285,7 +285,20 @@ def main(rows):
     cast_np_dtypes(stats_df, stats_dtypes)
 
     meta_df = meta_df.astype(meta_dtypes)
-    stats_df = stats_df.astype(stats_dtypes)
+    for col in stats_df.columns:
+        stats_df[col] = stats_df[col].astype(stats_dtypes[col])
+    row = stats_df.loc[stats_df['graph_name'] == 'zhishi-baidu-internallink']
+    # some konect stats are either not computed or incorrect - recalculate them
+    stat_cols_to_verify = [
+        # 'fill',
+    ]
+
+    for col in stat_cols_to_verify:
+        logging.info(f"Verifying {col}..")
+        stat_col = []
+        for graph_name in stats_df['graph_name'].values:
+            stat_col.append(verify_stat(col, graph_name))
+        print(stat_col)
 
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)

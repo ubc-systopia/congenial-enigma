@@ -8,6 +8,8 @@ import matplotlib as mpl
 import subprocess
 import os
 import gc
+
+from matplotlib import patches, cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as plticker
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -17,7 +19,7 @@ from PyQt5.QtWidgets import QApplication
 from konect_scraper.io import get_adj_mat_from_edge_list, read_iso_map, save_spy_plots, read_image
 from konect_scraper import config
 from konect_scraper.util import get_directed, get_n, get_m, create_plot_dirs_if_not_exists, get_graph_dir, get_plot_dir, \
-    translate_adj_mat, chunks
+    translate_adj_mat, chunks, single_val_get, get_critical_depth, next_largest_multiple
 import matplotlib.colors
 
 
@@ -204,8 +206,47 @@ def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, ):
     else:
         ax.spy(map_mat, markersize=markersize)
 
+    # highlight the dense region defined by sb_k x sb_num_iters
+    if order == 'sb':
+        sb_k = single_val_get('sb_k', 'statistics', graph_name)
+        sb_n_iters = single_val_get('sb_n_iters', 'statistics', graph_name)
+        if sb_k and sb_n_iters:
+            sqr_width = sb_k * sb_n_iters
+            rect = patches.Rectangle((0, sqr_width), sqr_width, -sqr_width,
+                                     linewidth=1, edgecolor='r', alpha=0.3, zorder=2, facecolor='r')
+            ax.add_patch(rect)
+
+    if order == 'rbt':
+        # read the original vertex id community assignment
+        comms_path = os.path.join(graph_dir, "comms")
+        comms = np.loadtxt(comms_path).astype(np.uint32)
+        mapped_comms = np.zeros(adj_mat.shape[0])
+        np.set_printoptions(threshold=sys.maxsize)
+        for i, c in enumerate(comms):
+            mapped_comms[iso_map[i]] = c
+
+        plot_rbt_comms(ax, mapped_comms)
+
     return
 
+def plot_rbt_comms(ax, comms):
+    n_comms = len(np.unique(comms))
+    color = iter(cm.rainbow(np.linspace(0, 1, n_comms)))
+    for comm in np.unique(comms):
+
+        start = np.argwhere(comms == comm)[0][0]
+        end = np.argwhere(comms == comm)[-1][0]
+        comm_size = end - start
+
+        # plot the updated region size
+        critical_depth = get_critical_depth()
+
+        comm_size = next_largest_multiple(comm_size, critical_depth + 2)
+
+        c = next(color)
+        rect = patches.Rectangle((start, end), comm_size, -comm_size,
+                                 linewidth=1, edgecolor=c, alpha=0.3, zorder=2, facecolor=c)
+        ax.add_patch(rect)
 
 def ax_plot_adj_mat(ax, graph_name, directed, plot_type, markersize, label_str, el_file_name):
     settings = config.settings
@@ -375,6 +416,9 @@ def main(rows, orders):
                                   plots_dir,
                                   dpi,
                                   ax_plot_order, plot_type)
+
+
+
 
         gc.collect()
 

@@ -4,10 +4,21 @@ import sqlite3
 from datetime import datetime
 
 from konect_scraper import config, column_names, scrape_konect_stats
-from konect_scraper.util import delete_graphs_db, create_data_dirs_if_not_exists, create_sql_table, init_logger, \
-    get_datasets, get_all_rows, delete_all_rows, column_exists, add_column_if_not_exists, update_table_schema, \
+from konect_scraper.util import create_data_dirs_if_not_exists, create_sql_table, init_logger, \
+    get_all_rows, update_table_schema, \
     create_pr_expt_table
 
+
+def update_ns_ms():
+    settings = config.settings
+    graphs_dir = settings['graphs_dir']
+    sub_dirs = os.listdir(graphs_dir)
+    for graph_name in sub_dirs:
+        sb_ord_path = os.path.join(graphs_dir, graph_name, "sb")
+        with open(sb_ord_path, 'r') as f:
+            n = int(f.readline().strip())
+            m = int(f.readline().strip())
+            print(graph_name, n, m)
 
 def main():
     """
@@ -50,12 +61,13 @@ def main():
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
 
-    tables = ['metadata', 'statistics', 'preproc', 'konect']
+    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m']
     columns = [
         column_names.meta_col_names,
         column_names.stat_col_names,
         column_names.preproc_col_names,
         column_names.konect_col_names,
+        column_names.n_m_col_names
     ]
 
 
@@ -67,12 +79,15 @@ def main():
     # scrape_konect_stats.fill_konect_table() TODO add argument for conditional first exection
 
     # remove any existing rows scraped from konect
-    for table in ['metadata', 'statistics', 'preproc']:
-        delete_all_rows(table)
+    # for table in ['metadata', 'statistics', 'preproc']:
+    #     delete_all_rows(table)
 
     # get all rows from konect table and scrape konect for those rows
     rows = get_all_rows("konect")
     scrape_konect_stats.main(rows)
+
+    # add existing n, m values to now reset db
+    # update_ns_ms()
     return
 
 
