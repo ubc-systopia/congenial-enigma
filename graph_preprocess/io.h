@@ -92,4 +92,5 @@ void write_binary_edge_list(std::string path, std::vector<std::pair<ul, ul>> &ed
 
 void write_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges);
 
+void read_map(std::string in_path, std::vector<ul> &mp);
 #endif //GRAPH_SIMPLIFY_IO_H

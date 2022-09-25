@@ -1,17 +1,14 @@
+import logging
+import os
 import shutil
+import subprocess
 from pathlib import Path
 
 from konect_scraper import config
-import os
-import logging
-import subprocess
-
-from konect_scraper.config import IOMode
 from konect_scraper.util import get_directed, get_n, get_m
 
 
 def compute_dbg_order(graph_name, order_str):
-
     settings = config.settings
     order_str_dict = settings['dbg']['order_str_dict']
     order_idx_dict = settings['dbg']['order_idx_dict']
@@ -55,19 +52,26 @@ def compute_dbg_order(graph_name, order_str):
             order_str
         )
     )
-    print(' '.join(args))
-    print(res.decode('ascii'))
+
+    # remove the duplicate file from the dbg directory
+    try:
+        os.remove(order_file)
+    except OSError:
+        pass
+
+    # print(' '.join(args))
+    # print(res.decode('ascii'))
 
     return
 
 
-def compute_rabbit(graph_path, order_path, graph_name):
+def compute_rabbit(graph_path, order_path, graph_name, comms_path):
     settings = config.settings
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
 
     executable = settings['rabbit_order_executable']
     args = [executable]
-    args += [graph_path, order_path, graph_name, sqlite3_db_path]
+    args += [graph_path, order_path, graph_name, sqlite3_db_path, comms_path]
 
     logging.info(f"Executing: " + ' '.join(args))
 
@@ -102,6 +106,35 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
         '-b', sqlite3_db_path,
         '-o', order_path,
     ]
+
+    logging.info(f"Executing: " + ' '.join(args))
+
+    res = subprocess.check_output(args)
+
+    return
+
+
+def compute_parallel_batch_cm(graph_path, n, m, directed, cm_path, rcm_path):
+    settings = config.settings
+    percent = settings['hyperparameters']['slashburn']['percent']
+    sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
+
+    executable = settings['parallel_batch_rcm_executable']
+    args = [executable]
+
+    args += [
+        graph_path,
+        '-i', 'CPU_BATCH',
+        '-t', str(config.settings['n_threads']),
+        '-o', cm_path,
+        '-n', str(n),
+        '-m', str(m),
+        '--rcm', rcm_path,
+        '--sqlite3_db', sqlite3_db_path,
+    ]
+    if directed:
+        args += ['-d']
+    # print(f"Executing: " + ' '.join(args))
 
     logging.info(f"Executing: " + ' '.join(args))
 
@@ -163,11 +196,23 @@ def compute_ordering(graph_name, order):
             extension = ".net"
 
             comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
-            compute_rabbit(comp_graph_path, order_path, graph_name)
+            comms_path = os.path.join(graph_dir, "comms")
+            compute_rabbit(comp_graph_path, order_path, graph_name, comms_path)
+
         case "sb":
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
+
         case "cm":
-            compute_cuthill_mckee(comp_graph_path, n, m)
+            extension = ".net"
+
+            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
+            cm_order_path = order_path
+            rcm_order_path = os.path.join(graph_dir, 'rev_cm')
+            # compute_cuthill_mckee(comp_graph_path, n, m)
+            compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+        case "rev_cm":
+            return
+
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""

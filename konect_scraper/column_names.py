@@ -5,7 +5,9 @@ def init():
     global stat_col_names
     global preproc_col_names
     global konect_col_names
+    global pr_expts_col_names
     global sqlite3_to_np_dtypes
+    global n_m_col_names
     global sql_to_np_dtypes
 
     sql_to_np_dtypes = {
@@ -13,7 +15,17 @@ def init():
         'STRING': str,
         'INTEGER': "Int64",
         'REAL': "Float64",
-        'BIGINT': "Int64"
+        'BIGINT': object
+    }
+
+    pr_expts_col_names = {
+        "graph_name": 'TEXT',
+        "datetime": 'TEXT',
+        "expt_num": 'INTEGER',
+        "num_iters": 'INTEGER',
+        "vertex_order": 'TEXT',
+        "edge_order": 'TEXT',
+        "runtime": 'BIGINT'
     }
 
     konect_col_names = {
@@ -42,6 +54,12 @@ def init():
         'hubsort': 'REAL',
         'sort': 'REAL',
         'dbg': 'REAL',
+    }
+
+    n_m_col_names = {
+        'graph_name': 'TEXT',
+        'n': 'BIGINT',
+        'm': 'BIGINT'
     }
 
     meta_col_names = {
@@ -161,5 +179,8 @@ def init():
         # computed stats - results of running slashburn, cuthill-mckee
         'orig_bandwidth': 'INTEGER',
         'cm_bandwidth': 'INTEGER',
-        'wing_width_ratio': 'REAL',
+        'sb_k': 'BIGINT',
+        'sb_n_iters': 'BIGINT',
+        'pr_struct_size': 'BIGINT',
+
     }

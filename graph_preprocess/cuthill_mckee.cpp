@@ -97,11 +97,14 @@ int main(int argc, char *argv[]) {
 
 	std::vector<Vertex> inv_perm(num_vertices(G));
 	std::vector<size_type> perm(num_vertices(G));
+	fmt::print("start: \n");
 
 	auto t1 = high_resolution_clock::now();
 	cuthill_mckee_ordering(G, inv_perm.begin(), get(vertex_color, G),
 	                       make_degree_map(G));
 	auto t2 = high_resolution_clock::now();
+	fmt::print("end: \n");
+
 	auto cm_runtime = duration_cast<time_unit>(t2 - t1);
 	single_val_set_int(sqlite_db_path, "cuthill_mckee", "preproc", graph_name, int(cm_runtime.count()));
 	ul cm_id = 0;

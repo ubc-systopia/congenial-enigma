@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 		iter += 1;
 	}
 
-	double wing_width_ratio = (k * iter) / n;
+	double wing_width_ratio = double(k * iter) / n;
 	boost::filesystem::path p(input_path);
 	boost::filesystem::path dir = p.parent_path();
 	std::string graph_name = dir.filename().string();
@@ -144,7 +144,8 @@ int main(int argc, char *argv[]) {
 	auto end = std::chrono::high_resolution_clock::now();
 	auto slashburn_time = duration_cast<time_unit>(end - start);
 
-	single_val_set_int(sqlite_db_path, "wing_width_ratio", "statistics", graph_name, wing_width_ratio);
+	single_val_set_int(sqlite_db_path, "sb_k", "statistics", graph_name, k);
+	single_val_set_int(sqlite_db_path, "sb_n_iters", "statistics", graph_name, iter);
 	single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
 
 

@@ -3,16 +3,22 @@ import sys
 from pathlib import Path
 from enum import Enum
 
+import psutil
 from PyQt5.QtWidgets import QApplication
+
+from konect_scraper.util import get_cache_stats
 
 
 def get_monitors_dpi():
+    print(os.environ['DISPLAY'])
     app = QApplication(sys.argv)
     screens = app.screens()
     dpis = [screen.physicalDotsPerInch() for screen in screens]
     app.quit()
     return dpis
 
+def get_n_threads():
+    return psutil.cpu_count()
 
 class IOMode(Enum):
     binary = 1
@@ -22,37 +28,49 @@ class IOMode(Enum):
 def init():
     global settings
 
+    debug = False
+
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
-    dbg_home = os.path.join(repo_root, "dbg")
+
+    dbg_home = os.path.join(repo_root, "dbg")  # todo replace
+    dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
+
     dbg_apps_dir = os.path.join(dbg_home, "apps")
     dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")
     dbg_clean_el_executable = os.path.join(dbg_convert_dir, "clean_edgelist.py")
     dbg_convert_script = os.path.join(dbg_convert_dir, "convert.sh")
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
-    data_dir = os.path.join(repo_home, "data")
+    data_dir = os.path.join(repo_home, "data")  # todo replace
+    data_dir = "/media/atrostan/patterson_backup/data"
+
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(data_dir, "dataframes")
     graphs_dir = os.path.join(data_dir, "graphs")
     plots_dir = os.path.join(data_dir, "plots")
+    results_dir = os.path.join(data_dir, "results")
     orig_el_file_name = "orig.net"
     compressed_el_file_name = "comp"
     cmake_build_dir = "cmake-build-debug"
     graph_preprocess_dir = os.path.join(repo_root, "graph_preprocess")
+
     # EXECUTABLES
     graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
     slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
     cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
+    # TODO replace with git submodule
+    parallel_batch_rcm_executable = "/home/atrostan/Workspace/repos/ParallelBatchRCM/build/CuthillMcKee"
 
     rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
 
+    pr_experiments_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "pr_experiments")
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
     # log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -65,10 +83,19 @@ def init():
     marker = ','
     markersize = .5
     plot_format = 'png'
-    dpi = max(list(map(int, get_monitors_dpi())))
+    try:
+        dpis = get_monitors_dpi()
+        dpi = max(list(map(int, get_monitors_dpi())))
+    except:
+        dpi = 200
+
     ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
+    # CPU INFO
+    cache_stats = get_cache_stats()
+
     settings = {
+        "debug": debug,
         "repo_root": repo_root,
         "repo_home": repo_home,
         "rabbit_home": rabbit_home,
@@ -102,6 +129,7 @@ def init():
         "dataframes_dir": dataframes_dir,
         "graphs_dir": graphs_dir,
         "plots_dir": plots_dir,
+        "results_dir": results_dir,
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
 
@@ -109,9 +137,12 @@ def init():
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
         "cuthill_mckee_executable": cuthill_mckee_executable,
+        "parallel_batch_rcm_executable": parallel_batch_rcm_executable,
         "rabbit_order_executable": rabbit_order_executable,
+        "pr_experiments_executable": pr_experiments_executable,
 
         "comment_strings": ["%", "#"],
+        "n_threads": get_n_threads(),
         "plot": {
             "marker": marker,
             "markersize": markersize,
@@ -129,10 +160,16 @@ def init():
             'rbt': "rabbit",
             'sb': "slashburn",
             'cm': "cuthill-mckee",
+            'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
             'hc': "hubcluster",
             'hs': "hubsort",
             'dbg': "degree-based-grouping",
+        },
+        "edge_orderings": {
+            'row': "Row",
+            'column': "Column",
+            'hilbert': "Hilbert",
         },
         "logging": {
             "log_dir": log_dir,
@@ -144,6 +181,16 @@ def init():
             },
             "cuthill-mckeee": {
 
+            },
+            "pr-experiments": {
+                "damping_factor": 0.85,
+                "edge_orderings": [
+                    'row',
+                    'column',
+                    'hilbert'
+                ],
+                "num_iters": 20,
+                "num_expts": 5,
             }
         },
         "dbg": {
@@ -163,6 +210,21 @@ def init():
             },
             "degree_used_for_reordering": 0,
             'max_iters': 1,  # only run 1 iteration of PR - since we're interested in the ordering, not the PR
+
+        },
+        "cpu-info": {
+            "cache-sizes": {
+                'line_size': cache_stats['line_size'],
+                'l1d_size': cache_stats['l1d_size'],
+                'l2_size': cache_stats['l2_size'],
+                'l3_size': cache_stats['l3_size'],
+            }
+        },
+        "modelling": {
+            "proportion": 0.5,
+            "min_n_data_samples": 50,   # need at least this many data samples to build a dataset for the PR
+                                        # expts; this value will be used to decide which features we'll use
+                                        # to train a predictive model of vertex+edge ordering performance
 
         }
     }
