@@ -86,6 +86,8 @@ def get_all_graphs_by_graph_names(graph_names):
 
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
+
+    
 def get_all_graphs_by_graph_names_where_stats_between(stats, mins, maxs, graph_names):
     assert len(stats) == len(mins) == len(maxs)
     conn = connect()
