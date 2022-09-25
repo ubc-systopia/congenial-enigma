@@ -96,8 +96,8 @@ def main(args):
     graph_names = get_unimputed_features([r['graph_name'] for r in rows])
     rows = get_all_graphs_by_graph_names(graph_names)
     graph_name_start_idx = 0
-    # graph_name_end_idx = 1
-    graph_name_end_idx = len(rows)
+    graph_name_end_idx = 1
+    # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
     rows = rows[graph_name_start_idx:graph_name_end_idx]

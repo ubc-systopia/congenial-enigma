@@ -37,6 +37,8 @@ def init():
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
 
+    pbrcm_home = os.path.join(repo_root, "ParallelBatchRCM")
+
     dbg_home = os.path.join(repo_root, "dbg")  # todo replace
     dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
 
@@ -64,8 +66,8 @@ def init():
     graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
     slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
     cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
-    # TODO replace with git submodule
-    parallel_batch_rcm_executable = "/home/atrostan/Workspace/repos/ParallelBatchRCM/build/CuthillMcKee"
+
+    parallel_batch_rcm_executable = os.path.join(pbrcm_home, 'build', 'CuthillMcKee')
 
     rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
@@ -98,14 +100,18 @@ def init():
         "debug": debug,
         "repo_root": repo_root,
         "repo_home": repo_home,
-        "rabbit_home": rabbit_home,
-        "dbg_home": dbg_home,
         "app_name": app_name,
+
+        "rabbit_home": rabbit_home,
+
+        "dbg_home": dbg_home,
         "dbg_apps_dir": dbg_apps_dir,
         "dbg_convert_dir": dbg_convert_dir,
         "dbg_clean_el_executable": dbg_clean_el_executable,
         "dbg_convert_script": dbg_convert_script,
         "dbg_datasets_dir": dbg_datasets_dir,
+
+        "pbrcm_home": pbrcm_home,
 
         "make_executable": "make",
         "cmake_executable": "cmake",

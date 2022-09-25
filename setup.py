@@ -3,6 +3,8 @@ import os
 import sqlite3
 from datetime import datetime
 import subprocess
+from pathlib import Path
+
 from konect_scraper import config, column_names
 import multiprocessing
 import psutil
@@ -23,6 +25,21 @@ def main():
     cmake_executable = settings["cmake_executable"]
     make_executable = settings["make_executable"]
 
+    # build and install ParallelBatchRCM
+    pbrcm_home = settings['pbrcm_home']
+    pbrcm_build_dir = os.path.join(pbrcm_home, "build")
+    Path(pbrcm_build_dir).mkdir(parents=True, exist_ok=True)
+    args = [
+        cmake_executable,
+        pbrcm_home,
+    ]
+    print(" ".join(args))
+    res = subprocess.check_output(args, cwd=pbrcm_build_dir)
+    print(res.decode('ascii'))
+    res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
+    print(res.decode('ascii'))
+
+
     # build graph_preprocess
     args = [
         cmake_executable,
@@ -35,9 +52,6 @@ def main():
     print(" ".join(args))
     res = subprocess.check_output(args)
     print(res.decode('ascii'))
-
-# /home/atrostan/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/222.3739.54/bin/cmake/linux/bin/cmake --build /home/atrostan/Workspace/repos/congenial-enigma/rabbit_order/demo/cmake-build-debug --target all -j 9
-
 
     # build rabbit submodule
     args = [
@@ -97,7 +111,7 @@ def main():
     ]
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     # args = [
     #     make_executable, "cleansrc",
