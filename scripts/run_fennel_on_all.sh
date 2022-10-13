@@ -3,10 +3,11 @@
 NC='\033[0m'
 BLUE='\033[1;34m'
 
+SHORTNAME=$(basename $0)
+HOSTNAME=$(hostname)
 LOG () {
 		# date, name of the script, and the message
-		SHORTNAME=$(basename $0)
-		echo -e "${BLUE}$(date +"%Y-%m-%d %H:%M:%S") $SHORTNAME:${NC} ${1}"
+		echo -e "${BLUE}$(date +"%Y-%m-%d %H:%M:%S") $SHORTNAME($HOSTNAME):${NC} ${1}"
 }
 
 RUN_FENNEL_SH=$(which run_fennel.sh)

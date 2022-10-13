@@ -4,12 +4,13 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+SCRIPTNAME=$(basename $0)
+HOSTNAME=$(hostname)
 LOG () {
 		# add timestamps to log; add the name of script to log
 		# extract the name of the script from $0 
-		SCRIPTNAME=$(basename $0)
 
-		echo -e "${GREEN}$(date +"%Y-%m-%d %H:%M:%S") $SCRIPTNAME:${NC} $1"
+		echo -e "${GREEN}$(date +"%Y-%m-%d %H:%M:%S") $SCRIPTNAME($HOSTNAME):${NC} $1"
 }
 
 # TODO: add fnl_edges if fnl_edges is implemented
