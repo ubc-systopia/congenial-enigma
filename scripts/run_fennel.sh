@@ -29,14 +29,14 @@ done
 # 4th arg: number of iterations per partition 
 # 5th arg: -y to skip the user confirmation
 
-if [ $# -lt 4 ]; then 
-		LOG "${RED}ERROR: not enough arguments provided(given $#; expected 4)${NC}"
+if [ $# -lt 3 ]; then 
+		LOG "${RED}ERROR: not enough arguments provided(given $#; expected 3)${NC}"
 
-		echo "Usage: $(basename $0) <input_grpah_file> <output_file> <number_of_partitions> <number_of_iterations_per_partition> [-y]"
+		echo "Usage: $(basename $0) <input_grpah_file> <number_of_partitions> <number_of_iterations_per_partition> [-y]"
 		echo ""
-		echo -e "\tExample: $(basename $0) ./INPUT_FILE.txt ./FENNEL 10 100"
+		echo -e "\tExample: $(basename $0) ./INPUT_FILE.txt 10 100"
 		echo ""
-		echo -e "\tThe example above will run Fennel on the ./INPUT_FILE.txt and produces two files: 1- Last partitioning results in ./fnl_nodes.FENNEL.part.X where X is the number partitions and 2- ./fnl_nodes.FENNEL.part.X.output which includes all fennel's output data and perf information. In this example, setting X is 10 means that the number of partitions starts from 2 and goes to 2^10, i.e. {2, 2^2, 2^3, ..., 2^10}. For each partition, it repeats the experiment 100 times. All repetitions are done by perf tool as 'perf stat -d -d -d --table -r 100'"
+		echo -e "\tThe example above will run Fennel on the ./INPUT_FILE.txt and produces two files: 1- Last partitioning results in ./INPUT_FILE.fennel.part.X where X is the number partitions and 2- ./INPUT_FILE.fennel.fnl_nodes.part.X.output which includes all fennel's output data and perf information. In this example, setting X is 10 means that the number of partitions starts from 2 and goes to 2^10, i.e. {2, 2^2, 2^3, ..., 2^10}. For each partition, it repeats the experiment 100 times. All repetitions are done by perf tool as 'perf stat -d -d -d --table -r 100'"
 		exit 1 
 fi
 
@@ -59,28 +59,38 @@ if [ ! -f $1 ]; then
 fi
 INPUT_FILE=$1
 
-OUTPUT_FILE=$2
-
-if [ $3 -lt 2 ]; then 
+# make sure num_partitions is a number 
+if ! [[ $2 =~ ^[0-9]+$ ]]; then
+		echo "Number of partitions must be a number: given: $2"
+		exit 1
+fi
+if [ $2 -lt 2 ]; then 
 		echo "Number of partitions must be at least 2"
 		exit 1 
 fi
-NUM_PARTITIONS=$3
+NUM_PARTITIONS=$2
 
-if [ $4 -lt 1 ]; then echo "Number of iterations per partition must be at least 1"
+
+# make sure num_iterations is a number
+if ! [[ $3 =~ ^[0-9]+$ ]]; then
+		echo "Number of iterations per partition must be a number (given: $3)"
+		exit 1
+fi
+if [ $3 -lt 1 ]; then echo "Number of iterations per partition must be at least 1"
 		exit 1 
 fi
-NUM_ITERATIONS=$4
+NUM_ITERATIONS=$3
 
 # print all input args 
 LOG "Input file: $INPUT_FILE"
-LOG "Output file: $OUTPUT_FILE"
 LOG "Number of partitions: {2^1, ..., 2^$NUM_PARTITIONS}"
 LOG "Number of iterations per partition: $NUM_ITERATIONS"
 LOG "Fennel binary files: 'fnl_nodes'"
+LOG "Partitioning result: $INPUT_FILE.fennel.part.X"
+LOG "Output log file: $INPUT_FILE.fennel.fnl_nodes.part.X.output"
 
 # confirm user wants to continue if -y is not specified
-if [ $# -eq 5 ]; then 
+if [ $# -eq 4 ]; then 
 		LOG "Auto confirmed(-y option specified)"
 else 
 		echo -e "${RED}Are you sure you want to continue?${NC}"
@@ -110,7 +120,7 @@ for FNL_BIN in "${ALL_FENNEL_BIN[@]}"; do
 		for num_partitions in "${num_partitions_array[@]}"
 		do 
 				# ./output.fnl_edges.part.X
-				OUTPUT_NAME=$OUTPUT_FILE.$FNL_BIN.part.$num_partitions.output
+				OUTPUT_NAME=$INPUT_FILE.fennel.$FNL_BIN.part.$num_partitions.output
 				# log the command to run
 				LOG "Running: perf stat -d -d -d --table -r $NUM_ITERATIONS $FNL_BIN $INPUT_FILE $num_partitions $load_balance_factor &> $OUTPUT_NAME"
 				perf stat -d -d -d --table -r $NUM_ITERATIONS $FNL_BIN $INPUT_FILE $num_partitions $load_balance_factor &> $OUTPUT_NAME
