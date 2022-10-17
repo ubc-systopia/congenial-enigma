@@ -26,24 +26,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../konect_scraper/stats.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../args.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../konect_scraper/test_ccs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QuadrantCalculator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/QuadrantCalculator.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sb_furhilbert.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sb_furhilbert.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order_slashburn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/order_slashburn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slashburn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/slashburn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/util.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../init_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/../init_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/column_names.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/column_names.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/debug_hilbert.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/debug_hilbert.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/download_and_extract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/reorder.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/reorder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/scrape_konect_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/scrape_konect_stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/util.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../plot_pr_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/../plot_pr_results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rabbit_order" beforeDir="false" afterPath="$PROJECT_DIR$/../rabbit_order" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,16 +77,17 @@
     "cf.advertisement.text.has.clang-format": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/atrostan/Workspace/repos/ParallelBatchRCM",
+    "last_opened_file_path": "/home/atrostan/CLionProjects/gapbs_sb",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="CMake Application.sb_furhilbert">
+  <component name="RunManager" selected="CMake Application.graph_preprocess">
     <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -123,7 +118,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="slashburn" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 1226 -m 2613 -p 0.005 -g /media/atrostan/patterson_backup/data/graphs/maayan-faa/comp.bin -b /media/atrostan/patterson_backup/data/graphs.db -o /media/atrostan/patterson_backup/data/graphs/maayan-faa/sb" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="slashburn" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="slashburn">
+    <configuration name="slashburn" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 26518 -m 65369 -p 0.005 -g /media/atrostan/patterson_backup/data/graphs/p2p-Gnutella24/comp.bin -b /media/atrostan/patterson_backup/data/graphs.db -o /media/atrostan/patterson_backup/data/graphs/p2p-Gnutella24/sb" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="slashburn" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="slashburn">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -165,7 +160,17 @@
       <workItem from="1663616281350" duration="12788000" />
       <workItem from="1663699309092" duration="615000" />
       <workItem from="1663699932443" duration="4642000" />
-      <workItem from="1664130317225" duration="307000" />
+      <workItem from="1664130317225" duration="1690000" />
+      <workItem from="1664151935810" duration="1383000" />
+      <workItem from="1664209947928" duration="303000" />
+      <workItem from="1664210259905" duration="3007000" />
+      <workItem from="1664303728267" duration="8890000" />
+      <workItem from="1664569274817" duration="2277000" />
+      <workItem from="1664741871903" duration="2510000" />
+      <workItem from="1664833073092" duration="16468000" />
+      <workItem from="1665184763470" duration="3288000" />
+      <workItem from="1665684252390" duration="7226000" />
+      <workItem from="1665965898621" duration="1574000" />
     </task>
     <servers />
   </component>

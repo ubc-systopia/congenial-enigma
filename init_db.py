@@ -3,6 +3,8 @@ import os
 import sqlite3
 from datetime import datetime
 
+import pandas as pd
+
 from konect_scraper import config, column_names, scrape_konect_stats
 from konect_scraper.util import create_data_dirs_if_not_exists, create_sql_table, init_logger, \
     get_all_rows, update_table_schema, \
@@ -84,6 +86,13 @@ def main():
 
     # get all rows from konect table and scrape konect for those rows
     rows = get_all_rows("konect")
+
+    # optionally, write konect to csv
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    db_df = pd.read_sql_query("select * from konect", conn)
+    db_df.to_csv('./konect.csv', index=False)
+
     scrape_konect_stats.main(rows)
 
     # add existing n, m values to now reset db

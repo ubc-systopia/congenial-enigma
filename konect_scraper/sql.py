@@ -33,6 +33,12 @@ def get_all_unipartite_graphs():
     cursor = conn.execute(sql)
     return cursor.fetchall()
 
+def get_all_unipartite_undirected_graphs():
+    conn = connect()
+    conn.row_factory = sqlite3.Row
+    sql = f"select * from metadata where network_format like 'Unipartite, undirected%'"
+    cursor = conn.execute(sql)
+    return cursor.fetchall()
 
 def get_all_unipartite_directed_graphs():
     conn = connect()

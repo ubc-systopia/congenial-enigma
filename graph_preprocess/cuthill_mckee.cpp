@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
 	while ((opt = getopt(argc, argv, "n:m:p:g:b:o:")) != -1) {
 		switch (opt) {
 			case 'n':
-				num_nodes = atoi(optarg);
+				num_nodes = atol(optarg);
 				break;
 			case 'm':
-				num_edges = atoi(optarg);
+				num_edges = atoll(optarg);
 				break;
 			case 'g':
 				input_path = optarg;

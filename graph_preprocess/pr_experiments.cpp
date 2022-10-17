@@ -48,10 +48,10 @@ int main(int argc, char *argv[]) {
 				debug = !debug;
 				break;
 			case 'n':
-				num_vertices = atoi(optarg);
+				num_vertices = atol(optarg);
 				break;
 			case 'm':
-				num_edges = atoi(optarg);
+				num_edges = atoll(optarg);
 				break;
 			case 'i':
 				num_iters = atoi(optarg);
