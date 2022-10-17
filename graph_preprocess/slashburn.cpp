@@ -32,10 +32,10 @@ int main(int argc, char *argv[]) {
 				directed = !directed;
 				break;
 			case 'n':
-				num_vertices = atoi(optarg);
+				num_vertices = atol(optarg);
 				break;
 			case 'm':
-				num_edges = atoi(optarg);
+				num_edges = atoll(optarg);
 				break;
 			case 'p':
 				percent = atof(optarg);
@@ -80,6 +80,7 @@ int main(int argc, char *argv[]) {
 	m = igraph_ecount(&g);
 	igraph_vector_t v = IGRAPH_VECTOR_NULL;
 	ul k = n * percent;
+	k = 1; // tmp
 	if (k == 0) {
 		k = 1;
 	}
@@ -148,7 +149,7 @@ int main(int argc, char *argv[]) {
 	single_val_set_int(sqlite_db_path, "sb_n_iters", "statistics", graph_name, iter);
 	single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
 
-
+	fmt::print("rank: {}\n", rank);
 	// all vertices have been assigned an index in the slashburn ordering
 	assert(std::none_of(rank.begin(), rank.end(), [](ul v) {
 		return v == std::numeric_limits<ul>::max();

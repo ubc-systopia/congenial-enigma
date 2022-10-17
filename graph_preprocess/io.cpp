@@ -60,8 +60,8 @@ read_binary_edge_list_into_igraph(std::string path, std::vector<std::pair<ul, ul
 	boost::archive::binary_iarchive ia(ifs);
 	ia >> edges;
 	ull i = 0;
-	igraph_vector_t es;
-	igraph_vector_init(&es, m * 2);
+	igraph_vector_int_t es;
+	igraph_vector_int_init(&es, m * 2);
 	for (auto &kv: edges) {
 //		fmt::print("{} {}\n", kv.first, kv.second);
 		VECTOR(es)[i] = kv.first;
@@ -69,7 +69,7 @@ read_binary_edge_list_into_igraph(std::string path, std::vector<std::pair<ul, ul
 		i += 2;
 	}
 	igraph_create(g, &es, n, 0);
-	igraph_vector_destroy(&es);
+	igraph_vector_int_destroy(&es);
 	ifs.close();
 }
 

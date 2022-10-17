@@ -20,8 +20,8 @@ bool sortByDescendingDegree(const vertex &lhs, const vertex &rhs) {
 }
 
 void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &rank) {
-	igraph_vector_t igraph_deg;
-	igraph_vector_init(&igraph_deg, 0);
+	igraph_vector_int_t igraph_deg;
+	igraph_vector_int_init(&igraph_deg, 0);
 	ul i;
 
 	// select k highest degree vertices
@@ -37,8 +37,8 @@ void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &r
 
 	std::sort(dpl::execution::par_unseq, vertices.begin(), vertices.end(), sortByDescendingDegree);
 
-	igraph_vector_t hubs_to_remove;
-	igraph_vector_init(&hubs_to_remove, k);
+	igraph_vector_int_t hubs_to_remove;
+	igraph_vector_int_init(&hubs_to_remove, k);
 	ul j;
 	for (j = 0; j < k; ++j) {
 		vertex v = vertices[j];
@@ -49,8 +49,8 @@ void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &r
 
 	igraph_delete_vertices(&g, igraph_vss_vector(&hubs_to_remove));
 
-	igraph_vector_destroy(&igraph_deg);
-	igraph_vector_destroy(&hubs_to_remove);
+	igraph_vector_int_destroy(&igraph_deg);
+	igraph_vector_int_destroy(&hubs_to_remove);
 }
 
 

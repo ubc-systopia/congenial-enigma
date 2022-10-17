@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import os
 from argparse import RawTextHelpFormatter
@@ -10,10 +11,11 @@ import konect_scraper.plot as plotting
 from konect_scraper import download_and_extract, reorder, pr_experiments
 from konect_scraper.config import IOMode
 from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between, get_all_downloadable_graphs, \
-    get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names
+    get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names, get_all_unipartite_graphs, \
+    get_all_unipartite_undirected_graphs
 from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
-    get_unimputed_features
+    get_unimputed_features, get_directed
 
 
 def main(args):
@@ -23,6 +25,7 @@ def main(args):
     io_modes = args.io_modes
     download = args.download
     run_pr_expts = args.run_pr_expts
+    json_args_path = args.json_args
     debug = args.debug
 
     config.settings['debug'] = debug
@@ -48,30 +51,12 @@ def main(args):
     #     maxs=[100, 1000]
     # )
 
-    # rows = get_all_unipartite_graphs()
+    # rows = get_all_unipartite_undirected_graphs()
     rows = get_all_unipartite_directed_graphs()
     n_unipartite_graphs = len(rows)
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
 
-    # get all graphs that are 10x-?x as big as the l3 cache
-    # 1000 * l3_cache_size
-    # np.inf
-    l3_cache_size = config.settings['cpu-info']['cache-sizes']['l3_size']
-    rows = get_all_graphs_by_graph_names_where_stats_between(
-        stats=['pr_struct_size', ],
-        mins=[5 * l3_cache_size, ],
-        maxs=[2 ** 64 - 1, ],
-        graph_names=graph_names
-    )
-
-    # get all where mn < size < mx and mn < volume < mx
-    # rows = get_all_graphs_by_graph_names_where_stats_between(
-    #     stats=['size', ],
-    #     mins=[1_000, ],
-    #     maxs=[50_000, ],
-    #     graph_names=graph_names
-    # )
 
     # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
@@ -94,21 +79,29 @@ def main(args):
     rows = get_all_downloadable_graphs(graph_names)[:]
 
     graph_names = get_unimputed_features([r['graph_name'] for r in rows])
+    if json_args_path:
+        with open(json_args_path, 'r') as j:
+            json_args = json.loads(j.read())
+        graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
+    # print(rows)
     graph_name_start_idx = 0
-    graph_name_end_idx = 1
+    graph_name_end_idx = 100
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
     rows = rows[graph_name_start_idx:graph_name_end_idx]
     for i, row in enumerate(rows):
+        # if int(get_directed(row['graph_name'])) == 1:
+        #     continue
         print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"
-              f"{get_category(row['graph_name']): <40}")
-    return
+              f"{get_category(row['graph_name']): <40}"
+              f"{get_directed(row['graph_name']): <40}")
+    # return
+
     if download:
         download_and_extract.main(rows, io_modes)
-
     if orders:
         if orders == ['all']:
             orders = config.settings['orderings'].keys()
@@ -187,5 +180,7 @@ if __name__ == '__main__':
                         action=argparse.BooleanOptionalAction, required=True,
                         help='Run in Debug Mode.'
                         )
+    parser.add_argument('--json-args', required=False, help="Path to json file containing arguments listing which graphs"
+                                                           "to preprocess, run experiments on etc.")
 
     main(parser.parse_args())

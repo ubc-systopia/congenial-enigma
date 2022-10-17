@@ -88,7 +88,7 @@ def main():
     pr_df = read_table_as_table('pr_expts')
     pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
 
-    filter_datetime = '24-09-2022 17-34-00'  # only look at experiments after this date
+    filter_datetime = '14-10-2022 21-19-20'  # only look at experiments after this date
     pr_df = pr_df[
         (pr_df['datetime'] >= pd.to_datetime(filter_datetime, format='%d-%m-%Y %H-%M-%S'))
     ]
@@ -106,12 +106,12 @@ def main():
     gdfs = [[name, gdf] for name, gdf in pr_df.groupby('graph_name')]
 
     gdfs = sorted(gdfs, key=lambda x: get_pr_struct_size(x[0]), reverse=True)
-    for name, gdf in gdfs:
-        print(name)
+
 
     for name, gdf in gdfs:
-        if gdf.shape[0] != reqd_num_expts:
-            continue
+        # if gdf.shape[0] != reqd_num_expts:
+        #     print(name)
+        #     continue
         plot_pr_results(name, gdf)
     return
 
