@@ -11,11 +11,13 @@ RUN apt-get update \
 # This variable specifices the system packages needed to be installed
 # nvidia-cuda-toolkit needed for ParBatchRCM can be ignored for now
 ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \ 
-    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl" 
+    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl python3.10 python3.10-distutils" 
 
-RUN apt-get update \
-    &&  apt-get upgrade -y \
-    && apt-get install -y ${BUILD_DEPS} ${APP_DEPS} 
+RUN add-apt-repository ppa:deadsnakes/ppa\
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y ${BUILD_DEPS} ${APP_DEPS} \
+    && `curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10`
 
 # Install igraph from source
 RUN git clone https://github.com/igraph/igraph.git \
@@ -26,9 +28,14 @@ RUN git clone https://github.com/igraph/igraph.git \
     && cmake --install . 
 
 # Install boost 1.74.0 from source
-ENV BOOST_VERSION="1_74_0"
-ENV BOOST_URL="http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION}/boost_${BOOST_VERSION}.tar.gz"
+ENV BOOST_VERSION_MAJOR=1
+ENV BOOST_VERSION_MINOR=74
+ENV BOOST_VERSION_REVISION=0
+
+ENV BOOST_VERSION_FNAME="boost_${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_REVISION}"
+ENV BOOST_URL="http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_REVISION}/${BOOST_VERSION_FNAME}.tar.gz"
 ENTRYPOINT echo $BOOST_URL
+
 # install python3.10
 
 
