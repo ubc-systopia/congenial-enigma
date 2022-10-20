@@ -86,7 +86,7 @@ def main(args):
     rows = get_all_graphs_by_graph_names(graph_names)
     # print(rows)
     graph_name_start_idx = 20
-    graph_name_end_idx = 25
+    graph_name_end_idx = 70
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 

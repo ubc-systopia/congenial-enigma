@@ -181,6 +181,7 @@ def init():
             'rnd': "random",
             'rbt': "rabbit",
             'sb': "slashburn",
+            'parsb': "par_slashburn",
             # 'cm': "cuthill-mckee", # todo ignore these (too long with pbrcm)
             # 'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
