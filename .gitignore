@@ -353,3 +353,7 @@ venv/**
 
 
 .vscode/
+
+./rabbit_order/.idea/*
+
+./rabbit_order/demo/cmake-build-debug/*
