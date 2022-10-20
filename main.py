@@ -85,8 +85,8 @@ def main(args):
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
     # print(rows)
-    graph_name_start_idx = 20
-    graph_name_end_idx = 70
+    graph_name_start_idx = -2
+    graph_name_end_idx = -1
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
@@ -101,11 +101,11 @@ def main(args):
           f"{'Is Directed?': <40}")
     print('-' * 245)
     for i, row in enumerate(rows):
-        size, size_str = convert_size(get_pr_struct_size(row['graph_name']))
+        size, size_string = convert_size(get_pr_struct_size(row['graph_name']))
         print(f"{i + graph_name_start_idx : <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
-              f"{size}" + f" {size_str: <40}"
+              f"{str(size) + size_string: <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
     # return

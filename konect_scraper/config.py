@@ -175,7 +175,7 @@ def init():
             "bbox_inches": 'tight',
             "pad_inches": 0,
             "max_rows_per_agg_spy_plot": 5,  # the number of graphs to show per aggregated spy plot,
-            "max_n": 50_000,  # the largest graph size that is plottable as as adjacency matrix
+            "max_n": 100_000,  # the largest graph size that is plottable as as adjacency matrix
         },
         "orderings": {
             'rnd': "random",
