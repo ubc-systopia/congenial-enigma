@@ -48,7 +48,7 @@ cmake ..
 cmake --build . 
 cmake --install . 
 
-# Install boost 1.74.0 from source
+# Install boost 1.71.0 from source
 BOOST_VERSION_MAJOR=1
 BOOST_VERSION_MINOR=74
 BOOST_VERSION_REVISION=0
@@ -69,3 +69,5 @@ cat /usr/local/include/boost/version.hpp | grep "BOOST_LIB_VERSION"
 # install python3.10 
 
 # create virtual environment
+
+# https://stackoverflow.com/questions/70961987/how-do-i-install-virtualenv-in-python-3-10-2-and-activate-it-for-a-telegram-bot

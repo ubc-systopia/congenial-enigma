@@ -37,7 +37,7 @@ void PageRank::compute() {
 			src[n] = alpha * dst[n] / deg[n];
 			dst[n] = 1.0 - alpha;
 		}
-		for (auto &e: edges) {
+		for (const auto &e: edges) {
 			ul x = e.source;
 			ul y = e.dest;
 

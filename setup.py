@@ -35,9 +35,9 @@ def main():
     ]
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=pbrcm_build_dir)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
     res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
 
     # build graph_preprocess
@@ -51,7 +51,7 @@ def main():
     ]
     print(" ".join(args))
     res = subprocess.check_output(args)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     # build rabbit submodule
     args = [
@@ -64,7 +64,7 @@ def main():
     ]
     print(" ".join(args))
     subprocess.check_output(args, cwd=os.path.join(rabbit_home, 'demo'))
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
     n_threads = config.settings['n_threads']
 
@@ -126,7 +126,7 @@ def main():
     ]
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
-    print(res.decode('ascii'))
+    print(res.decode('utf-8'))
 
 if __name__ == "__main__":
     main()
