@@ -17,9 +17,9 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
-
 # boost <= 1.74 serialization breaks when reading binary archives of edgelists
-find_package(Boost 1.74.0 COMPONENTS system filesystem graph serialization REQUIRED)
+# todo boost != 1.58 breaks error: static assertion failed: boost::atomic<T> requires T to be a trivially copyable type for union rabbit_order::aux::atomix<rabbit_order::aux::atom>
+find_package(Boost 1.58.0 EXACT COMPONENTS system filesystem graph serialization REQUIRED)
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 

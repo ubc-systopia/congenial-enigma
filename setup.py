@@ -13,7 +13,7 @@ import psutil
 def main():
     config.init()
     settings = config.settings
-
+    
     cmake_build_dir = settings['cmake_build_dir']
     rabbit_cmake_build_dir = settings['rabbit_cmake_build_dir']
     cmake_build_type = settings['cmake_build_type']
@@ -25,20 +25,19 @@ def main():
     cmake_executable = settings["cmake_executable"]
     make_executable = settings["make_executable"]
 
-    # build and install ParallelBatchRCM
-    pbrcm_home = settings['pbrcm_home']
-    pbrcm_build_dir = os.path.join(pbrcm_home, "build")
-    Path(pbrcm_build_dir).mkdir(parents=True, exist_ok=True)
-    args = [
-        cmake_executable,
-        pbrcm_home,
-    ]
-    print(" ".join(args))
-    res = subprocess.check_output(args, cwd=pbrcm_build_dir)
-    print(res.decode('utf-8'))
-    res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
-    print(res.decode('utf-8'))
-
+    # # build and install ParallelBatchRCM
+    # pbrcm_home = settings['pbrcm_home']
+    # pbrcm_build_dir = os.path.join(pbrcm_home, "build")
+    # Path(pbrcm_build_dir).mkdir(parents=True, exist_ok=True)
+    # args = [
+    #     cmake_executable,
+    #     pbrcm_home,
+    # ]
+    # print(" ".join(args))
+    # res = subprocess.check_output(args, cwd=pbrcm_build_dir)
+    # print(res.decode('ascii'))
+    # res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
+    # print(res.decode('ascii'))
 
     # build graph_preprocess
     args = [
@@ -50,7 +49,11 @@ def main():
         "-B", cmake_build_dir,
     ]
     print(" ".join(args))
+<<<<<<< HEAD
+    res = subprocess.check_output(args, cwd=graph_preprocess_dir)
+=======
     res = subprocess.check_output(args)
+>>>>>>> main
     print(res.decode('utf-8'))
 
     # build rabbit submodule
@@ -80,27 +83,17 @@ def main():
     res = subprocess.check_output(args)
     print(res.decode('utf-8'))
 
-    # install graph_preprocess
-    args = [
-        cmake_executable,
-        "--build", cmake_build_dir,
-        "--target", "graph_preprocess",
-        "-j", str(n_threads)
-    ]
-    print(" ".join(args))
-    res = subprocess.check_output(args)
-    print(res.decode('utf-8'))
-
-    # install slashburn
-    args = [
-        cmake_executable,
-        "--build", cmake_build_dir,
-        "--target", "slashburn",
-        "-j", str(n_threads)
-    ]
-    print(" ".join(args))
-    res = subprocess.check_output(args)
-    print(res.decode('utf-8'))
+    # compile 
+    for target in ['graph_preprocess', 'slashburn', 'pr_experiments']:
+        args = [
+            cmake_executable,
+            "--build", cmake_build_dir,
+            "--target", target,
+            "-j", str(n_threads)
+        ]
+        print(" ".join(args))
+        res = subprocess.check_output(args, cwd=graph_preprocess_dir)
+        print(res.decode('utf-8'))
 
     dbg_home = settings['dbg_home']
     dbg_apps_dir = settings['dbg_apps_dir']
