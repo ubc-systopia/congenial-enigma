@@ -49,7 +49,11 @@ def main():
         "-B", cmake_build_dir,
     ]
     print(" ".join(args))
+<<<<<<< HEAD
     res = subprocess.check_output(args, cwd=graph_preprocess_dir)
+=======
+    res = subprocess.check_output(args)
+>>>>>>> main
     print(res.decode('utf-8'))
 
     # build rabbit submodule

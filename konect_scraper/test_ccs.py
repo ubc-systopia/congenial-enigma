@@ -13,13 +13,15 @@ def main():
     degrees = np.array([v.degree() for v in g.vs])
     clusters = g.clusters(mode='weak')
     print(f"{degrees=}")
-    hub_id = np.argmax(degrees)
-    print(f"{hub_id=}")
+    k = 5
+    hub_ids = np.argpartition(degrees, -k)[-k:]
+    print(f"{hub_ids=}")
     for c in clusters:
         mapped_c = [g.vs[v]['orig_id'] for v in c]
         print(f"{mapped_c=} {len(mapped_c)=}")
     print("\nremove hub\n")
-    g.delete_vertices([hub_id])
+    print(hub_ids)
+    g.delete_vertices(hub_ids)
 
     clusters = g.clusters(mode='weak')
     for c in clusters:

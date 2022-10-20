@@ -88,7 +88,7 @@ def main():
     pr_df = read_table_as_table('pr_expts')
     pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
 
-    filter_datetime = '14-10-2022 21-19-20'  # only look at experiments after this date
+    filter_datetime = '18-10-2022 15-16-45'  # only look at experiments after this date
     pr_df = pr_df[
         (pr_df['datetime'] >= pd.to_datetime(filter_datetime, format='%d-%m-%Y %H-%M-%S'))
     ]

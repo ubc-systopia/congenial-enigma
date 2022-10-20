@@ -143,6 +143,7 @@ def init():
         # Executables
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
+        "par_slashburn_executable": "/home/atrostan/CLionProjects/gapbs_sb/cmake-build-debug/gapbs_sb",
         "cuthill_mckee_executable": cuthill_mckee_executable,
         "parallel_batch_rcm_executable": parallel_batch_rcm_executable,
         "rabbit_order_executable": rabbit_order_executable,

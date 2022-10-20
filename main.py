@@ -15,7 +15,7 @@ from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between
     get_all_unipartite_undirected_graphs
 from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
-    get_unimputed_features, get_directed
+    get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges
 
 
 def main(args):
@@ -59,7 +59,6 @@ def main(args):
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
 
-
     # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
 
@@ -79,22 +78,34 @@ def main(args):
         io_modes = modes
     graph_names = [r['graph_name'] for r in rows]
     rows = get_all_downloadable_graphs(graph_names)[:]
-
     graph_names = get_unimputed_features([r['graph_name'] for r in rows])
     if json_args_path:
         with open(json_args_path, 'r') as j:
             json_args = json.loads(j.read())
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
-    graph_name_start_idx = -3
-    graph_name_end_idx = -2
+    # print(rows)
+    graph_name_start_idx = 20
+    graph_name_end_idx = 25
+    # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
     rows = rows[graph_name_start_idx:graph_name_end_idx]
+
+    # print heading
+    print(f"{'Index' : <5} {'Graph Name' : <40}"
+          f"{'|V|': <40}"
+          f"{'|E|': <40}"
+          f"{'PageRank Struct Size': <40}"
+          f"{'Graph Category': <40}"
+          f"{'Is Directed?': <40}")
+    print('-' * 190)
     for i, row in enumerate(rows):
         # if int(get_directed(row['graph_name'])) == 1:
         #     continue
         print(f"{i : <5} {row['graph_name'] : <40}"
+              f"{get_n_vertices(row['graph_name']): <40}"
+              f"{get_n_edges(row['graph_name']): <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
@@ -179,8 +190,9 @@ if __name__ == '__main__':
                         action=argparse.BooleanOptionalAction, required=True,
                         help='Run in Debug Mode.'
                         )
-    parser.add_argument('--json-args', required=False, help="Path to json file containing arguments listing which graphs"
-                                                           "to preprocess, run experiments on etc.")
+    parser.add_argument('--json-args', required=False,
+                        help="Path to json file containing arguments listing which graphs"
+                             "to preprocess, run experiments on etc.")
 
     main(parser.parse_args())
 
