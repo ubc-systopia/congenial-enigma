@@ -47,15 +47,16 @@ void PageRank::compute() {
 	auto end_time = std::chrono::high_resolution_clock::now();
 	runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
-	// normalize
-	float sum = 0.0;
-	for (int n = 0; n < num_nodes; n++) {
-		sum += dst[n];
-	}
+	// normalize - todo - normalization step necessary for correctness of outputted value (pr value between [0, 1))
+	// but can skip for experiments (these values can be computed after the fact)
+	// float sum = 0.0;
+	// for (int n = 0; n < num_nodes; n++) {
+	// 	sum += dst[n];
+	// }
 
-	for (int n = 0; n < num_nodes; n++) {
-		dst[n] = dst[n] / sum;
-	}
+	// for (int n = 0; n < num_nodes; n++) {
+	// 	dst[n] = dst[n] / sum;
+	// }
 
 }
 

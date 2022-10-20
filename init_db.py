@@ -7,8 +7,7 @@ import pandas as pd
 
 from konect_scraper import config, column_names, scrape_konect_stats
 from konect_scraper.util import create_data_dirs_if_not_exists, create_sql_table, init_logger, \
-    get_all_rows, update_table_schema, \
-    create_pr_expt_table
+    get_all_rows, update_table_schema, create_pr_expt_table, create_log_dir_if_not_exists
 
 
 def update_ns_ms():
@@ -42,6 +41,7 @@ def main():
     settings = config.settings
 
     log_dir = settings['logging']['log_dir']
+    create_log_dir_if_not_exists()
     curr_time = datetime.now().strftime("%H_%M_%d_%m_%Y")
     log_path = f"init_db_{curr_time}"
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
@@ -84,15 +84,24 @@ def main():
     # for table in ['metadata', 'statistics', 'preproc']:
     #     delete_all_rows(table)
 
-    # get all rows from konect table and scrape konect for those rows
-    rows = get_all_rows("konect")
+
 
     # optionally, write konect to csv
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
-    db_df = pd.read_sql_query("select * from konect", conn)
-    db_df.to_csv('./konect.csv', index=False)
-
+    # db_df = pd.read_sql_query("select * from konect", conn)
+    # db_df.to_csv('./konect.csv', index=False)
+    
+    # on first execution populate konect table from konect.csv 
+    df = pd.read_csv(
+        os.path.join(
+            config.settings['dataframes_dir'],
+            'konect.csv'
+        )
+    )
+    df.to_sql('konect', con=conn, if_exists='replace')
+    # get all rows from konect table and scrape konect for those rows
+    rows = get_all_rows("konect")
     scrape_konect_stats.main(rows)
 
     # add existing n, m values to now reset db

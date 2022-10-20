@@ -2,12 +2,11 @@
 // Created by atrostan on 30/08/22.
 //
 
-#include <tuple>
-#include "order_slashburn.h"
-
 #include <oneapi/dpl/execution>
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/numeric>
+#include <tuple>
+#include "order_slashburn.h"
 #include <iostream>
 
 bool descSubgraphSize(const igraph_t *subgraph1, const igraph_t *subgraph2) {

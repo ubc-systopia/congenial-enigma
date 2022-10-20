@@ -80,7 +80,6 @@ int main(int argc, char *argv[]) {
 	m = igraph_ecount(&g);
 	igraph_vector_t v = IGRAPH_VECTOR_NULL;
 	ul k = n * percent;
-	k = 1; // tmp
 	if (k == 0) {
 		k = 1;
 	}

@@ -402,7 +402,7 @@ def get_cache_stats():
         if 'K' in s:
             return int(s.replace('K', '')) * 1024
         elif 'M' in s:
-            return int(s.replace('M', '')) * 1024 * 1024
+            return int(float(s.replace('M', ''))) * 1024 * 1024
 
     args = ['lscpu', '-C']
     res = subprocess.check_output(args)
@@ -410,7 +410,10 @@ def get_cache_stats():
     # in the compressed, simplified representation
     lines = [l.split() for l in res.decode('ascii').split('\n')]
     df = pd.DataFrame(columns=lines[0], data=lines[1:])
-    line_size = int(df['COHERENCY-SIZE'].unique()[0])
+    if 'COHERENCY-SIZE' not in df.columns:
+        line_size = 64
+    else:
+        line_size = int(df['COHERENCY-SIZE'].unique()[0])
     l1d_size = df.loc[df['NAME'] == 'L1d']['ONE-SIZE'].values[0]
     l2_size = df.loc[df['NAME'] == 'L2']['ONE-SIZE'].values[0]
     l3_size = df.loc[df['NAME'] == 'L3']['ONE-SIZE'].values[0]

@@ -50,9 +50,11 @@ def main(args):
     #     mins=[50, 100],
     #     maxs=[100, 1000]
     # )
-
-    # rows = get_all_unipartite_undirected_graphs()
-    rows = get_all_unipartite_directed_graphs()
+    directed = True
+    if directed:
+        rows = get_all_unipartite_directed_graphs()
+    else:
+        rows = get_all_unipartite_undirected_graphs()
     n_unipartite_graphs = len(rows)
     graph_names = [r['graph_name'] for r in rows]
     print(f"{len(graph_names)} unipartite graphs in dataset.")
@@ -84,10 +86,8 @@ def main(args):
             json_args = json.loads(j.read())
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
-    # print(rows)
-    graph_name_start_idx = 0
-    graph_name_end_idx = 100
-    # graph_name_end_idx = len(rows)
+    graph_name_start_idx = -3
+    graph_name_end_idx = -2
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
     rows = rows[graph_name_start_idx:graph_name_end_idx]
@@ -98,8 +98,7 @@ def main(args):
               f"{get_pr_struct_size(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
-    # return
-
+    return
     if download:
         download_and_extract.main(rows, io_modes)
     if orders:
@@ -184,3 +183,22 @@ if __name__ == '__main__':
                                                            "to preprocess, run experiments on etc.")
 
     main(parser.parse_args())
+
+
+"""Examples
+
+Only download and preprocess (i.e. simplify graph):
+$ python main.py --download --io-modes binary text --no-plot --no-run-pr-expts --no-debug
+
+No download, just reorder
+
+$ python main.py --no-download --io-modes binary text --reorder all --no-plot --no-run-pr-expts --no-debug
+
+No download, just experiments (reorder all detects that vertex orderings have been computed, and skips recomputation)
+
+$ python main.py --no-download --io-modes binary text --reorder all --no-plot --run-pr-expts --no-debug
+
+
+Download, preprocess, reorder, and plot; No PR experiments;
+$ python main.py --download --io-modes binary text --reorder all --plot --no-run-pr-expts --no-debug
+"""
