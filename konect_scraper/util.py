@@ -380,6 +380,10 @@ def get_n_m(graph_name):
 def get_n(graph_name):
     return single_val_get('n', 'n_m', graph_name)
 
+def get_n_vertices(graph_name):
+    return single_val_get('size', 'statistics', graph_name)
+def get_n_edges(graph_name):
+    return single_val_get('volume', 'statistics', graph_name)
 
 def get_pr_struct_size(graph_name):
     return single_val_get('pr_struct_size', 'statistics', graph_name)

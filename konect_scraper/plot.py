@@ -324,6 +324,8 @@ def plot_edge_ordering(graph_name, vorder_str, eorder_str):
     adj_mat_format = config.settings['plot']['adj_mat_format']
     edgelist_path = os.path.join(graph_dir, f"{vorder_str}.{eorder_str}")
     plot_path = os.path.join(plot_dir, f"{vorder_str}_{eorder_str}.{plot_format}")
+    print(plot_path)
+
     sorted_edges = np.loadtxt(edgelist_path).astype(np.uint32)
     adj_mat = np.zeros((n, n))
     c = np.zeros(sorted_edges.shape[0])

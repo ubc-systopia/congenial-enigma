@@ -79,7 +79,23 @@ def compute_rabbit(graph_path, order_path, graph_name, comms_path):
 
     return
 
+def compute_par_slashburn(graph_path, order_path):
+    settings = config.settings
+    percent = settings['hyperparameters']['slashburn']['percent']
+    sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
 
+    executable = settings['par_slashburn_executable']
+    args = [executable]
+    args += [
+        '-f', graph_path,
+        '-s',
+        '-o', order_path,
+        '-d', sqlite3_db_path,
+        '-p', str(percent)
+    ]
+    logging.info(f"Executing: " + ' '.join(args))
+
+    res = subprocess.check_output(args)
 def compute_slashburn(graph_path, order_path, directed, n, m):
     settings = config.settings
     percent = settings['hyperparameters']['slashburn']['percent']
@@ -199,7 +215,13 @@ def compute_ordering(graph_name, order):
             comms_path = os.path.join(graph_dir, "comms")
             compute_rabbit(comp_graph_path, order_path, graph_name, comms_path)
 
+        case "parsb":
+            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            compute_par_slashburn(comp_graph_path, order_path)
+
         case "sb":
+            # comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            # compute_par_slashburn(comp_graph_path, order_path)
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 
         case "cm":

@@ -52,7 +52,7 @@ def init():
     data_dir = "/media/atrostan/patterson_backup/data"
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
-    sqlite3_db_path = "/home/atrostan/Workspace/graphs.db"# todo replace
+    sqlite3_db_path = "/home/atrostan/Workspace/graphs_dbs/graphs.db"# todo replace
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(data_dir, "dataframes")
     graphs_dir = os.path.join(data_dir, "graphs")
@@ -143,6 +143,7 @@ def init():
         # Executables
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
+        "par_slashburn_executable": "/home/atrostan/CLionProjects/gapbs_sb/cmake-build-debug/gapbs_sb",
         "cuthill_mckee_executable": cuthill_mckee_executable,
         "parallel_batch_rcm_executable": parallel_batch_rcm_executable,
         "rabbit_order_executable": rabbit_order_executable,
@@ -166,8 +167,9 @@ def init():
             'rnd': "random",
             'rbt': "rabbit",
             'sb': "slashburn",
-            'cm': "cuthill-mckee",
-            'rev_cm': "reverse-cuthill-mckee",
+            'parsb': "par_slashburn",
+            # 'cm': "cuthill-mckee",
+            # 'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
             'hc': "hubcluster",
             'hs': "hubsort",

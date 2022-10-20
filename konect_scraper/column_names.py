@@ -46,14 +46,15 @@ def init():
         'unique_vs': 'INTEGER',
         'sort_es': 'INTEGER',
         'unique_es': 'INTEGER',
-        'rabbit': 'REAL',
-        'cuthill_mckee': 'REAL',
-        'slashburn': 'REAL',
-        'random': 'REAL',
-        'hubcluster': 'REAL',
-        'hubsort': 'REAL',
-        'sort': 'REAL',
-        'dbg': 'REAL',
+        'rabbit': 'BIGINT',
+        'cuthill_mckee': 'BIGINT',
+        'slashburn': 'BIGINT',
+        'par_slashburn': 'BIGINT',
+        'random': 'BIGINT',
+        'hubcluster': 'BIGINT',
+        'hubsort': 'BIGINT',
+        'sort': 'BIGINT',
+        'dbg': 'BIGINT',
     }
 
     n_m_col_names = {
@@ -180,7 +181,9 @@ def init():
         'orig_bandwidth': 'INTEGER',
         'cm_bandwidth': 'INTEGER',
         'sb_k': 'BIGINT',
+        'par_sb_k': 'BIGINT',
         'sb_n_iters': 'BIGINT',
+        'par_sb_n_iters': 'BIGINT',
         'pr_struct_size': 'BIGINT',
 
     }
