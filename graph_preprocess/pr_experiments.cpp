@@ -134,16 +134,16 @@ int main(int argc, char *argv[]) {
 		std::string eorder_str = order_strings[ord];
 		par_sort_edges(mapped_edges, ord, num_vertices);
 
-//		if (debug) {
-//			std::vector<std::pair<ul, ul>> sorted_edges;
-//			// now the edgelist is sorted, remove unneeded idx
-//			std::for_each(begin(mapped_edges), end(mapped_edges), [&sorted_edges](Edge e) {
-//				sorted_edges.emplace_back(e.source, e.dest);
-//			});
-//			// write each sorted edge list to file
-//			std::string eorder_path = fmt::format("{}/{}.{}", input_dir, vorder_str, eorder_str);
-//			write_text_edge_list(eorder_path, sorted_edges);
-//		}
+		if (debug) {
+			std::vector<std::pair<ul, ul>> sorted_edges;
+			// now the edgelist is sorted, remove unneeded idx
+			std::for_each(begin(mapped_edges), end(mapped_edges), [&sorted_edges](Edge e) {
+				sorted_edges.emplace_back(e.source, e.dest);
+			});
+			// write each sorted edge list to file
+			std::string eorder_path = fmt::format("{}/{}.{}", input_dir, vorder_str, eorder_str);
+			write_text_edge_list(eorder_path, sorted_edges);
+		}
 
 		// run pr experiments
 		for (int expt_idx = 0; expt_idx < num_expts; ++expt_idx) {

@@ -85,8 +85,8 @@ def main(args):
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
     # print(rows)
-    graph_name_start_idx = 40
-    graph_name_end_idx = 41
+    graph_name_start_idx = 74
+    graph_name_end_idx = 75
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
@@ -103,7 +103,7 @@ def main(args):
     for i, row in enumerate(rows):
         # if int(get_directed(row['graph_name'])) == 1:
         #     continue
-        print(f"{i : <5} {row['graph_name'] : <40}"
+        print(f"{i + graph_name_start_idx: <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
               f"{get_pr_struct_size(row['graph_name']): <40}"

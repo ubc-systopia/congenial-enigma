@@ -28,7 +28,7 @@ class IOMode(Enum):
 def init():
     global settings
 
-    debug = False
+    debug = True
 
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
@@ -49,6 +49,7 @@ def init():
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
     data_dir = os.path.join(repo_home, "data")  # todo replace
+    data_dir = '/media/atrostan/patterson_backup/data/'
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
     sqlite3_db_path = "/home/atrostan/Workspace/graphs.db"# todo replace
@@ -166,6 +167,7 @@ def init():
             'rnd': "random",
             'rbt': "rabbit",
             'sb': "slashburn",
+            'parsb': "par_slashburn",
             # 'cm': "cuthill-mckee", # todo ignore these (too long with pbrcm)
             # 'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
