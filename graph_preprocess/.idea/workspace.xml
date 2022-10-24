@@ -26,22 +26,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../sb_tessellate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PageRank.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/PageRank.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/slashburn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/slashburn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../install_deps/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../install_deps/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../install_deps/install_deps.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../install_deps/install_deps.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/column_names.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/column_names.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/reorder.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/reorder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/test_ccs.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/test_ccs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../plot_pr_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/../plot_pr_results.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../rabbit_order" beforeDir="false" afterPath="$PROJECT_DIR$/../rabbit_order" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
