@@ -25,11 +25,11 @@ RUN git clone https://github.com/igraph/igraph.git \
     && mkdir build && cd build \
     && cmake .. \
     && cmake --build . \
-    && cmake --install . 
+    && cmake --install .  
 
-# Install boost 1.74.0 from source
+# Install boost 1.58.0 from source
 ENV BOOST_VERSION_MAJOR=1
-ENV BOOST_VERSION_MINOR=74
+ENV BOOST_VERSION_MINOR=58
 ENV BOOST_VERSION_REVISION=0
 
 ENV BOOST_VERSION_FNAME="boost_${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_REVISION}"
@@ -47,6 +47,15 @@ RUN wget ${BOOST_URL} \
     && cat /usr/local/include/boost/version.hpp | grep "BOOST_LIB_VERSION"
 
 
-# install python3.10
+# clone congenial-enigma
+RUN git clone --recurse-submodules https://github.com/ubc-systopia/congenial-enigma.git \
+    && pwd && ls
+    
+
+
+# create py3.10 virtualenv and install requirements
+# RUN pip3.10 install virutalenv \
+
+# SHELL ["virtualenv", ""]
 
 

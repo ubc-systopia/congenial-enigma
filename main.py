@@ -101,8 +101,9 @@ def main(args):
           f"{'Is Directed?': <40}")
     print('-' * 245)
     for i, row in enumerate(rows):
-        size, size_string = convert_size(get_pr_struct_size(row['graph_name']))
-        print(f"{i + graph_name_start_idx : <5} {row['graph_name'] : <40}"
+        # if int(get_directed(row['graph_name'])) == 1:
+        #     continue
+        print(f"{i + graph_name_start_idx: <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
               f"{str(size) + size_string: <40}"
