@@ -3,6 +3,8 @@ FROM intel/oneapi-basekit:devel-ubuntu20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV BASIC_DEPS="build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libgit2-dev curl libpq-dev python3-pip python3 wget apt-transport-https ca-certificates gnupg-agent software-properties-common"
+ARG reqs_path
+RUN echo reqs_path=${reqs_path}
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -47,15 +49,12 @@ RUN wget ${BOOST_URL} \
     && cat /usr/local/include/boost/version.hpp | grep "BOOST_LIB_VERSION"
 
 
-# clone congenial-enigma
-RUN git clone --recurse-submodules https://github.com/ubc-systopia/congenial-enigma.git \
-    && pwd && ls
-    
+# copy reqs txt from local to image
+COPY requirements.txt requirements.txt
+# install all python3.10 requirements
+RUN which pip3
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+RUN pip3.10 install -r requirements.txt
 
-
-# create py3.10 virtualenv and install requirements
-# RUN pip3.10 install virutalenv \
-
-# SHELL ["virtualenv", ""]
 
 
