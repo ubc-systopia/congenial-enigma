@@ -5,14 +5,15 @@
 
 [submodule "dbg"]
 	path = dbg
-	url = https://github.com:atrostan/dbg.git
+	url = https://github.com/atrostan/dbg.git
 	branch = output-to-files
 
 [submodule "ParallelBatchRCM"]
 	path = ParallelBatchRCM
-	url = https://github.com:atrostan/ParallelBatchRCM.git
+	url = https://github.com/atrostan/ParallelBatchRCM.git
+	
 	branch = custom-io
 	
 [submodule "par_slashburn"]
 	path = par_slashburn
-	url = https://github.com:atrostan/par_slashburn.git
+	url = https://github.com/atrostan/par_slashburn.git
