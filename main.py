@@ -85,8 +85,8 @@ def main(args):
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
     # print(rows)
-    graph_name_start_idx = -2
-    graph_name_end_idx = -1
+    graph_name_start_idx = 283
+    graph_name_end_idx = -2
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
@@ -212,4 +212,7 @@ $ python main.py --no-download --io-modes binary text --reorder all --no-plot --
 
 Download, preprocess, reorder, and plot; No PR experiments;
 $ python main.py --download --io-modes binary text --reorder all --plot --no-run-pr-expts --no-debug
+
+$ python main.py --download --io-modes binary text --reorder all --no-plot --run-pr-expts --no-debug
+
 """
