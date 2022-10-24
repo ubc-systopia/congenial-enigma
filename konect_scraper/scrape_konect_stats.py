@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy.dialects.sqlite import insert
 
 from konect_scraper import column_names, config
+from konect_scraper.sql import read_precomputed_stats
 from konect_scraper.stats import verify_stat
 from konect_scraper.util import get_query_vals_str, cast_np_dtypes, get_size_in_memory
 
@@ -264,6 +265,9 @@ def main(rows):
     meta_df = pd.read_csv(meta_df_path, index_col=0)
     stats_df = pd.read_csv(stats_df_path, index_col=0)
 
+    # add precomputed (e.g. slashburn) stats if they already exist
+    precomputed_stats_df = read_precomputed_stats()
+    return
     # use the (uncompressed) size and volume of the graphs to compute (roughly)
     # calculate the sizes of the PageRank computation structs
     stats_df['pr_struct_size'] = stats_df.apply(

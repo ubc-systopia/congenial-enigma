@@ -33,12 +33,32 @@ def get_all_unipartite_graphs():
     cursor = conn.execute(sql)
     return cursor.fetchall()
 
+
+def read_precomputed_stats():
+    conn = connect()
+    additional_stat_cols = [
+        'orig_bandwidth',
+        'cm_bandwidth',
+        'sb_k',
+        'par_sb_k',
+        'sb_n_iters',
+        'par_sb_n_iters',
+        'pr_struct_size',
+    ]
+    try:
+        df = read_table_as_table('statistics')
+    except:
+        return
+    return df[additional_stat_cols]
+
+
 def get_all_unipartite_undirected_graphs():
     conn = connect()
     conn.row_factory = sqlite3.Row
     sql = f"select * from metadata where network_format like 'Unipartite, undirected%'"
     cursor = conn.execute(sql)
     return cursor.fetchall()
+
 
 def get_all_unipartite_directed_graphs():
     conn = connect()
@@ -81,6 +101,7 @@ def get_all_rows_by_graph_names(table, graph_names):
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
 
+
 def get_all_graphs_by_graph_names(graph_names):
     conn = connect()
     conn.row_factory = sqlite3.Row
@@ -93,7 +114,7 @@ def get_all_graphs_by_graph_names(graph_names):
     cursor = conn.execute(sql, graph_names)
     return cursor.fetchall()
 
-    
+
 def get_all_graphs_by_graph_names_where_stats_between(stats, mins, maxs, graph_names):
     assert len(stats) == len(mins) == len(maxs)
     conn = connect()
