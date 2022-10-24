@@ -38,7 +38,7 @@ def main():
     # print(res.decode('ascii'))
     # res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
     # print(res.decode('ascii'))
-
+    
     # build graph_preprocess
     args = [
         cmake_executable,
@@ -90,6 +90,61 @@ def main():
         print(" ".join(args))
         res = subprocess.check_output(args, cwd=graph_preprocess_dir)
         print(res.decode('utf-8'))
+    
+
+    # build and install abseil (only if not installed already)
+    if not os.path.isdir(settings["abseil_install_include_dir"]):
+        subprocess.check_output(
+            ['git', 'clone', settings['abseil_repo_url']], 
+            cwd=settings["par_slashburn_dir"]
+        )
+        absl_install_dir = os.path.join(settings['par_slashburn_dir'], 'install')
+        absl_build_dir = os.path.join(settings['abseil_repo_dir'], 'build')
+        Path(absl_install_dir).mkdir(parents=True, exist_ok=True)   
+        Path(absl_build_dir).mkdir(parents=True, exist_ok=True)   
+
+        args = [
+            cmake_executable,
+            '..',
+            f'-DCMAKE_INSTALL_PREFIX={absl_install_dir}'
+        ]
+        subprocess.check_output(args, cwd=absl_build_dir)
+        args = [
+            cmake_executable,
+            '--build',
+            '.',
+            '--target',
+            'install'
+        ]
+        subprocess.check_output(args, cwd=absl_build_dir)
+    cmake_open_mp_options='-DIPS4O_USE_OPENMP=ON -DONEDPL_PAR_BACKEND=openmp'
+    par_slashburn_dir = settings['par_slashburn_dir']
+    # build and compile parallel slashburn
+    # build graph_preprocess
+    args = [
+        cmake_executable,
+        # tell cmake ips4o, onedpl to use
+        f"-DCMAKE_BUILD_TYPE={cmake_build_type}",
+        f"-DCMAKE_MAKE_PROGRAM={cmake_make_program}",
+        '-DIPS4O_USE_OPENMP=ON',
+        '-DONEDPL_PAR_BACKEND=openmp',
+        "-G", "Ninja",
+        "-S", par_slashburn_dir,
+        "-B", os.path.join(par_slashburn_dir, cmake_build_dir),
+    ]
+    print(" ".join(args))
+    res = subprocess.check_output(args, cwd=par_slashburn_dir)
+    print(res.decode('utf-8'))
+    args = [
+            cmake_executable,
+            "--build", cmake_build_dir,
+            "--target", 'par_slashburn',
+            "-j", str(n_threads)
+        ]
+    print(" ".join(args))
+    res = subprocess.check_output(args, cwd=par_slashburn_dir)
+    print(res.decode('utf-8'))
+    
 
     dbg_home = settings['dbg_home']
     dbg_apps_dir = settings['dbg_apps_dir']
