@@ -11,7 +11,6 @@
 [submodule "ParallelBatchRCM"]
 	path = ParallelBatchRCM
 	url = https://github.com/atrostan/ParallelBatchRCM.git
-	
 	branch = custom-io
 	
 [submodule "par_slashburn"]
