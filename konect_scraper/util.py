@@ -380,11 +380,11 @@ def get_n_m(graph_name):
 def get_n(graph_name):
     return single_val_get('n', 'n_m', graph_name)
 
+
 def get_n_vertices(graph_name):
     return single_val_get('size', 'statistics', graph_name)
 def get_n_edges(graph_name):
     return single_val_get('volume', 'statistics', graph_name)
-
 def get_pr_struct_size(graph_name):
     return single_val_get('pr_struct_size', 'statistics', graph_name)
 
@@ -406,7 +406,7 @@ def get_cache_stats():
         if 'K' in s:
             return int(s.replace('K', '')) * 1024
         elif 'M' in s:
-            return int(float(s.replace('M', ''))) * 1024 * 1024
+            return float(s.replace('M', '')) * 1024 * 1024
 
     args = ['lscpu', '-C']
     res = subprocess.check_output(args)
@@ -414,10 +414,10 @@ def get_cache_stats():
     # in the compressed, simplified representation
     lines = [l.split() for l in res.decode('ascii').split('\n')]
     df = pd.DataFrame(columns=lines[0], data=lines[1:])
-    if 'COHERENCY-SIZE' not in df.columns:
-        line_size = 64
-    else:
+    if 'COHERENCY-SIZE' in df.columns:
         line_size = int(df['COHERENCY-SIZE'].unique()[0])
+    else:
+        line_size = 64
     l1d_size = df.loc[df['NAME'] == 'L1d']['ONE-SIZE'].values[0]
     l2_size = df.loc[df['NAME'] == 'L2']['ONE-SIZE'].values[0]
     l3_size = df.loc[df['NAME'] == 'L3']['ONE-SIZE'].values[0]

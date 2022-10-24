@@ -15,7 +15,7 @@ from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between
     get_all_unipartite_undirected_graphs
 from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
-    get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges
+    get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
 
 
 def main(args):
@@ -85,8 +85,8 @@ def main(args):
         graph_names = json_args['graph_names']
     rows = get_all_graphs_by_graph_names(graph_names)
     # print(rows)
-    graph_name_start_idx = 40
-    graph_name_end_idx = 41
+    graph_name_start_idx = 283
+    graph_name_end_idx = -2
     # graph_name_end_idx = len(rows)
     rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
 
@@ -96,17 +96,17 @@ def main(args):
     print(f"{'Index' : <5} {'Graph Name' : <40}"
           f"{'|V|': <40}"
           f"{'|E|': <40}"
-          f"{'PageRank Struct Size': <40}"
+          f"{'PageRank Struct Size ': <40}"
           f"{'Graph Category': <40}"
           f"{'Is Directed?': <40}")
-    print('-' * 190)
+    print('-' * 245)
     for i, row in enumerate(rows):
         # if int(get_directed(row['graph_name'])) == 1:
         #     continue
-        print(f"{i : <5} {row['graph_name'] : <40}"
+        print(f"{i + graph_name_start_idx: <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
-              f"{get_pr_struct_size(row['graph_name']): <40}"
+              f"{str(size) + size_string: <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
     # return
@@ -213,4 +213,7 @@ $ python main.py --no-download --io-modes binary text --reorder all --no-plot --
 
 Download, preprocess, reorder, and plot; No PR experiments;
 $ python main.py --download --io-modes binary text --reorder all --plot --no-run-pr-expts --no-debug
+
+$ python main.py --download --io-modes binary text --reorder all --no-plot --run-pr-expts --no-debug
+
 """

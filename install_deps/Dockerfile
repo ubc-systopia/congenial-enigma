@@ -13,7 +13,7 @@ RUN apt-get update \
 # This variable specifices the system packages needed to be installed
 # nvidia-cuda-toolkit needed for ParBatchRCM can be ignored for now
 ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \ 
-    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build" 
+    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build libtbb-dev" 
 
 RUN add-apt-repository ppa:deadsnakes/ppa\
     && apt-get update \
@@ -27,7 +27,7 @@ RUN git clone https://github.com/igraph/igraph.git \
     && mkdir build && cd build \
     && cmake .. \
     && cmake --build . \
-    && cmake --install . 
+    && cmake --install .  
 
 # Install boost 1.58.0 from source
 ENV BOOST_VERSION_MAJOR=1

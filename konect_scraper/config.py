@@ -28,7 +28,7 @@ class IOMode(Enum):
 def init():
     global settings
 
-    debug = False
+    debug = True
 
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
@@ -40,7 +40,7 @@ def init():
     pbrcm_home = os.path.join(repo_root, "ParallelBatchRCM")
 
     dbg_home = os.path.join(repo_root, "dbg")  # todo replace
-    dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
+    # dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
 
     dbg_apps_dir = os.path.join(dbg_home, "apps")
     dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")
@@ -49,9 +49,10 @@ def init():
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
     data_dir = os.path.join(repo_home, "data")  # todo replace
+    # data_dir = '/media/atrostan/patterson_backup/data/'
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
-    sqlite3_db_path = "/home/atrostan/Workspace/graphs.db"# todo replace
+    sqlite3_db_path = "/home/atrostan/Workspace/graphs_dbs/graphs.db"# todo replace
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(repo_root, "konect_dataframes")
     graphs_dir = os.path.join(data_dir, "graphs")
@@ -73,6 +74,13 @@ def init():
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
 
     pr_experiments_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "pr_experiments")
+
+    # abseil and parallel slashburn
+    par_slashburn_dir = os.path.join(repo_root, 'par_slashburn')
+    abseil_repo_dir = os.path.join(par_slashburn_dir, 'abseil-cpp')
+    abseil_install_include_dir = os.path.join(par_slashburn_dir, 'install', 'include')
+    par_slashburn_executable =  os.path.join(par_slashburn_dir, cmake_build_dir, 'par_slashburn')
+
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
     # log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -139,10 +147,17 @@ def init():
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
 
+        # abseil
+        "abseil_install_include_dir": abseil_install_include_dir,
+        "abseil_repo_url": "https://github.com/abseil/abseil-cpp.git",
+        "abseil_repo_dir": abseil_repo_dir,
+        # parallel slashburn
+        "par_slashburn_dir": par_slashburn_dir,
+
         # Executables
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
-        "par_slashburn_executable": "/home/atrostan/CLionProjects/gapbs_sb/cmake-build-debug/gapbs_sb",
+        "par_slashburn_executable": par_slashburn_executable,
         "cuthill_mckee_executable": cuthill_mckee_executable,
         "parallel_batch_rcm_executable": parallel_batch_rcm_executable,
         "rabbit_order_executable": rabbit_order_executable,
@@ -160,12 +175,13 @@ def init():
             "bbox_inches": 'tight',
             "pad_inches": 0,
             "max_rows_per_agg_spy_plot": 5,  # the number of graphs to show per aggregated spy plot,
-            "max_n": 50_000,  # the largest graph size that is plottable as as adjacency matrix
+            "max_n": 100_000,  # the largest graph size that is plottable as as adjacency matrix
         },
         "orderings": {
             'rnd': "random",
             'rbt': "rabbit",
             'sb': "slashburn",
+            'parsb': "par_slashburn",
             # 'cm': "cuthill-mckee", # todo ignore these (too long with pbrcm)
             # 'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
