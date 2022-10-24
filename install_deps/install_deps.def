@@ -1,0 +1,16 @@
+# Copyright (c) 2019-2022 Intel Corporation.
+# SPDX-License-Identifier: BSD-3-Clause
+
+Bootstrap: docker
+From: intel/oneapi-hpckit:devel-ubuntu20.04
+
+%environment
+    export BASIC_DEPS="build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libgit2-dev curl libpq-dev python3-pip python3 wget apt-transport-https ca-certificates gnupg-agent software-properties-common"
+    export BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config"
+    export APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build libtbb-dev" 
+
+%post 
+    echo "deb http://us.archive.ubuntu.com/ubuntu focal universe " >> /etc/apt/sources.list
+    echo "deb http://us.archive.ubuntu.com/ubuntu focal multiverse " >> /etc/apt/sources.list
+    DEBIAN_FRONTEND=noninteractive
+    apt-get update && apt-get upgrade -y && apt-get -qq install -y ${BASIC_DEPS}
