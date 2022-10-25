@@ -13,7 +13,7 @@ RUN apt-get update \
 # This variable specifices the system packages needed to be installed
 # nvidia-cuda-toolkit needed for ParBatchRCM can be ignored for now
 ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \ 
-    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build libtbb-dev" 
+    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build libtbb-dev g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev" 
 
 RUN add-apt-repository ppa:deadsnakes/ppa\
     && apt-get update \
@@ -40,13 +40,11 @@ ENV BOOST_URL="http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERS
 RUN wget ${BOOST_URL} \
     && tar -xzvf ${BOOST_VERSION_FNAME}.tar.gz \
     && cd ${BOOST_VERSION_FNAME} \
-    && export cpuCores=$(cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}')\
-    && echo $cpuCores \
+    && ./bootstrap.sh --prefix=/usr/local --with-libraries=atomic,serialization,graph,filesystem,system
+RUN cd ${BOOST_VERSION_FNAME} \
+    && cpuCores=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`\
     && echo "Available CPU cores: "$cpuCores \
-    && ./bootstrap.sh  # this will generate ./b2 \
-    && ./b2 --with=all -j $cpuCores install \
-    && echo "Verifying boost version: " \
-    && cat /usr/local/include/boost/version.hpp | grep "BOOST_LIB_VERSION"
+    && ./b2 --with-program_options --with-atomic --with-serialization --with-graph --with-filesystem --with-system -j $cpuCores install 
 
 
 # copy reqs txt from local to image

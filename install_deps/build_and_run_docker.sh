@@ -7,3 +7,15 @@ docker build \
     # --build-arg pip_reqs=${}
     # .
 docker run install-deps
+# sudo apt-get -y install build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev
+
+# sudo apt-get install build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev
+
+# docker run -it \
+#    install-deps:latest /bin/bash \
+#    --mount type=bind,source=/home/atrostan/Workspace/repos/congenial-enigma/,target=/app
+#    /bin/bash
+
+docker run -it \
+   --mount type=bind,source=/home/atrostan/Workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
+   install-deps:latest /bin/bash 
