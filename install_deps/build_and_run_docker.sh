@@ -16,6 +16,10 @@ docker run install-deps
 #    --mount type=bind,source=/home/atrostan/Workspace/repos/congenial-enigma/,target=/app
 #    /bin/bash
 
+
+git clone https://github.com/ubc-systopia/congenial-enigma.git && cd congenial-enigma
+git submodule update --force --recursive --init --remote
+
 docker run -it \
    --mount type=bind,source=/home/atrostan/Workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
    install-deps:latest /bin/bash 
