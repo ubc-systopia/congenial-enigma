@@ -16,3 +16,4 @@
 [submodule "par_slashburn"]
 	path = par_slashburn
 	url = https://github.com/atrostan/par_slashburn.git
+	branch = main
