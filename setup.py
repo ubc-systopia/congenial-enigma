@@ -137,7 +137,7 @@ def main():
     print(res.decode('utf-8'))
     args = [
             cmake_executable,
-            "--build", cmake_build_dir,
+            "--build", os.path.join(par_slashburn_dir, cmake_build_dir),
             "--target", 'par_slashburn',
             "-j", str(n_threads)
         ]
