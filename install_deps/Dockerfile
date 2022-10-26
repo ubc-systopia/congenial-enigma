@@ -14,12 +14,19 @@ RUN apt-get update \
 # This variable specifices the system packages needed to be installed
 # nvidia-cuda-toolkit needed for ParBatchRCM can be ignored for now
 ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \ 
-    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build g++ python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libpthread-stubs0-dev libtbb-dev" 
+    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build g++-11 python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libpthread-stubs0-dev" 
 
-RUN add-apt-repository ppa:deadsnakes/ppa\
+RUN add-apt-repository ppa:deadsnakes/ppa \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y ${BUILD_DEPS} ${APP_DEPS}     
+
+# after install, update g++, gcc path
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 40 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 60 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 40 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 60 
 
 # install intel-basekit manually 
 # use wget to fetch the Intel repository public key

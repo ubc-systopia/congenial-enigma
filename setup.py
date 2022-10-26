@@ -131,6 +131,7 @@ def main():
         "-G", "Ninja",
         "-S", par_slashburn_dir,
         "-B", os.path.join(par_slashburn_dir, cmake_build_dir),
+        "-DCMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/latest"
     ]
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=par_slashburn_dir)

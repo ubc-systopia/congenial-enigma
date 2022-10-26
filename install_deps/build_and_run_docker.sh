@@ -25,5 +25,5 @@ cd ../
 
 
 docker run -it \
-   --mount type=bind,source=/home/atrostan/Workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
+   --mount type=bind,source=/home/atrostan/workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
    install-deps:latest /bin/bash 
