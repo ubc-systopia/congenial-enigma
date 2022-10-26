@@ -8,6 +8,7 @@ from konect_scraper import config
 def connect():
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
+
     return conn
 
 
@@ -24,6 +25,14 @@ def get_all_graphs_in_categories(categories):
 
 def is_bipartite(graph_name):
     return "Bipartite" in single_val_get('network_format', 'metadata', graph_name)
+
+
+def get_all_bipartite_graphs():
+    conn = connect()
+    conn.row_factory = sqlite3.Row
+    sql = f"select * from metadata where network_format like 'Bipartite%'"
+    cursor = conn.execute(sql)
+    return cursor.fetchall()
 
 
 def get_all_unipartite_graphs():

@@ -1,0 +1,324 @@
+,index,graph_name,num_vertices,num_edges,pr_struct_size,category
+0,0,moreno_taro,22,78,1.73KB,Human social network
+1,1,moreno_rhesus,16,111,2.11KB,Animal network
+2,2,moreno_sampson,18,189,3.38KB,Human social network
+3,3,moreno_cattle,28,217,4.05KB,Animal network
+4,4,league-be1-2016,16,239,4.11KB,Interaction network
+5,5,moreno_sheep,28,250,4.56KB,Animal network
+6,6,league-de1-2016,18,306,5.2KB,Interaction network
+7,7,moreno_bison,26,314,5.52KB,Animal network
+8,8,league-fr1-2016,20,380,6.41KB,Interaction network
+9,9,league-uk1-2013,20,380,6.41KB,Interaction network
+10,10,moreno_seventh,29,376,6.55KB,Human social network
+11,11,moreno_highschool,70,366,7.36KB,Human social network
+12,12,moreno_hens,32,496,8.5KB,Animal network
+13,13,convote,219,764,17.07KB,Interaction network
+14,14,moreno_mac,62,1187,20.0KB,Animal network
+15,15,moreno_innovation,241,1098,22.8KB,Human social network
+16,16,foodweb-baywet,128,2106,35.91KB,Trophic network
+17,17,foodweb-baydry,128,2137,36.39KB,Trophic network
+18,18,wiki_talk_ht,536,1530,36.47KB,Communication network
+19,19,maayan-foodweb,183,2494,43.26KB,Trophic network
+20,20,moreno_oz,217,2672,46.84KB,Human social network
+21,21,moreno_vdb,32,3062,48.59KB,Human social network
+22,22,librec-filmtrust-trust,874,1853,49.44KB,Online social network
+23,23,maayan-faa,1226,2615,69.59KB,Infrastructure network
+24,24,dimacs10-celegansneural,297,4296,74.09KB,Neural network
+25,25,maayan-Stelzl,1706,6207,136.97KB,Metabolic network
+26,26,maayan-figeys,2239,6452,153.29KB,Metabolic network
+27,27,wiki_talk_cy,2233,10740,220.15KB,Communication network
+28,28,wiki_talk_br,1181,13754,242.59KB,Communication network
+29,29,wiki_talk_oc,3144,11059,246.48KB,Communication network
+30,30,moreno_health,2539,12969,262.15KB,Human social network
+31,31,moreno_blogs,1224,19025,325.95KB,Hyperlink network
+32,32,soc-sign-bitcoinalpha,3783,24186,466.57KB,Online social network
+33,33,p2p-Gnutella08,6301,20777,472.32KB,Computer network
+34,34,opsahl-usairport,1574,28236,478.08KB,Infrastructure network
+35,35,opsahl-openflights,2939,30501,545.46KB,Infrastructure network
+36,36,dimacs10-polblogs,1224,33430,551.03KB,Hyperlink network
+37,37,p2p-Gnutella09,8114,26013,596.62KB,Computer network
+38,38,dnc-temporalGraph,2029,39264,661.05KB,Communication network
+39,39,soc-sign-bitcoinotc,5881,35592,693.96KB,Online social network
+40,40,p2p-Gnutella06,8717,31525,696.88KB,Computer network
+41,41,p2p-Gnutella05,8846,31839,704.81KB,Computer network
+42,42,librec-ciaodvd-trust,4658,40133,736.25KB,Online social network
+43,43,p2p-Gnutella04,10876,39994,879.81KB,Computer network
+44,44,wiki_talk_eo,7586,47070,913.27KB,Communication network
+45,45,tntp-ChicagoRegional,12982,39018,913.92KB,Infrastructure network
+46,46,advogato,6541,51127,952.16KB,Online social network
+47,47,wiki_talk_nds,23132,27432,970.78KB,Communication network
+48,48,opsahl-ucsocial,1899,59835,979.43KB,Communication network
+49,49,ego-twitter,23370,33101,1.04MB,Online social network
+50,50,dblp-cite,12590,49759,1.05MB,Citation network
+51,51,openflights,3425,67663,1.11MB,Infrastructure network
+52,52,ego-gplus,23628,39242,1.14MB,Online social network
+53,53,wiki_talk_gl,8097,63809,1.16MB,Communication network
+54,54,chess,7301,65053,1.16MB,Interaction network
+55,55,radoslaw_email,167,82927,1.27MB,Communication network
+56,56,p2p-Gnutella25,22687,54705,1.35MB,Computer network
+57,57,p2p-Gnutella24,26518,65369,1.6MB,Computer network
+58,58,elec,7118,103675,1.74MB,Online contact network
+59,59,wiki_talk_eu,40993,58120,1.83MB,Communication network
+60,60,wikipedia_link_gag,2929,118603,1.88MB,Hyperlink network
+61,61,subelj_cora,23166,91500,1.93MB,Citation network
+62,62,wikipedia_link_mi,7996,116464,1.96MB,Hyperlink network
+63,63,munmun_digg_reply,30398,87627,2.03MB,Communication network
+64,64,wiki_talk_lv,41424,73900,2.08MB,Communication network
+65,65,wikipedia_link_so,7439,125060,2.08MB,Hyperlink network
+66,66,wikipedia_link_am,20943,105746,2.09MB,Hyperlink network
+67,67,wikipedia_link_lo,3811,132837,2.11MB,Hyperlink network
+68,68,wikipedia_link_vls,9941,128212,2.18MB,Hyperlink network
+69,69,p2p-Gnutella30,36682,88328,2.19MB,Computer network
+70,70,foldoc,13356,125207,2.22MB,Hyperlink network
+71,71,subelj_jung-j,6120,138706,2.26MB,Software network
+72,72,wikipedia_link_myv,6293,142571,2.32MB,Hyperlink network
+73,73,wikipedia_link_nds_nl,10453,140501,2.38MB,Hyperlink network
+74,74,wikipedia_link_bat_smg,21900,123807,2.39MB,Hyperlink network
+75,75,subelj_jdk,6434,150985,2.45MB,Software network
+76,76,wikipedia_link_gv,6862,150595,2.45MB,Hyperlink network
+77,77,wikipedia_link_tk,6138,167810,2.7MB,Hyperlink network
+78,78,wikipedia_link_crh,8286,175470,2.87MB,Hyperlink network
+79,79,wikipedia_link_co,8252,177420,2.9MB,Hyperlink network
+80,80,wikipedia_link_gan,9189,176051,2.9MB,Hyperlink network
+81,81,wikipedia_link_rue,7621,178842,2.9MB,Hyperlink network
+82,82,wiki_talk_sk,41452,131884,2.96MB,Communication network
+83,83,cfinder-google,15763,171206,2.97MB,Hyperlink network
+84,84,wikipedia_link_nah,10285,180916,3.0MB,Hyperlink network
+85,85,wikipedia_link_csb,5561,191255,3.05MB,Hyperlink network
+86,86,wikipedia_link_wa,29021,162508,3.14MB,Hyperlink network
+87,87,wikipedia_link_lez,5171,204133,3.23MB,Hyperlink network
+88,88,wikipedia_link_dv,4266,206809,3.25MB,Hyperlink network
+89,89,slashdot-threads,51083,140778,3.32MB,Communication network
+90,90,wikipedia_link_kv,6914,211650,3.39MB,Hyperlink network
+91,91,wikipedia_link_as,15989,200929,3.43MB,Hyperlink network
+92,92,wikipedia_link_pam,9537,220180,3.58MB,Hyperlink network
+93,93,wikipedia_link_si,24913,197952,3.59MB,Hyperlink network
+94,94,wikipedia_link_xal,2697,232680,3.61MB,Hyperlink network
+95,95,p2p-Gnutella31,62586,147892,3.69MB,Computer network
+96,96,wiki_talk_bn,83803,122078,3.78MB,Communication network
+97,97,wikipedia_link_mhr,14569,226643,3.79MB,Hyperlink network
+98,98,wiki_talk_el,40254,190279,3.82MB,Communication network
+99,99,linux,30837,213954,3.97MB,Software network
+100,100,wikipedia_link_se,8622,259998,4.16MB,Hyperlink network
+101,101,wikipedia_link_fiu_vro,6424,280614,4.43MB,Hyperlink network
+102,102,wikipedia_link_os,20874,265981,4.54MB,Hyperlink network
+103,103,wikipedia_link_hsb,17665,280929,4.69MB,Hyperlink network
+104,104,wikipedia_link_vec,17524,293008,4.87MB,Hyperlink network
+105,105,wikipedia_link_fo,17649,296944,4.93MB,Hyperlink network
+106,106,wikipedia_link_cdo,14816,306031,5.01MB,Hyperlink network
+107,107,wikipedia_link_diq,11810,310697,5.01MB,Hyperlink network
+108,108,wikipedia_link_hif,8758,335267,5.32MB,Hyperlink network
+109,109,wikispeedia,4179,343950,5.34MB,Hyperlink network
+110,110,wikipedia_link_glk,7332,340451,5.36MB,Hyperlink network
+111,111,wikipedia_link_kn,29531,310910,5.42MB,Hyperlink network
+112,112,wikipedia_link_bcl,8130,349496,5.52MB,Hyperlink network
+113,113,wikipedia_link_map_bms,14162,345041,5.59MB,Hyperlink network
+114,114,wikipedia_link_gd,22978,340005,5.71MB,Hyperlink network
+115,115,wikipedia_link_sah,15531,352209,5.73MB,Hyperlink network
+116,116,cit-HepTh,27770,352807,6.02MB,Citation network
+117,117,wikipedia_link_bh,15581,382620,6.19MB,Hyperlink network
+118,118,wikipedia_link_xmf,15600,405676,6.55MB,Hyperlink network
+119,119,wikipedia_link_hak,11487,427057,6.78MB,Hyperlink network
+120,120,wikipedia_link_li,49129,375392,6.85MB,Hyperlink network
+121,121,wiki_talk_sr,103068,312837,7.13MB,Communication network
+122,122,wikipedia_link_nso,8152,455809,7.14MB,Hyperlink network
+123,123,wikipedia_link_ht,57219,384030,7.17MB,Hyperlink network
+124,124,wiki_talk_ca,79736,351610,7.19MB,Communication network
+125,125,cit-HepPh,34546,421578,7.22MB,Citation network
+126,126,wikipedia_link_or,25876,439724,7.3MB,Hyperlink network
+127,127,wikipedia_link_mn,24924,488451,8.02MB,Hyperlink network
+128,128,wikipedia_link_arz,24958,502048,8.23MB,Hyperlink network
+129,129,sx-mathoverflow,24818,506550,8.3MB,Online contact network
+130,130,eat,23132,511764,8.34MB,Lexical network
+131,131,wikipedia_link_pa,39753,537334,9.11MB,Hyperlink network
+132,132,wikipedia_link_nds,39034,541578,9.16MB,Hyperlink network
+133,133,soc-Epinions1,75879,508837,9.5MB,Online social network
+134,134,slashdot-zoo,79120,515397,9.68MB,Online social network
+135,135,wikipedia_link_ps,12949,637529,10.02MB,Hyperlink network
+136,136,wikipedia_link_pms,67205,569036,10.22MB,Hyperlink network
+137,137,wikipedia_link_bar,40757,664036,11.07MB,Hyperlink network
+138,138,wikipedia_link_yi,25250,698864,11.24MB,Hyperlink network
+139,139,wiki_talk_sv,120833,598066,11.89MB,Communication network
+140,140,wikipedia_link_als,29511,763424,12.32MB,Hyperlink network
+141,141,email-EuAll,265214,420045,12.48MB,Communication network
+142,142,wikipedia_link_io,31011,805095,12.99MB,Hyperlink network
+143,143,wikipedia_link_ku,37123,805932,13.15MB,Hyperlink network
+144,144,wikipedia_link_cv,44634,875818,14.39MB,Hyperlink network
+145,145,facebook-wosn-wall,46952,876993,14.46MB,Communication network
+146,146,wikisigned-k2,138592,740397,14.47MB,Online contact network
+147,147,wikipedia_link_ky,85076,861498,15.09MB,Hyperlink network
+148,148,wikipedia_link_nap,15441,993392,15.51MB,Hyperlink network
+149,149,wikipedia_link_min,222989,690651,15.64MB,Hyperlink network
+150,150,epinions,131828,841372,15.86MB,Online social network
+151,151,wikipedia_link_yo,41205,1042990,16.86MB,Hyperlink network
+152,152,wikipedia_link_roa_tara,10423,1089948,16.87MB,Hyperlink network
+153,153,wiki_talk_vi,338714,607087,17.02MB,Communication network
+154,154,wikipedia_link_vo,242046,761034,17.15MB,Hyperlink network
+155,155,dimacs9-NY,264346,730100,17.19MB,Infrastructure network
+156,156,wikipedia_link_sw,58770,1077184,17.78MB,Hyperlink network
+157,157,wikipedia_link_fy,65562,1071678,17.85MB,Hyperlink network
+158,158,lkml-reply,63399,1096440,18.18MB,Communication network
+159,159,sx-askubuntu,159316,964437,18.36MB,Online contact network
+160,160,wikipedia_link_mg,125916,1025610,18.53MB,Hyperlink network
+161,161,wikipedia_link_qu,37219,1165599,18.64MB,Hyperlink network
+162,162,wikipedia_link_scn,39957,1182785,18.96MB,Hyperlink network
+163,163,wikipedia_link_ckb,60722,1176333,19.34MB,Hyperlink network
+164,164,wikipedia_link_my,44651,1201350,19.35MB,Hyperlink network
+165,165,wikipedia_link_is,69381,1169291,19.43MB,Hyperlink network
+166,166,wikipedia_link_ilo,20485,1244270,19.45MB,Hyperlink network
+167,167,dimacs9-BAY,321270,794830,19.48MB,Infrastructure network
+168,168,enron,87273,1148072,19.52MB,Communication network
+169,169,wikipedia_link_su,43169,1250082,20.06MB,Hyperlink network
+170,170,wikipedia_link_ba,52560,1241806,20.15MB,Hyperlink network
+171,171,wikipedia_link_gu,30430,1327439,20.95MB,Hyperlink network
+172,172,wikipedia_link_an,56485,1306724,21.23MB,Hyperlink network
+173,173,wikipedia_link_lb,64161,1354329,22.13MB,Hyperlink network
+174,174,wikipedia_link_sco,64347,1397072,22.79MB,Hyperlink network
+175,175,wikipedia_link_mzn,18112,1476267,22.94MB,Hyperlink network
+176,176,wikipedia_link_pnb,51933,1436320,23.11MB,Hyperlink network
+177,177,munmun_twitter_social,465017,834797,23.38MB,Online social network
+178,178,wiki_talk_pl,155820,1358426,24.29MB,Communication network
+179,179,wiki_talk_ja,397635,1031378,24.84MB,Communication network
+180,180,wikipedia_link_br,83392,1553757,25.62MB,Hyperlink network
+181,181,wikipedia_link_ga,55088,1611606,25.85MB,Hyperlink network
+182,182,dimacs9-COL,435666,1042400,25.88MB,Infrastructure network
+183,183,sx-superuser,194085,1443339,26.47MB,Online contact network
+184,184,link-dynamic-simplewiki,100312,1627472,27.13MB,Hyperlink network
+185,185,wikipedia_link_zh_yue,110749,1718542,28.76MB,Hyperlink network
+186,186,wiki_talk_nl,225749,1554699,28.89MB,Communication network
+187,187,wikipedia_link_eml,11856,1895125,29.19MB,Hyperlink network
+188,188,wikipedia_link_jv,72453,1831665,29.61MB,Hyperlink network
+189,189,wikipedia_link_new,100573,1808560,29.9MB,Hyperlink network
+190,190,web-NotreDame,325729,1497134,30.3MB,Hyperlink network
+191,191,wikipedia_link_mr,93638,1886320,30.93MB,Hyperlink network
+192,192,wikipedia_link_af,72290,2019724,32.47MB,Hyperlink network
+193,193,digg-friends,279630,1731653,32.82MB,Online social network
+194,194,wikipedia_link_ast,83330,2095962,33.89MB,Hyperlink network
+195,195,wikipedia_link_ia,24031,2204006,34.18MB,Hyperlink network
+196,196,wikipedia_link_ml,132717,2125430,35.47MB,Hyperlink network
+197,197,citeseer,384413,1751463,35.52MB,Citation network
+198,198,wikipedia_link_bpy,25379,2411436,37.38MB,Hyperlink network
+199,199,wikipedia_link_tl,186450,2208986,37.97MB,Hyperlink network
+200,200,wikipedia-discussions-de,91340,2435731,39.26MB,Communication network
+201,201,wikipedia_link_sq,97940,2491433,40.26MB,Hyperlink network
+202,202,wikipedia_link_be_x_old,87179,2549700,40.9MB,Hyperlink network
+203,203,web-Stanford,281903,2312497,41.74MB,Hyperlink network
+204,204,wiki_talk_ru,457017,2282055,45.28MB,Communication network
+205,205,wikipedia_link_ne,36211,2941201,45.71MB,Hyperlink network
+206,206,wikipedia_link_te,93596,2930023,46.85MB,Hyperlink network
+207,207,wikipedia_link_bn,226501,2832143,48.4MB,Hyperlink network
+208,208,wikipedia_link_cy,142648,2967435,48.54MB,Hyperlink network
+209,209,wiki_talk_pt,541355,2424962,49.39MB,Communication network
+210,210,wiki_talk_es,497446,2702879,52.63MB,Communication network
+211,211,prosper-loans,89269,3394979,53.85MB,Interaction network
+212,212,wiki_talk_ar,1095799,1913103,54.27MB,Communication network
+213,213,wikipedia_link_lmo,52214,3623678,56.49MB,Hyperlink network
+214,214,wikipedia_link_sa,21779,3720076,57.26MB,Hyperlink network
+215,215,wikipedia_link_la,181160,3563825,58.53MB,Hyperlink network
+216,216,wikipedia_link_nn,215911,3566744,59.37MB,Hyperlink network
+217,217,zhishi-baidu-relatedpages,415641,3284387,59.63MB,Hyperlink network
+218,218,lasagne-yahoo,653260,2931708,59.69MB,Lexical network
+219,219,amazon0601,403394,3387388,60.92MB,Miscellaneous network
+220,220,wikipedia_link_lv,190048,3739941,61.42MB,Hyperlink network
+221,221,wiki_talk_zh,1219241,2284546,62.77MB,Communication network
+222,222,dimacs9-FLA,1070376,2687902,65.51MB,Infrastructure network
+223,223,wiki_talk_it,863846,3067680,66.58MB,Communication network
+224,224,wikipedia_link_uz,439347,3926707,69.97MB,Hyperlink network
+225,225,dimacs9-NW,1207945,2820774,70.69MB,Infrastructure network
+226,226,wikipedia_link_az,167246,4465854,71.97MB,Hyperlink network
+227,227,wikipedia_link_zh_min_nan,429317,4421679,77.3MB,Hyperlink network
+228,228,wikipedia_link_mk,136857,4903213,77.95MB,Hyperlink network
+229,229,wikipedia_link_tt,136014,4919249,78.17MB,Hyperlink network
+230,230,wikipedia_link_ka,159755,4887982,78.24MB,Hyperlink network
+231,231,wikipedia_link_simple,185262,5098259,82.03MB,Hyperlink network
+232,232,wikipedia_link_et,295546,5143473,85.25MB,Hyperlink network
+233,233,wikipedia_link_tg,110972,5611005,88.16MB,Hyperlink network
+234,234,dimacs9-NE,1524453,3868020,93.91MB,Infrastructure network
+235,235,wikipedia_link_el,216365,5890410,94.83MB,Hyperlink network
+236,236,wikipedia_link_th,266937,5845248,95.3MB,Hyperlink network
+237,237,web-Google,875713,5105039,97.94MB,Hyperlink network
+238,238,wikipedia_link_lt,268159,6091416,99.09MB,Hyperlink network
+239,239,wikipedia_link_bug,14266,6504058,99.57MB,Hyperlink network
+240,240,youtube-links,1138499,4942297,101.47MB,Online social network
+241,241,wiki_talk_fr,1420367,4641928,103.34MB,Communication network
+242,242,wikipedia_link_gl,207027,6798252,108.47MB,Hyperlink network
+243,243,wikipedia_link_be,375911,6563979,108.76MB,Hyperlink network
+244,244,dimacs9-CAL,1890815,4630444,113.93MB,Infrastructure network
+245,245,wiki_talk_de,519403,6729794,114.58MB,Communication network
+246,246,wikipedia_link_ce,172283,7301226,115.35MB,Hyperlink network
+247,247,wikipedia_link_hr,223125,7295433,116.43MB,Hyperlink network
+248,248,wikipedia_link_sk,291006,7597315,122.59MB,Hyperlink network
+249,249,wikipedia_link_ta,152870,8098155,127.07MB,Hyperlink network
+250,250,wikipedia_link_hi,172547,8183314,128.82MB,Hyperlink network
+251,251,wikipedia_link_sl,228316,8187935,130.16MB,Hyperlink network
+252,252,wikipedia_link_ur,332057,8079171,130.88MB,Hyperlink network
+253,253,wiki-Talk,2394385,5021410,131.42MB,Communication network
+254,254,web-BerkStan,685230,7600595,131.66MB,Hyperlink network
+255,255,wikipedia_link_eu,371025,8985762,145.6MB,Hyperlink network
+256,256,wikipedia_link_bg,354062,9527823,153.49MB,Hyperlink network
+257,257,wikipedia_link_da,378375,9618862,155.43MB,Hyperlink network
+258,258,trec-wt10g,1601787,8063026,159.69MB,Hyperlink network
+259,259,dimacs9-LKS,2758119,6794808,166.81MB,Infrastructure network
+260,260,wikipedia_link_eo,412997,10424529,168.52MB,Hyperlink network
+261,261,wikipedia_link_bs,178413,11485895,179.34MB,Hyperlink network
+262,262,dimacs9-E,3598623,8708058,215.24MB,Infrastructure network
+263,263,wikipedia_link_tr,544514,14703300,236.82MB,Hyperlink network
+264,264,higgs-twitter-social,456626,14855842,237.13MB,Online social network
+265,265,wikipedia_link_he,387503,15082322,239.01MB,Hyperlink network
+266,266,wikipedia_link_fi,684613,14658697,239.34MB,Hyperlink network
+267,267,wikipedia_link_kk,257226,15349731,240.11MB,Hyperlink network
+268,268,libimseti,220970,17359346,269.94MB,Online social network
+269,269,zhishi-hudong-internallink,1984484,14869484,272.31MB,Hyperlink network
+270,270,wikipedia_link_cs,655173,18516525,297.54MB,Hyperlink network
+271,271,dbpedia-all,3966924,13820853,301.69MB,Miscellaneous network
+272,272,wikipedia_link_hy,557677,19197218,305.69MB,Hyperlink network
+273,273,zhishi-baidu-internallink,2141300,17794839,320.54MB,Hyperlink network
+274,274,link-dynamic-nlwiki,1039252,20070561,330.04MB,Hyperlink network
+275,275,wikipedia_link_no,759923,20546603,330.91MB,Hyperlink network
+276,276,patentcite,3774768,16518947,338.46MB,Citation network
+277,277,zhishi-hudong-relatedpages,2452715,18854882,343.84MB,Hyperlink network
+278,278,wikipedia_link_oc,96228,23312547,357.92MB,Hyperlink network
+279,279,dimacs9-W,6262104,15119284,374.03MB,Infrastructure network
+280,280,link-dynamic-plwiki,1033050,25026208,405.51MB,Hyperlink network
+281,281,wikipedia_link_ms,362264,28260868,439.52MB,Hyperlink network
+282,282,wiki_talk_en,2987535,24981163,449.56MB,Communication network
+283,283,wikipedia_link_ko,772123,29371477,465.85MB,Hyperlink network
+284,284,soc-pokec-relationships,1632803,30622564,504.64MB,Online social network
+285,285,wikipedia_link_ro,903416,32763547,520.61MB,Hyperlink network
+286,286,flickr-growth,2302925,33140017,558.39MB,Online social network
+287,287,link-dynamic-itwiki,1204009,34826283,558.96MB,Hyperlink network
+288,288,wikipedia_link_id,894470,38282192,604.61MB,Hyperlink network
+289,289,wikipedia_link_ca,926636,38966215,615.79MB,Hyperlink network
+290,290,wikipedia_link_war,2093450,38631915,637.39MB,Hyperlink network
+291,291,wikipedia-growth,1870709,39953145,652.45MB,Hyperlink network
+292,292,wikipedia_link_hu,621511,46358909,721.61MB,Hyperlink network
+293,293,wikipedia_link_es,3033373,46656045,781.34MB,Hyperlink network
+294,294,wikipedia_link_vi,1372591,51077243,810.79MB,Hyperlink network
+295,295,dimacs9-CTR,14081816,33866826,839.07MB,Infrastructure network
+296,296,wikipedia_link_pt,1744781,57679728,920.06MB,Hyperlink network
+297,297,wikipedia_link_uk,1201408,59136839,929.85MB,Hyperlink network
+298,298,link-dynamic-frwiki,2212682,59008831,951.05MB,Hyperlink network
+299,299,wikipedia_link_nl,2622756,59168169,962.86MB,Hyperlink network
+300,300,sx-stackoverflow,2601977,63497050,1.0GB,Online contact network
+301,301,wikipedia_link_ar,1073810,66458548,1.01GB,Hyperlink network
+302,302,wikipedia_link_fa,2105723,66969531,1.04GB,Hyperlink network
+303,303,wikipedia_link_pl,1688608,70256468,1.08GB,Hyperlink network
+304,304,wikipedia_link_zh,1786381,72614837,1.12GB,Hyperlink network
+305,305,soc-LiveJournal1,4846609,68475391,1.13GB,Online social network
+306,306,zhishi-all,7827192,65905159,1.16GB,Hyperlink network
+307,307,wikipedia_link_ceb,7891015,69540354,1.21GB,Hyperlink network
+308,308,wikipedia_link_ja,1767268,83202622,1.28GB,Hyperlink network
+309,309,link-dynamic-dewiki,2166669,86337879,1.33GB,Hyperlink network
+310,310,dimacs9-USA,23947347,57708624,1.4GB,Infrastructure network
+311,311,wikipedia_link_ru,3370462,93373056,1.47GB,Hyperlink network
+312,312,wikipedia_link_de,3603726,96865851,1.52GB,Hyperlink network
+313,313,wikipedia_link_it,2148791,104719994,1.61GB,Hyperlink network
+314,314,wikipedia_link_sh,3924218,106265500,1.67GB,Hyperlink network
+315,315,wikipedia_link_sv,6100692,106749786,1.73GB,Hyperlink network
+316,316,wikipedia_link_fr,3333397,123709902,1.92GB,Hyperlink network
+317,317,wikipedia_link_sr,3175009,139586199,2.15GB,Hyperlink network
+318,318,dbpedia-link,18268992,172183984,2.97GB,Hyperlink network
+319,319,wikipedia_link_en,13593032,437217424,6.82GB,Hyperlink network
+320,320,twitter,41652230,1468365182,22.81GB,Online social network
+321,321,twitter_mpi,52579682,1963263821,30.43GB,Online social network
+322,322,friendster,68349466,2586147869,40.06GB,Online social network

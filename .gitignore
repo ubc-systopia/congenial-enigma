@@ -337,7 +337,7 @@ Mkfile.old
 dkms.conf
 
 # misc 
-*.csv
+# *.csv
 
 # ignore all intellij 
 .idea/*
