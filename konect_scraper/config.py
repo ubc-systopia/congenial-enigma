@@ -40,7 +40,6 @@ def init():
     pbrcm_home = os.path.join(repo_root, "ParallelBatchRCM")
 
     dbg_home = os.path.join(repo_root, "dbg")  # todo replace
-    # dbg_home = "/media/atrostan/patterson_backup/dbg"  # change dbg home dir to save space on big datasets
 
     dbg_apps_dir = os.path.join(dbg_home, "apps")
     dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")

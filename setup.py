@@ -1,5 +1,7 @@
+import argparse
 import logging
 import os
+import shutil
 import sqlite3
 from datetime import datetime
 import subprocess
@@ -10,9 +12,34 @@ import multiprocessing
 import psutil
 
 
-def main():
+def clean_built_submodules(settings):
+    submodule_paths = [
+        # ParallelBatchRCM,
+        settings['graph_preprocess_dir'],
+        os.path.join(settings["rabbit_home"], 'demo'),
+        settings['par_slashburn_dir'],
+    ]
+    for submodule_path in submodule_paths:
+        shutil.rmtree(
+            os.path.join(submodule_path, settings['cmake_build_dir']),
+            ignore_errors=True
+        )
+
+    subprocess.check_output(
+        ['make', 'clean'], 
+        cwd=os.path.join(settings['dbg_home'], 'apps'),
+    )
+    
+    return
+
+def main(args):
     config.init()
     settings = config.settings
+
+    if args.clean:
+        clean_built_submodules(settings)
+        return
+
     
     cmake_build_dir = settings['cmake_build_dir']
     rabbit_cmake_build_dir = settings['rabbit_cmake_build_dir']
@@ -21,6 +48,8 @@ def main():
 
     graph_preprocess_dir = settings["graph_preprocess_dir"]
     rabbit_home = settings["rabbit_home"]
+    dbg_home = settings['dbg_home']
+    par_slashburn_dir = settings['par_slashburn_dir']
 
     cmake_executable = settings["cmake_executable"]
     make_executable = settings["make_executable"]
@@ -118,7 +147,6 @@ def main():
         ]
         subprocess.check_output(args, cwd=absl_build_dir)
     cmake_open_mp_options='-DIPS4O_USE_OPENMP=ON -DONEDPL_PAR_BACKEND=openmp'
-    par_slashburn_dir = settings['par_slashburn_dir']
     # build and compile parallel slashburn
     # build graph_preprocess
     args = [
@@ -131,7 +159,10 @@ def main():
         "-G", "Ninja",
         "-S", par_slashburn_dir,
         "-B", os.path.join(par_slashburn_dir, cmake_build_dir),
-        "-DCMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/latest"
+        # path to local tbb install 
+        # (so that we don't have to use deprecated find_TBB cmake module
+        # in ips4o submodule build)
+        "-DCMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/latest"  
     ]
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=par_slashburn_dir)
@@ -145,9 +176,7 @@ def main():
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=par_slashburn_dir)
     print(res.decode('utf-8'))
-    
 
-    dbg_home = settings['dbg_home']
     dbg_apps_dir = settings['dbg_apps_dir']
     # build dbg
     print(dbg_apps_dir)
@@ -158,20 +187,24 @@ def main():
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))
 
-    # args = [
-    #     make_executable, "cleansrc",
-    # ]
-    # print(" ".join(args))
-    # subprocess.check_output(args, cwd=dbg_apps_dir)
-    # print(res.decode('ascii'))
-
     args = [
         make_executable,
         "-j", str(n_threads),
+        f'graph_preprocess_dir={graph_preprocess_dir}',
+        f'DBG_ROOT={dbg_home}',
     ]
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))
 
 if __name__ == "__main__":
-    main()
+    argparse_desc = """
+    python script that sets up (i.e. builds and compiles) all the submodules 
+    required by congenial enigma
+
+    """
+    parser = argparse.ArgumentParser(description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--clean',
+                        action=argparse.BooleanOptionalAction,
+                        help='Clean a previously built build.')
+    main(parser.parse_args())

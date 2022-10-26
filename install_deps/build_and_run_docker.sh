@@ -20,10 +20,12 @@ docker run install-deps
 git clone https://github.com/ubc-systopia/congenial-enigma.git && cd congenial-enigma
 git submodule update --force --recursive --init --remote
 cd par_slashburn
-git submodule update --recursive --init
+git submodule update --force --recursive --init --remote 
 cd ../
 
 
 docker run -it \
    --mount type=bind,source=/home/atrostan/workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
    install-deps:latest /bin/bash 
+
+   
