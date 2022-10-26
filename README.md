@@ -23,13 +23,22 @@ output: three files
 
 ## Python
 
-`>= Python3.10`  
+Recommended to create a `virtualenv >= Python3.10`.  
+`$ virtualenv --python="/usr/bin/python3.10" "./venv"`  
+`$ pip install -r requirements.txt`
+
 See [requirements.txt](./requirements.txt)
 
 ## C++
 
-- [Boost](https://www.boost.org/)
-    - `sudo apt-get install libboost-all-dev`
+### g++11
+```
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
+apt-get update
+apt-get install g++-11
+```
+
+- [Boost](https://www.boost.org/) (==1.5.8)
 - [igraph](https://igraph.org/c/)
 - [oneDPL](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html)
 

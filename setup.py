@@ -20,11 +20,13 @@ def clean_built_submodules(settings):
         settings['par_slashburn_dir'],
     ]
     for submodule_path in submodule_paths:
+        print(f"rm -rf {os.path.join(submodule_path, settings['cmake_build_dir'])}")
         shutil.rmtree(
             os.path.join(submodule_path, settings['cmake_build_dir']),
             ignore_errors=True
         )
-
+    
+    print(f"cd {os.path.join(settings['dbg_home'], 'apps')}; make clean")
     subprocess.check_output(
         ['make', 'clean'], 
         cwd=os.path.join(settings['dbg_home'], 'apps'),
