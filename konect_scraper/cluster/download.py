@@ -39,4 +39,6 @@ def main(graph_type, graph_ns):
     print(df['graph_name'].values)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
     write_sbatch_array_csv(rows)
+
+    # run the sbatch command on 
     return 
