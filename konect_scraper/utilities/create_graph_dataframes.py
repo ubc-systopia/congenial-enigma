@@ -23,7 +23,7 @@ def populate_df(rows, df):
     for i, row in enumerate(rows):
         size, size_string = convert_size(get_pr_struct_size(row['graph_name']))
         d = {
-            'index': i,
+            'graph_number': i,
             'graph_name': row['graph_name'],
             'num_vertices': get_n_vertices(row['graph_name']),
             'num_edges': get_n_edges(row['graph_name']),
@@ -43,8 +43,9 @@ def sort_downloadable_graphs(rows):
         r['graph_name']), reverse=False)
     return rows
 
+
 def main():
-    cols = ['index', 'graph_name', 'num_vertices', 'num_edges', 'pr_struct_size',
+    cols = ['graph_number', 'graph_name', 'num_vertices', 'num_edges', 'pr_struct_size',
             'category']
 
     config.init()
@@ -65,9 +66,9 @@ def main():
 
     dfs_dir = settings['dataframes_dir']
 
-    dir_df.to_csv(os.path.join(dfs_dir, 'directed.csv'))
-    undir_df.to_csv(os.path.join(dfs_dir, 'undirected.csv'))
-    bip_df.to_csv(os.path.join(dfs_dir, 'bipartite.csv'))
+    dir_df.to_csv(os.path.join(dfs_dir, 'directed.csv'), index=False)
+    undir_df.to_csv(os.path.join(dfs_dir, 'undirected.csv'), index=False)
+    bip_df.to_csv(os.path.join(dfs_dir, 'bipartite.csv'), index=False)
 
     return
 

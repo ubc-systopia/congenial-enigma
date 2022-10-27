@@ -357,3 +357,13 @@ venv/**
 ./rabbit_order/.idea/*
 
 ./rabbit_order/demo/cmake-build-debug/*
+
+# dbg Executables
+
+./dbg/apps/BC-iters
+./dbg/apps/BC
+./dbg/apps/BellmanFord-iters
+./dbg/apps/BellmanFord
+./dbg/apps/PageRank
+./dbg/apps/PageRankDelta
+./dbg/apps/Radii

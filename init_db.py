@@ -21,6 +21,7 @@ def update_ns_ms():
             m = int(f.readline().strip())
             print(graph_name, n, m)
 
+
 def main():
     """
     This script:
@@ -63,19 +64,26 @@ def main():
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
 
-    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m']
+    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'directed',
+              'undirected', 'bipartite']
     columns = [
         column_names.meta_col_names,
         column_names.stat_col_names,
         column_names.preproc_col_names,
         column_names.konect_col_names,
-        column_names.n_m_col_names
-    ]
-
+        column_names.n_m_col_names,
+    ] + [column_names.graph_dataframe_col_names] * 3
 
     for table, cols in zip(tables, columns):
         create_sql_table(conn, table, cols)
         update_table_schema(table, cols)
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+
+    graph_table_names = ['directed', 'undirected', 'bipartite']
+    for table_name in graph_table_names:
+        df = pd.read_csv(os.path.join(settings['dataframes_dir'], f"{table_name}.csv"))
+        conn = sqlite3.connect(db_path)
+        df.to_sql(table_name, con=conn, if_exists='replace')
 
     create_pr_expt_table()
     # scrape_konect_stats.fill_konect_table() TODO add argument for conditional first exection
@@ -84,15 +92,12 @@ def main():
     # for table in ['metadata', 'statistics', 'preproc']:
     #     delete_all_rows(table)
 
-
-
     # optionally, write konect to csv
-    db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
     # db_df = pd.read_sql_query("select * from konect", conn)
     # db_df.to_csv('./konect.csv', index=False)
-    
-    # on first execution populate konect table from konect.csv 
+
+    # on first execution populate konect table from konect.csv
     df = pd.read_csv(
         os.path.join(
             config.settings['dataframes_dir'],

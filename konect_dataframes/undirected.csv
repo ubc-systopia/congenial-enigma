@@ -1,91 +1,91 @@
-,index,graph_name,num_vertices,num_edges,pr_struct_size,category
-0,0,ucidata-gama,16,58,1.28KB,Human social network
-1,1,hiv,40,41,1.58KB,Human contact network
-2,2,moreno_kangaroo,17,91,1.82KB,Animal network
-3,3,ucidata-zachary,34,78,2.02KB,Human social network
-4,4,moreno_zebra,27,111,2.37KB,Animal network
-5,5,contiguous-usa,49,107,2.82KB,Infrastructure network
-6,6,iceland,75,114,3.54KB,Human contact network
-7,7,dimacs10-chesapeake,39,170,3.57KB,Trophic network
-8,8,dolphins,62,159,3.94KB,Animal network
-9,9,moreno_train,64,243,5.3KB,Human social network
-10,10,moreno_lesmis,77,254,5.77KB,Miscellaneous network
-11,11,moreno_beach,43,336,6.26KB,Human contact network
-12,12,maayan-pdzbase,212,244,8.78KB,Metabolic network
-13,13,adjnoun_adjacency,112,425,9.27KB,Lexical network
-14,14,dimacs10-polbooks,105,441,9.35KB,Miscellaneous network
-15,15,gene_fusion,291,279,11.18KB,Miscellaneous network
-16,16,dimacs10-football,115,613,12.27KB,Interaction network
-17,17,dbpedia-similar,430,565,18.91KB,Miscellaneous network
-18,18,dimacs10-celegans_metabolic,453,2025,42.26KB,Metabolic network
-19,19,arenas-jazz,198,2742,47.48KB,Human social network
-20,20,subelj_euroroad,1174,1417,49.66KB,Infrastructure network
-21,21,dimacs10-netscience,1461,2742,77.09KB,Co-authorship network
-22,22,moreno_propro,1870,2277,79.41KB,Metabolic network
-23,23,arenas-meta,453,4596,82.43KB,Metabolic network
-24,24,petster-hamster-household,1576,4032,99.94KB,Online social network
-25,25,arenas-email,1133,5451,111.73KB,Communication network
-26,26,ego-facebook,2888,2981,114.27KB,Online social network
-27,27,maayan-vidal,3133,6726,178.52KB,Metabolic network
-28,28,opsahl-powergrid,4941,6594,218.84KB,Infrastructure network
-29,29,petster-friendships-hamster,1858,12534,239.39KB,Online social network
-30,30,petster-hamster-friend,2952,12534,265.03KB,Online social network
-31,31,sociopatterns-infectious,410,17298,279.89KB,Human contact network
-32,32,moreno_names,1773,16401,297.82KB,Lexical network
-33,33,petster-hamster,2426,16631,316.72KB,Online social network
-34,34,sociopatterns-hypertext,113,20818,327.93KB,Human contact network
-35,35,pajek-erdos,6927,11850,347.51KB,Co-authorship network
-36,36,as20000102,6474,13895,368.84KB,Computer network
-37,37,contact,274,28244,447.73KB,Human contact network
-38,38,asoiaf,796,32629,528.48KB,Miscellaneous network
-39,39,arenas-pgp,10680,24316,630.25KB,Online contact network
-40,40,twin,14274,20573,656.0KB,Miscellaneous network
-41,41,dimacs10-as-22july06,22963,48436,1.26MB,Computer network
-42,42,as-caida20071105,26475,53381,1.42MB,Computer network
-43,43,dnc-corecipient,2029,136602,2.13MB,Online contact network
-44,44,dimacs10-astro-ph,16046,121251,2.22MB,Co-authorship network
-45,45,reactome,6327,147547,2.4MB,Metabolic network
-46,46,dimacs10-cond-mat-2003,30460,120029,2.53MB,Co-authorship network
-47,47,topology,34761,171403,3.41MB,Computer network
-48,48,ca-AstroPh,18771,198050,3.45MB,Co-authorship network
-49,49,dimacs10-cond-mat-2005,39577,175691,3.59MB,Co-authorship network
-50,50,loc-brightkite_edges,58228,214078,4.6MB,Online social network
-51,51,douban,154908,327162,8.54MB,Online social network
-52,52,petster-cat-household,105138,494858,9.96MB,Online social network
-53,53,wordnet-words,146005,656999,13.37MB,Lexical network
-54,54,facebook-wosn-links,63731,817035,13.93MB,Online social network
-55,55,mit,96,1086404,16.58MB,Human contact network
-56,56,loc-gowalla_edges,196591,950327,19.0MB,Online social network
-57,57,com-amazon,334863,925872,21.79MB,Miscellaneous network
-58,58,com-dblp,317080,1049866,23.28MB,Co-authorship network
-59,59,livemocha,104103,2193083,35.85MB,Online social network
-60,60,flickrEdges,105938,2316948,37.78MB,Miscellaneous network
-61,61,petster-dog-household,260390,2148179,38.74MB,Online social network
-62,62,ca-cit-HepTh,22908,2673133,41.31MB,Co-citation network
-63,63,wikiconflict,118100,2917785,47.22MB,Online contact network
-64,64,petster-catdog-household,333111,2643012,47.95MB,Online social network
-65,65,roadNet-PA,1088092,1541898,48.43MB,Infrastructure network
-66,66,dimacs10-cnr-2000,325557,2738969,49.24MB,Hyperlink network
-67,67,roadNet-TX,1379917,1921660,60.91MB,Infrastructure network
-68,68,ca-cit-HepPh,28093,4596803,70.78MB,Co-citation network
-69,69,com-youtube,1134890,2987624,71.56MB,Online social network
-70,70,hyves,1402673,2777419,74.48MB,Online social network
-71,71,petster-friendships-cat,149700,5449275,86.58MB,Online social network
-72,72,roadNet-CA,1965206,2766607,87.2MB,Infrastructure network
-73,73,petster-cat-friend,204473,5448197,87.81MB,Online social network
-74,74,petster-friendships-dog,426820,8546581,140.18MB,Online social network
-75,75,petster-dog-friend,451710,8543549,140.7MB,Online social network
-76,76,flixster,2523386,7918801,178.59MB,Online social network
-77,77,as-skitter,1696415,11095298,208.13MB,Computer network
-78,78,youtube-u-growth,3223589,9375374,216.84MB,Online social network
-79,79,petster-catdog-friend,623754,13991746,227.77MB,Online social network
-80,80,dimacs10-in-2004,1382867,13591473,239.04MB,Hyperlink network
-81,81,petster-carnivore,623766,15699276,253.83MB,Online social network
-82,82,dimacs10-eu-2005,862664,16138468,266.0MB,Hyperlink network
-83,83,flickr-links,1715255,15551250,276.55MB,Online social network
-84,84,dblp_coauthor,1824701,29487744,491.71MB,Co-authorship network
-85,85,actor-collaboration,382219,33115812,514.06MB,Miscellaneous network
-86,86,livejournal-links,5204176,49174464,869.46MB,Online social network
-87,87,orkut-links,3072441,117184899,1.81GB,Online social network
-88,88,dimacs10-uk-2002,18483186,261787258,4.31GB,Hyperlink network
-89,89,dimacs10-uk-2007-05,105153952,3301876564,51.55GB,Hyperlink network
+graph_number,graph_name,num_vertices,num_edges,pr_struct_size,category
+0,ucidata-gama,16,58,1.28KB,Human social network
+1,hiv,40,41,1.58KB,Human contact network
+2,moreno_kangaroo,17,91,1.82KB,Animal network
+3,ucidata-zachary,34,78,2.02KB,Human social network
+4,moreno_zebra,27,111,2.37KB,Animal network
+5,contiguous-usa,49,107,2.82KB,Infrastructure network
+6,iceland,75,114,3.54KB,Human contact network
+7,dimacs10-chesapeake,39,170,3.57KB,Trophic network
+8,dolphins,62,159,3.94KB,Animal network
+9,moreno_train,64,243,5.3KB,Human social network
+10,moreno_lesmis,77,254,5.77KB,Miscellaneous network
+11,moreno_beach,43,336,6.26KB,Human contact network
+12,maayan-pdzbase,212,244,8.78KB,Metabolic network
+13,adjnoun_adjacency,112,425,9.27KB,Lexical network
+14,dimacs10-polbooks,105,441,9.35KB,Miscellaneous network
+15,gene_fusion,291,279,11.18KB,Miscellaneous network
+16,dimacs10-football,115,613,12.27KB,Interaction network
+17,dbpedia-similar,430,565,18.91KB,Miscellaneous network
+18,dimacs10-celegans_metabolic,453,2025,42.26KB,Metabolic network
+19,arenas-jazz,198,2742,47.48KB,Human social network
+20,subelj_euroroad,1174,1417,49.66KB,Infrastructure network
+21,dimacs10-netscience,1461,2742,77.09KB,Co-authorship network
+22,moreno_propro,1870,2277,79.41KB,Metabolic network
+23,arenas-meta,453,4596,82.43KB,Metabolic network
+24,petster-hamster-household,1576,4032,99.94KB,Online social network
+25,arenas-email,1133,5451,111.73KB,Communication network
+26,ego-facebook,2888,2981,114.27KB,Online social network
+27,maayan-vidal,3133,6726,178.52KB,Metabolic network
+28,opsahl-powergrid,4941,6594,218.84KB,Infrastructure network
+29,petster-friendships-hamster,1858,12534,239.39KB,Online social network
+30,petster-hamster-friend,2952,12534,265.03KB,Online social network
+31,sociopatterns-infectious,410,17298,279.89KB,Human contact network
+32,moreno_names,1773,16401,297.82KB,Lexical network
+33,petster-hamster,2426,16631,316.72KB,Online social network
+34,sociopatterns-hypertext,113,20818,327.93KB,Human contact network
+35,pajek-erdos,6927,11850,347.51KB,Co-authorship network
+36,as20000102,6474,13895,368.84KB,Computer network
+37,contact,274,28244,447.73KB,Human contact network
+38,asoiaf,796,32629,528.48KB,Miscellaneous network
+39,arenas-pgp,10680,24316,630.25KB,Online contact network
+40,twin,14274,20573,656.0KB,Miscellaneous network
+41,dimacs10-as-22july06,22963,48436,1.26MB,Computer network
+42,as-caida20071105,26475,53381,1.42MB,Computer network
+43,dnc-corecipient,2029,136602,2.13MB,Online contact network
+44,dimacs10-astro-ph,16046,121251,2.22MB,Co-authorship network
+45,reactome,6327,147547,2.4MB,Metabolic network
+46,dimacs10-cond-mat-2003,30460,120029,2.53MB,Co-authorship network
+47,topology,34761,171403,3.41MB,Computer network
+48,ca-AstroPh,18771,198050,3.45MB,Co-authorship network
+49,dimacs10-cond-mat-2005,39577,175691,3.59MB,Co-authorship network
+50,loc-brightkite_edges,58228,214078,4.6MB,Online social network
+51,douban,154908,327162,8.54MB,Online social network
+52,petster-cat-household,105138,494858,9.96MB,Online social network
+53,wordnet-words,146005,656999,13.37MB,Lexical network
+54,facebook-wosn-links,63731,817035,13.93MB,Online social network
+55,mit,96,1086404,16.58MB,Human contact network
+56,loc-gowalla_edges,196591,950327,19.0MB,Online social network
+57,com-amazon,334863,925872,21.79MB,Miscellaneous network
+58,com-dblp,317080,1049866,23.28MB,Co-authorship network
+59,livemocha,104103,2193083,35.85MB,Online social network
+60,flickrEdges,105938,2316948,37.78MB,Miscellaneous network
+61,petster-dog-household,260390,2148179,38.74MB,Online social network
+62,ca-cit-HepTh,22908,2673133,41.31MB,Co-citation network
+63,wikiconflict,118100,2917785,47.22MB,Online contact network
+64,petster-catdog-household,333111,2643012,47.95MB,Online social network
+65,roadNet-PA,1088092,1541898,48.43MB,Infrastructure network
+66,dimacs10-cnr-2000,325557,2738969,49.24MB,Hyperlink network
+67,roadNet-TX,1379917,1921660,60.91MB,Infrastructure network
+68,ca-cit-HepPh,28093,4596803,70.78MB,Co-citation network
+69,com-youtube,1134890,2987624,71.56MB,Online social network
+70,hyves,1402673,2777419,74.48MB,Online social network
+71,petster-friendships-cat,149700,5449275,86.58MB,Online social network
+72,roadNet-CA,1965206,2766607,87.2MB,Infrastructure network
+73,petster-cat-friend,204473,5448197,87.81MB,Online social network
+74,petster-friendships-dog,426820,8546581,140.18MB,Online social network
+75,petster-dog-friend,451710,8543549,140.7MB,Online social network
+76,flixster,2523386,7918801,178.59MB,Online social network
+77,as-skitter,1696415,11095298,208.13MB,Computer network
+78,youtube-u-growth,3223589,9375374,216.84MB,Online social network
+79,petster-catdog-friend,623754,13991746,227.77MB,Online social network
+80,dimacs10-in-2004,1382867,13591473,239.04MB,Hyperlink network
+81,petster-carnivore,623766,15699276,253.83MB,Online social network
+82,dimacs10-eu-2005,862664,16138468,266.0MB,Hyperlink network
+83,flickr-links,1715255,15551250,276.55MB,Online social network
+84,dblp_coauthor,1824701,29487744,491.71MB,Co-authorship network
+85,actor-collaboration,382219,33115812,514.06MB,Miscellaneous network
+86,livejournal-links,5204176,49174464,869.46MB,Online social network
+87,orkut-links,3072441,117184899,1.81GB,Online social network
+88,dimacs10-uk-2002,18483186,261787258,4.31GB,Hyperlink network
+89,dimacs10-uk-2007-05,105153952,3301876564,51.55GB,Hyperlink network

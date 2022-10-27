@@ -9,6 +9,7 @@ def init():
     global sqlite3_to_np_dtypes
     global n_m_col_names
     global sql_to_np_dtypes
+    global graph_dataframe_col_names
 
     sql_to_np_dtypes = {
         'TEXT': str,
@@ -16,6 +17,15 @@ def init():
         'INTEGER': "Int64",
         'REAL': "Float64",
         'BIGINT': object
+    }
+
+    graph_dataframe_col_names = {
+        "graph_number": 'INTEGER',
+        "graph_name": 'TEXT',
+        "num_vertices": 'BIGINT',
+        "num_edges": 'BIGINT',
+        "pr_struct_size": 'STRING',
+        "category": 'STRING',
     }
 
     pr_expts_col_names = {
