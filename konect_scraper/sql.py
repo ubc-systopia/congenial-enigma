@@ -1,3 +1,4 @@
+from ctypes import alignment
 import sqlite3
 
 import pandas as pd
@@ -10,6 +11,64 @@ def connect():
     conn = sqlite3.connect(db_path)
 
     return conn
+
+
+def print_rows(rs):
+    """Given an arbitrary list of rows, use the rows' keys to pretty print 
+    a table of the rows' contents
+
+    Args:
+        rs (list of sqlite3.Row): 
+    """
+    ks = rs[0].keys()
+    width = 30
+
+    heading_str = ""
+    for k in ks:
+        heading_str += f"{k : <{width }}"
+
+    # heading
+    print("-" * width * len(ks))
+    print(heading_str)
+    print("-" * width * len(ks))
+
+    # rows
+    for r in rs:
+        r_str = ""
+        for k in ks:
+            r_str += f"{r[k] : <{width }}"
+        print(r_str)
+
+    return
+
+
+def print_row(r):
+    """Given an arbitrary 
+
+    Args:
+        r (_type_): _description_
+    """
+    return
+
+
+def get_graphs_by_graph_numbers(ns, graph_type):
+    """given a min, max graph numbers and a graph type, return all relevant rows
+
+    Args:
+        ns (int pair): pair of ints - [min graph number, max graph number)
+        graph_type (string): type of graph - one of: directed, undirected, 
+                                                     bipartite
+    """
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    mn = ns[0]
+    mx = ns[1]
+    sql = f"select * from {graph_type} where graph_number between {mn} and {mx}"
+    cursor = conn.execute(sql)
+    rows = cursor.fetchall()
+
+    return rows
 
 
 def get_all_graphs_in_categories(categories):

@@ -17,59 +17,12 @@ from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
     get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
 
+from konect_scraper.cluster import download as cc_download
 
-def main(args):
-    create_log_dir_if_not_exists()
-    plot = args.plot
-    orders = args.reorder
-    io_modes = args.io_modes
-    directed = args.directed
-    run_pr_expts = args.run_pr_expts
-    json_args_path = args.json_args
-    debug = args.debug
-    exec_mode = args.mode
-
-    match exec_mode:
-        case 'download':
-            
-            return 
-        case 'download':
-            return 
-        case 'preprocess':
-            return 
-        case 'reorder':
-            return 
-        case 'plot':
-            return 
-        case 'pr_expt':
-            return 
-        case _:
-            return 
-
-    return 
-
-    config.settings['debug'] = debug
-
-    log_dir = config.settings['logging']['log_dir']
-    curr_time = datetime.now().strftime("%H_%d_%m_%Y")
-    log_path = f"{config.settings['app_name']}_{curr_time}"
-    log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
-    init_logger(log_file_name)
-    directed = True
-    if directed:
-        rows = get_all_unipartite_directed_graphs()
-    else:
-        rows = get_all_unipartite_undirected_graphs()
-    n_unipartite_graphs = len(rows)
-    graph_names = [r['graph_name'] for r in rows]
-    print(f"{len(graph_names)} unipartite graphs in dataset.")
-
-    # a selection of relevant graph_names have been identified,
-    # download, reorder, and plot them
-
-    # if io mode is unspecified, use text as default
+def get_io_modes(io_modes):
+    # if io mode is unspecified, use both binary and text as default
     if not io_modes:
-        io_modes = [IOMode.text]
+        io_modes = [IOMode.binary, IOMode.text]
     else:
         modes = []
         for io_mode in io_modes:
@@ -81,6 +34,84 @@ def main(args):
                 case _:
                     logging.error(f"{mode}: Unsupported IO mode!")
         io_modes = modes
+    return io_modes
+
+def main(args):
+    create_log_dir_if_not_exists()
+    plot = args.plot
+    orders = args.reorder
+    io_modes = args.io_modes
+    directed = args.directed
+    run_pr_expts = args.run_pr_expts
+    json_args_path = args.json_args
+    debug = args.debug
+    graph_ns = list(map(int, args.graph_numbers))
+    exec_mode = args.mode
+    environment = args.environment
+
+    io_modes = get_io_modes(io_modes)
+
+    config.settings['debug'] = debug
+
+    log_dir = config.settings['logging']['log_dir']
+    curr_time = datetime.now().strftime("%H_%d_%m_%Y")
+    log_path = f"{config.settings['app_name']}_{curr_time}"
+    log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
+    init_logger(log_file_name)
+
+    if directed:
+        graph_type = 'directed'
+    else:
+        graph_type = 'undirected'
+
+    match environment:
+        case 'cluster':
+            match exec_mode:
+                case 'download':
+                    cc_download.main(graph_type, graph_ns)
+                    return
+                case 'preprocess':
+                    return
+                case 'reorder':
+                    return
+                case 'plot':
+                    return
+                case 'pr_expt':
+                    return
+                case _:
+                    return
+            return
+
+        case 'local':
+            match exec_mode:
+                case 'download':
+                    return
+                case 'preprocess':
+                    return
+                case 'reorder':
+                    return
+                case 'plot':
+                    return
+                case 'pr_expt':
+                    return
+                case _:
+                    return
+            return 
+    return
+
+
+    
+    directed = True
+    if directed:
+        rows = get_all_unipartite_directed_graphs()
+    else:
+        rows = get_all_unipartite_undirected_graphs()
+    n_unipartite_graphs = len(rows)
+    graph_names = [r['graph_name'] for r in rows]
+    print(f"{len(graph_names)} unipartite graphs in dataset.")
+
+    # a selection of relevant graph_names have been identified,
+    # download, reorder, and plot them
 
     graph_names = [r['graph_name'] for r in rows]
     rows = get_all_downloadable_graphs(graph_names)[:]
@@ -161,22 +192,26 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=RawTextHelpFormatter)
 
+    parser.add_argument('-v', '--environment', choices={'local', 'cluster'},
+                        required=True, help="Whether to run konect scraper and"
+                        "preprocess locally or on Compute Canada")
+
     exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr_expt'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
                         "\{'download', 'preprocess', 'reorder', 'plot', "
                         "'pr_expt'\}")
 
-    parser.add_argument('-g', '--graph-numbers', nargs='+', required=True,
-                        help='If specified, only download and scrape these graphs\n'
-                        'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
-                        'is [0, 100) ')
-
     parser.add_argument('-d', '--directed',
                         action=argparse.BooleanOptionalAction,
                         required=True,
                         help='Whether to download and preprocess directed/undirected graphs.\n'
                         '(Bipartite graphs currently unsupported).')
+
+    parser.add_argument('-g', '--graph-numbers', nargs='+', required=True,
+                        help='If specified, only download and scrape these graphs\n'
+                        'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
+                        'is [0, 100) ')
 
     parser.add_argument('-i', '--io-modes', nargs='+',
                         help='The IO mode that the graphs and isomorphisms will be saved as.'

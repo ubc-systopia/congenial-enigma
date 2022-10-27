@@ -367,3 +367,6 @@ venv/**
 ./dbg/apps/PageRank
 ./dbg/apps/PageRankDelta
 ./dbg/apps/Radii
+
+*.sif
+konect_scraper/cluster/csvs/*
