@@ -179,7 +179,10 @@ def create_plot_dirs_if_not_exists(graph_name):
 
 
 def create_log_dir_if_not_exists():
-    data_dirs = [config.settings['logging']['log_dir']]
+    data_dirs = [
+        config.settings['logging']['log_dir'],
+        config.settings['logging']['slurm_log_dir'],
+    ]
 
     for data_dir in data_dirs:
         Path(data_dir).mkdir(parents=True, exist_ok=True)

@@ -28,8 +28,7 @@ docker run -it \
    --mount type=bind,source=/home/atrostan/workspace/repos/tmp/congenial-enigma,target=/congenial-enigma \
    install-deps:latest /bin/bash 
 
+
+
+
    
-
-python -m konect_scraper.cluster.main --mode download --directed --graph-numbers 20 30 --data-dir /home/atrostan/workspace/repos/congenial-enigma/konect_scraper/data
-
-python -m konect_scraper.cluster.slurm.download /home/atrostan/workspace/repos/congenial-enigma/konect_scraper/cluster/csvs/download.csv 1

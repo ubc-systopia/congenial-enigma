@@ -1,4 +1,5 @@
 import os.path
+import subprocess
 import sys
 from pathlib import Path
 from enum import Enum
@@ -19,6 +20,7 @@ def get_monitors_dpi():
 
 def get_n_threads():
     return psutil.cpu_count()
+
 
 class IOMode(Enum):
     binary = 1
@@ -198,6 +200,7 @@ def init(input_data_dir=None):
         },
         "logging": {
             "log_dir": log_dir,
+            "slurm_log_dir": os.path.join(log_dir, 'slurm'),
             "log_format": log_format
         },
         "hyperparameters": {
@@ -252,6 +255,7 @@ def init(input_data_dir=None):
                                         # to train a predictive model of vertex+edge ordering performance
         },
         'compute_canada': {
-            'job_array_dir': os.path.join(repo_home, 'cluster', 'csvs')
+            'job_array_dir': os.path.join(repo_home, 'cluster', 'csvs'),
+            'image': '/home/atrostan/singularity-images/congenial_enigma.sif'
         }
     }
