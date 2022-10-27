@@ -2,7 +2,7 @@ import logging
 import os
 import sqlite3
 from datetime import datetime
-
+import argparse
 import pandas as pd
 
 from konect_scraper import config, column_names, scrape_konect_stats
@@ -22,7 +22,7 @@ def update_ns_ms():
             print(graph_name, n, m)
 
 
-def main():
+def main(data_dir=None):
     """
     This script:
     - Initializes a sqlite3 db with the following tables:
@@ -37,7 +37,7 @@ def main():
                              'If true, existing sqlite db in the path specified by '
                              'config.settings.sqlite3.sqlite3_db_path will be deleted')
     """
-    config.init()
+    config.init(data_dir)
     column_names.init()
     settings = config.settings
 
@@ -115,4 +115,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    argparse_desc = """
+    An initialization (and potential modification) script that manages 
+    the sqlite3 database
+    """
+    parser = argparse.ArgumentParser(
+        description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-d', '--data-dir',
+                        help="Path to directory that should store sqlite3.db")
+    args = parser.parse_args()
+    
+    main(args.data_dir)
