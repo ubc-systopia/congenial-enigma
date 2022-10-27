@@ -17,16 +17,39 @@ from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
     get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
 
+from konect_scraper.cluster import download as cc_download
+
+def get_io_modes(io_modes):
+    # if io mode is unspecified, use both binary and text as default
+    if not io_modes:
+        io_modes = [IOMode.binary, IOMode.text]
+    else:
+        modes = []
+        for io_mode in io_modes:
+            match io_mode:
+                case 'binary':
+                    modes.append(IOMode.binary)
+                case 'text':
+                    modes.append(IOMode.text)
+                case _:
+                    logging.error(f"{mode}: Unsupported IO mode!")
+        io_modes = modes
+    return io_modes
 
 def main(args):
     create_log_dir_if_not_exists()
     plot = args.plot
     orders = args.reorder
     io_modes = args.io_modes
-    download = args.download
+    directed = args.directed
     run_pr_expts = args.run_pr_expts
     json_args_path = args.json_args
     debug = args.debug
+    graph_ns = list(map(int, args.graph_numbers))
+    exec_mode = args.mode
+    environment = args.environment
+
+    io_modes = get_io_modes(io_modes)
 
     config.settings['debug'] = debug
 
@@ -36,20 +59,48 @@ def main(args):
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)
 
-    # categories = [
-    #     'Citation network',
-    #     'Online social network'
-    # ]
-    #
-    # rows = get_all_graphs_in_categories(categories)
-    # graphs = [r['graph_name'] for r in rows]
+    if directed:
+        graph_type = 'directed'
+    else:
+        graph_type = 'undirected'
 
-    # get all where 50 < size < 100 and 100 < volume < 1000
-    # rows = get_all_graphs_where_stats_between(
-    #     stats=['size', 'volume'],
-    #     mins=[50, 100],
-    #     maxs=[100, 1000]
-    # )
+    match environment:
+        case 'cluster':
+            match exec_mode:
+                case 'download':
+                    cc_download.main(graph_type, graph_ns)
+                    return
+                case 'preprocess':
+                    return
+                case 'reorder':
+                    return
+                case 'plot':
+                    return
+                case 'pr_expt':
+                    return
+                case _:
+                    return
+            return
+
+        case 'local':
+            match exec_mode:
+                case 'download':
+                    return
+                case 'preprocess':
+                    return
+                case 'reorder':
+                    return
+                case 'plot':
+                    return
+                case 'pr_expt':
+                    return
+                case _:
+                    return
+            return 
+    return
+
+
+    
     directed = True
     if directed:
         rows = get_all_unipartite_directed_graphs()
@@ -62,20 +113,6 @@ def main(args):
     # a selection of relevant graph_names have been identified,
     # download, reorder, and plot them
 
-    # if io mode is unspecified, use text as default
-    if not io_modes:
-        io_modes = [IOMode.text]
-    else:
-        modes = []
-        for mode in io_modes:
-            match mode:
-                case 'binary':
-                    modes.append(IOMode.binary)
-                case 'text':
-                    modes.append(IOMode.text)
-                case _:
-                    logging.error(f"{mode}: Unsupported IO mode!")
-        io_modes = modes
     graph_names = [r['graph_name'] for r in rows]
     rows = get_all_downloadable_graphs(graph_names)[:]
     graph_names = get_unimputed_features([r['graph_name'] for r in rows])
@@ -88,7 +125,8 @@ def main(args):
     graph_name_start_idx = 283
     graph_name_end_idx = -2
     # graph_name_end_idx = len(rows)
-    rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
+    rows = sorted(rows, key=lambda r: get_pr_struct_size(
+        r['graph_name']), reverse=False)
 
     rows = rows[graph_name_start_idx:graph_name_end_idx]
 
@@ -112,6 +150,7 @@ def main(args):
     # return
     if download:
         download_and_extract.main(rows, io_modes)
+
     if orders:
         if orders == ['all']:
             orders = config.settings['orderings'].keys()
@@ -137,33 +176,46 @@ if __name__ == '__main__':
     config.init()
     column_names.init()
     argparse_desc = """
-    Konect Scraper: an automatic scraper that:
-    1.  Downloads either:
-        1.1.    all graphs in datasets.json or
-        1.2.    a single graph specified by the konect `Internal Name` (must exist in datasets.json)
-        Specify single graph using -g argument (all graphs will be downloaded by default).\n
-    2.  Scrapes all available stats for the graph(s) from konect and populates a sqlite3 database\n
-    3.  Computes orderings using dbg, rabbit, cuthill-mckee, and slashburn
-        3.1.    The runtime of each reordering operation is persisted\n
-    4.  Optionally, plot the adjacency matrix of each isomorphism. (spy plots should only be plotted for relatively small graphs - < 10,000 vertices). 
-        4.1.    Specify optional plotting using -p argument.\n
-    5.  Iterates over the edges of the isomorphisms using either Row/Column-major or Hilbert order to compute the PageRank (PR)
-        5.1.    The runtime of each experiment is persisted.
+    Konect Scraper: a driver that performs the following functions:
+    1. Downloads graphs from konect.cc
+    2. Preprocesses downloaded graphs
+        - removes duplicate edges, self-loops
+        - maps the vertex ids to a dense space: [0, |V| - 1)
+    3. Reorders preprocessed graphs 
+        - each graph directory will store the isomorphism map for the computed
+          ordering
+    4. Plots computed isomorphism (i.e. vertex orderings)
+    5. Runs PageRank Experiments
+        - each experiment consists of iterating over all the edges of the graph
+          using a pair of <vertex order, edge order> combination
     """
-    parser = argparse.ArgumentParser(description=argparse_desc, formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=argparse_desc, formatter_class=RawTextHelpFormatter)
 
-    parser.add_argument('-g', '--graph-names', nargs='+',
-                        help='If specified, only download and scrape these graphs '
-                             'from dataset (must exist in datasets.json). '
-                             'Otherwise, download ALL graphs in datasets.json.', )
+    parser.add_argument('-v', '--environment', choices={'local', 'cluster'},
+                        required=True, help="Whether to run konect scraper and"
+                        "preprocess locally or on Compute Canada")
 
-    parser.add_argument('-m', '--io-modes', nargs='+',
+    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr_expt'}
+    parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
+                        help="Specify the execution mode. One of: "
+                        "\{'download', 'preprocess', 'reorder', 'plot', "
+                        "'pr_expt'\}")
+
+    parser.add_argument('-d', '--directed',
+                        action=argparse.BooleanOptionalAction,
+                        required=True,
+                        help='Whether to download and preprocess directed/undirected graphs.\n'
+                        '(Bipartite graphs currently unsupported).')
+
+    parser.add_argument('-g', '--graph-numbers', nargs='+', required=True,
+                        help='If specified, only download and scrape these graphs\n'
+                        'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
+                        'is [0, 100) ')
+
+    parser.add_argument('-i', '--io-modes', nargs='+',
                         help='The IO mode that the graphs and isomorphisms will be saved as.'
                              'At least one of [binary, text] should be specified', )
-
-    parser.add_argument('-d', '--download',
-                        action=argparse.BooleanOptionalAction, required=True,
-                        help='Whether to download the graph from konect or not.')
 
     parser.add_argument('-r', '--reorder', nargs='+',
                         help='A list of orderings to compute, if any.\n'
@@ -180,17 +232,17 @@ if __name__ == '__main__':
                              '}')
 
     parser.add_argument('-l', '--plot', action=argparse.BooleanOptionalAction,
-                        help='Whether to plot the adjacency matrices or not.', required=True)
+                        help='Whether to plot the adjacency matrices or not.',)
 
     parser.add_argument('-e', '--run-pr-expts',
-                        action=argparse.BooleanOptionalAction, required=True,
+                        action=argparse.BooleanOptionalAction,
                         help='Whether to run Edge-Centric PageRank computation experiments or not.')
 
     parser.add_argument('--debug',
-                        action=argparse.BooleanOptionalAction, required=True,
+                        action=argparse.BooleanOptionalAction,
                         help='Run in Debug Mode.'
                         )
-    parser.add_argument('--json-args', required=False,
+    parser.add_argument('--json-args',
                         help="Path to json file containing arguments listing which graphs"
                              "to preprocess, run experiments on etc.")
 
@@ -215,5 +267,18 @@ Download, preprocess, reorder, and plot; No PR experiments;
 $ python main.py --download --io-modes binary text --reorder all --plot --no-run-pr-expts --no-debug
 
 $ python main.py --download --io-modes binary text --reorder all --no-plot --run-pr-expts --no-debug
+
+
+    1.  Download either:
+        1.1.    all graphs in datasets.json or
+        1.2.    a single graph specified by the konect `Internal Name` (must exist in datasets.json)
+        Specify single graph using -g argument (all graphs will be downloaded by default).\n
+    2.  Scrapes all available stats for the graph(s) from konect and populates a sqlite3 database\n
+    3.  Computes orderings using dbg, rabbit, cuthill-mckee, and slashburn
+        3.1.    The runtime of each reordering operation is persisted\n
+    4.  Optionally, plot the adjacency matrix of each isomorphism. (spy plots should only be plotted for relatively small graphs - < 10,000 vertices). 
+        4.1.    Specify optional plotting using -p argument.\n
+    5.  Iterates over the edges of the isomorphisms using either Row/Column-major or Hilbert order to compute the PageRank (PR)
+        5.1.    The runtime of each experiment is persisted.
 
 """

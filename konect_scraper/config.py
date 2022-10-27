@@ -25,11 +25,11 @@ class IOMode(Enum):
     text = 2
 
 
-def init():
+def init(input_data_dir=None):
     global settings
 
     debug = True
-
+    
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     app_name = "graph_preprocess"
@@ -47,11 +47,14 @@ def init():
     dbg_convert_script = os.path.join(dbg_convert_dir, "convert.sh")
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
-    data_dir = os.path.join(repo_home, "data")  # todo replace
+    if input_data_dir:
+        data_dir = input_data_dir
+    else:
+        data_dir = os.path.join(repo_home, "data")  
     # data_dir = '/media/atrostan/patterson_backup/data/'
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
-    sqlite3_db_path = "/home/atrostan/Workspace/graphs_dbs/graphs.db"# todo replace
+    # sqlite3_db_path = "/home/atrostan/workspace/repos/graphs_dbs/graphs.db"# todo replace
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(repo_root, "konect_dataframes")
     graphs_dir = os.path.join(data_dir, "graphs")
@@ -247,6 +250,8 @@ def init():
             "min_n_data_samples": 50,   # need at least this many data samples to build a dataset for the PR
                                         # expts; this value will be used to decide which features we'll use
                                         # to train a predictive model of vertex+edge ordering performance
-
+        },
+        'compute_canada': {
+            'job_array_dir': os.path.join(repo_home, 'cluster', 'csvs')
         }
     }
