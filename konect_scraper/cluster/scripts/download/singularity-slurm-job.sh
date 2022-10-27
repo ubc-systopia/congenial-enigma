@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#SBATCH --mem=125G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
+#SBATCH --mem=1G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
 #SBATCH --time=0-01:00     	# DD-HH:MM:SS
-#SBATCH --constraint=broadwell 	# Request Broadwell processor
 #SBATCH --nodes=1-1
 #SBATCH --job-name=congenial-engima-download
 #SBATCH --output=%x-%j.out
@@ -29,4 +28,6 @@ fi
 
 echo ${CFG_FILE}
 echo ${IMAGE}
-echo ${ARRAY_OFFSET}
+echo ${CONFIG_ID}
+
+#SBATCH --constraint=broadwell 	# Request Broadwell processor

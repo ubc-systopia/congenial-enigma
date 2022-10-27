@@ -9,7 +9,8 @@ NUM_CONFIGS=$((NUM_LINES - 2)) # include csv header
 CFG_ID_END=$((NUM_CONFIGS - 1))
 
 OUT_FILE=${LOGDIR}/download-%A-%a.out
-JOB_FILE=$(pwd)/singularity-start.sh
+JOB_FILE=$(pwd)/singularity-slurm-job.sh
+echo "log directory: " ${LOGDIR}
 echo "slurm output file: ${OUT_FILE}"
 echo "slurm job file: ${JOB_FILE}"
 
