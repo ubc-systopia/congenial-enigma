@@ -34,6 +34,7 @@ def init(input_data_dir=None):
     
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
+    
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
@@ -106,7 +107,12 @@ def init(input_data_dir=None):
     ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     # CPU INFO
-    cache_stats = get_cache_stats()
+    cache_stats = get_cache_stats() # todo parse larger table if lscpu -C doesn't work
+    if not cache_stats:
+        cache_stats['line_size'] = -1
+        cache_stats['l1d_size'] = -1
+        cache_stats['l2_size'] = -1
+        cache_stats['l3_size'] = -1
 
     settings = {
         "debug": debug,
@@ -256,6 +262,9 @@ def init(input_data_dir=None):
         },
         'compute_canada': {
             'job_array_dir': os.path.join(repo_home, 'cluster', 'csvs'),
+            'scripts_dir': os.path.join(repo_home, 'cluster', 'scripts'),
+            'repo_root': repo_root,
+            'data_dir': data_dir,
             'image': '/home/atrostan/singularity-images/congenial_enigma.sif'
         }
     }

@@ -61,7 +61,7 @@ apt-get install g++-11
   `$ cmake --build ./graph_preprocess/<cmake build directory name> --target slashshburn -j <num threads>`
 
 # Examples
-
+## Local
 1. Download and compress `petster-hamster-household` and `opsahl-powergrid` graphs from konect, compute the `slashburn`
    order of those graphs, and plot the spy plots of the results.
 
@@ -84,6 +84,17 @@ python main.py \
 	--no-download \
 	--reorder sb \
 	--plot
+```
+## Cluster
+### Compute Canada
+Download and extract all directed graphs to `--data-dir` whose `graph-number` is [20, 30) (Listed in [directed.csv](./konect_dataframes/directed.csv)).
+
+```
+(venv) $ python -m konect_scraper.cluster.main \
+	--mode download \
+	--directed \
+	--graph-numbers 20 30 \
+	--data-dir /home/atrostan/scratch/data
 ```
 
 # SQL

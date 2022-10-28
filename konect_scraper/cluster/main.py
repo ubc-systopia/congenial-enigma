@@ -5,7 +5,7 @@ from datetime import datetime
 from ..config import *
 from ..column_names import *
 from ..util import *
-from . import download
+from . import execute
 
 
 def get_io_modes(io_modes):
@@ -56,9 +56,11 @@ def main(args):
 
     match exec_mode:
         case 'download':
-            download.main(graph_type, graph_ns)
+            print(f"Downloading the following {graph_ns[1] - graph_ns[0]} graphs to {config.settings['graphs_dir']}")
+            execute.main(graph_type, graph_ns, 'download')
             return
         case 'preprocess':
+            execute.main(graph_type, graph_ns, 'preprocess')
             return
         case 'reorder':
             return
@@ -67,6 +69,7 @@ def main(args):
         case 'pr_expt':
             return
         case _:
+            print(f"Unsupported execution mode on cluster: {exec_mode}")
             return
 
 

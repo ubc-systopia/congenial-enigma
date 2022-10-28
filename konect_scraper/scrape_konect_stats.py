@@ -267,7 +267,7 @@ def main(rows):
 
     # add precomputed (e.g. slashburn) stats if they already exist
     precomputed_stats_df = read_precomputed_stats()
-    return
+    # return
     # use the (uncompressed) size and volume of the graphs to compute (roughly)
     # calculate the sizes of the PageRank computation structs
     stats_df['pr_struct_size'] = stats_df.apply(

@@ -412,7 +412,10 @@ def get_cache_stats():
             return float(s.replace('M', '')) * 1024 * 1024
 
     args = ['lscpu', '-C']
-    res = subprocess.check_output(args)
+    try:
+        res = subprocess.check_output(args)
+    except subprocess.CalledProcessError:
+        return {}
     # parse the output of the simplify program to get the number of vertices and edges
     # in the compressed, simplified representation
     lines = [l.split() for l in res.decode('ascii').split('\n')]

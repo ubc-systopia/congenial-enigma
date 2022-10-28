@@ -17,7 +17,7 @@ from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
     get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
 
-from konect_scraper.cluster import download as cc_download
+from konect_scraper.cluster import execute as cc_download
 
 def get_io_modes(io_modes):
     # if io mode is unspecified, use both binary and text as default
@@ -63,42 +63,6 @@ def main(args):
         graph_type = 'directed'
     else:
         graph_type = 'undirected'
-
-    match environment:
-        case 'cluster':
-            match exec_mode:
-                case 'download':
-                    cc_download.main(graph_type, graph_ns)
-                    return
-                case 'preprocess':
-                    return
-                case 'reorder':
-                    return
-                case 'plot':
-                    return
-                case 'pr_expt':
-                    return
-                case _:
-                    return
-            return
-
-        case 'local':
-            match exec_mode:
-                case 'download':
-                    return
-                case 'preprocess':
-                    return
-                case 'reorder':
-                    return
-                case 'plot':
-                    return
-                case 'pr_expt':
-                    return
-                case _:
-                    return
-            return 
-    return
-
 
     
     directed = True

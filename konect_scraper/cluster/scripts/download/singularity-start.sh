@@ -3,13 +3,17 @@
 CONFIG_FILE=$1
 LOGDIR=$2
 IMAGE=$3
+REPO_HOME=$4
+DATA_DIR=$5
 # get the number of configuration lines
 NUM_LINES=$(wc -l ${CONFIG_FILE} | cut -f 1 -d ' ')
 NUM_CONFIGS=$((NUM_LINES - 2)) # include csv header
 CFG_ID_END=$((NUM_CONFIGS - 1))
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 OUT_FILE=${LOGDIR}/download-%A-%a.out
-JOB_FILE=$(pwd)/singularity-slurm-job.sh
+JOB_FILE=${SCRIPT_DIR}/singularity-slurm-job.sh
 echo "log directory: " ${LOGDIR}
 echo "slurm output file: ${OUT_FILE}"
 echo "slurm job file: ${JOB_FILE}"
@@ -25,8 +29,8 @@ while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   # calculate the end of the array
 
   # enqueue the batch for the current values
-  echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE}"
-  sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE}
+  echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR}"
+  sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR}
 
   # calculate the new array start
   ARRAY_START=$((ARRAY_START + MAX_ARRAY_JOBS))
@@ -40,5 +44,5 @@ done
 ARRAY_END=$((NUM_CONFIGS - 1))
 
 # enqueue the remainder
-echo "sbatch --array=0-${ARRAY_END} -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE}"
-sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE}
+echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR}"
+sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${CONFIG_FILE} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR}
