@@ -2,14 +2,14 @@ import argparse
 import logging
 from pathlib import Path
 import pandas as pd
+import os
+
 from konect_scraper.cluster.main import parse_and_init_data_dir
 from konect_scraper.cluster.slurm.utils import is_graph_compressed
-
-
 from ... import config
 import os
 from ... import download_and_extract
-from ...util import single_val_numeric_set
+from ...util import get_directed, get_size, get_size_in_memory, get_volume, set_n_m, single_val_numeric_set
 
 
 def main(config_path, config_idx):
@@ -20,19 +20,24 @@ def main(config_path, config_idx):
     df = pd.read_csv(config_path)
     row = df.iloc[int(config_idx)]
     graph_name = row['graph_name']
-    data_url = row['data_url']
     graph_dir = os.path.join(settings['graphs_dir'], graph_name)
 
-    # create directory for the graph (if not exists)
-    Path(graph_dir).mkdir(parents=True, exist_ok=True)
-    download_and_extract.download_graph(data_url, graph_dir)
-    # update the graph's metadata to point to its directory
-    download_and_extract.update_meta_dir(graph_dir, graph_name)
+    # compress the graph's edgelist
+    directed = bool(get_directed(graph_name))
+    sz = get_size(graph_name)
+    vol = get_volume(graph_name)
+    io_modes = [config.IOMode.binary, config.IOMode.text]
+    n, m = download_and_extract.compress(
+        graph_dir, directed, sz, vol, io_modes, graph_name)
+    set_n_m(graph_name, n, m)
+    # update the PageRank experiments structs size in db
+    get_size_in_memory(n, m)
 
     # update the text file size in the database
-    graph_path = os.path.join(graph_dir, settings["orig_el_file_name"])
-    single_val_numeric_set('txt_file_size', 'metadata',
-                           graph_name, os.path.getsize(graph_path))
+    compressed_graph_path = os.path.join(
+        graph_dir, settings["compressed_el_file_name"])
+    single_val_numeric_set('compressed_txt_file_size', 'metadata', graph_name,
+                           os.path.getsize(compressed_graph_path + ".net"))
 
     return
 

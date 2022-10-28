@@ -179,13 +179,16 @@ def create_plot_dirs_if_not_exists(graph_name):
 
 
 def create_log_dir_if_not_exists():
+    slurm_log_dir = config.settings['logging']['slurm_log_dir']
     data_dirs = [
+        slurm_log_dir,
         config.settings['logging']['log_dir'],
-        config.settings['logging']['slurm_log_dir'],
+    ] + [
+        os.path.join(slurm_log_dir, m) for m in 
+        config.settings['compute_canada']['execution_modes']
     ]
 
-    for data_dir in data_dirs:
-        Path(data_dir).mkdir(parents=True, exist_ok=True)
+    [Path(data_dir).mkdir(parents=True, exist_ok=True) for data_dir in data_dirs]
 
 
 def create_data_dirs_if_not_exists():
@@ -235,6 +238,11 @@ def valid_orderings(orders):
     all_orders = set([k for k in orderings.keys()])
     return all([o in all_orders for o in orders])
 
+def valid_edge_orderings(orders):
+    settings = config.settings
+    orderings = settings['edge_orderings']
+    all_orders = set([k for k in orderings.keys()])
+    return all([o in all_orders for o in orders])
 
 def get_all_konect_names():
     settings = config.settings

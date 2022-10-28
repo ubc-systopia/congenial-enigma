@@ -87,6 +87,7 @@ python main.py \
 ```
 ## Cluster
 ### Compute Canada
+#### `download`
 Download and extract all directed graphs to `--data-dir` whose `graph-number` is [20, 30) (Listed in [directed.csv](./konect_dataframes/directed.csv)).
 
 ```
@@ -96,7 +97,50 @@ Download and extract all directed graphs to `--data-dir` whose `graph-number` is
 	--graph-numbers 20 30 \
 	--data-dir /home/atrostan/scratch/data
 ```
+---
+#### `preprocess`
 
+Preprocess (simplify, "densify") all directed graphs to `--data-dir` whose `graph-number` is [20, 30).
+
+```
+(venv) $ python -m konect_scraper.cluster.main \
+	--mode preprocess \
+	--directed \
+	--graph-numbers 20 30 \
+	--data-dir /home/atrostan/scratch/data
+```
+---
+#### `reorder`
+Reorder all directed graphs whose whose `graph-number` is [20, 30) using the given vertex orderings.  
+(`all` = [Random, Rabbit, SlashBurn, Parallel SlashBurn, Descending Degree Sort, HubCluster, HubSort, 
+Degree Based Grouping])  
+(See [config.py](./konect_scraper/config.py) - `settings['orderings']` for a list of supported vertex orders.)
+```
+(venv) $ python -m konect_scraper.cluster.main \
+	--mode reorder \
+	--directed \
+	--graph-numbers 20 30 \
+	--reorder all \
+	--data-dir /home/atrostan/scratch/data
+```
+---
+#### `pr_expt`
+For each directed graph whose `graph-number` is [20, 30), construct an isomorphism using a vertex ordering
+given by `--reorder`.  
+For each graph isomorphism, iterate over the edges of the graph in: 
+- Row Major
+- Column Major
+- Hilbert  
+
+Record the total time to compute the PageRank using all `<vertex order, edge order>` combinations
+```
+(venv) $ python -m konect_scraper.cluster.main \
+	--mode pr-expt \
+	--directed \
+	--graph-numbers 20 30 \
+	--reorder all \
+	--data-dir /home/atrostan/scratch/data
+```
 # SQL
 
 ## All Possible Network Categories

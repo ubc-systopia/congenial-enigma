@@ -34,4 +34,4 @@ docker run -it \
 #    python -m konect_scraper.cluster.slurm.download /home/atrostan/workspace/repos/congenial-enigma/konect_scraper/cluster/csvs/download.csv 1
 
 
-singularity shell --bind /home/atrostan/scratch/data,/scratch/atrostan/repos/congenial-enigma/konect_scraper:/congenial-enigma  /home/atrostan/singularity-images/congenial_enigma.sif
+singularity shell --bind /home/atrostan/scratch/data:/data,/scratch/atrostan/repos/congenial-enigma/:/congenial-enigma  /home/atrostan/singularity-images/congenial_enigma.sif

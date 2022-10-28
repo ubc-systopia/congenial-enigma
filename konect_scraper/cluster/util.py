@@ -1,5 +1,7 @@
 import pandas as pd
 
+from konect_scraper.util import valid_orderings
+
 def write_job_array_csv(path, df):
     df.to_csv(path)
 
@@ -15,3 +17,11 @@ def rows_to_df(rs):
             data=[dict_from_row(r).values()]
             )], ignore_index=True)
     return df
+
+def verify_vertex_orders(orders, settings):
+    if orders:
+        if orders == ['all']:
+            orders = settings['orderings'].keys()
+        # verify that the requested ordering to compute are supported
+        assert valid_orderings(orders)
+    return orders

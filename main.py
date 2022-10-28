@@ -160,7 +160,7 @@ if __name__ == '__main__':
                         required=True, help="Whether to run konect scraper and"
                         "preprocess locally or on Compute Canada")
 
-    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr_expt'}
+    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
                         "\{'download', 'preprocess', 'reorder', 'plot', "

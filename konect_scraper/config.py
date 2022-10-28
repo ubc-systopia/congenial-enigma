@@ -35,6 +35,7 @@ def init(input_data_dir=None):
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
     
+    repo_name = "congenial-enigma"
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
@@ -118,6 +119,7 @@ def init(input_data_dir=None):
         "debug": debug,
         "repo_root": repo_root,
         "repo_home": repo_home,
+        "repo_name": repo_name,
         "app_name": app_name,
 
         "rabbit_home": rabbit_home,
@@ -265,6 +267,13 @@ def init(input_data_dir=None):
             'scripts_dir': os.path.join(repo_home, 'cluster', 'scripts'),
             'repo_root': repo_root,
             'data_dir': data_dir,
-            'image': '/home/atrostan/singularity-images/congenial_enigma.sif'
+            'image': '/home/atrostan/singularity-images/congenial_enigma.sif',
+            'execution_modes': [
+                'download', 
+                'preprocess',
+                'reorder',
+                'plot',
+                'pr_expt'
+            ]
         }
     }

@@ -6,6 +6,7 @@ from ..config import *
 from ..column_names import *
 from ..util import *
 from . import execute
+from konect_scraper.cluster.util import verify_vertex_orders
 
 
 def get_io_modes(io_modes):
@@ -25,6 +26,12 @@ def get_io_modes(io_modes):
         io_modes = modes
     return io_modes
 
+def parse_and_init_data_dir():
+    prsr = argparse.ArgumentParser()
+    prsr.add_argument('config_path')
+    prsr.add_argument('config_idx')
+    prsr.add_argument('data_dir')
+    return prsr.parse_args()
 
 def main(args):
 
@@ -33,7 +40,6 @@ def main(args):
     orders = args.reorder
     io_modes = args.io_modes
     directed = args.directed
-    run_pr_expts = args.run_pr_expts
     json_args_path = args.json_args
     debug = args.debug
     graph_ns = list(map(int, args.graph_numbers))
@@ -56,17 +62,24 @@ def main(args):
 
     match exec_mode:
         case 'download':
-            print(f"Downloading the following {graph_ns[1] - graph_ns[0]} graphs to {config.settings['graphs_dir']}")
+            print(
+                f"Downloading {graph_ns[1] - graph_ns[0]} graphs to {config.settings['graphs_dir']}")
             execute.main(graph_type, graph_ns, 'download')
             return
         case 'preprocess':
             execute.main(graph_type, graph_ns, 'preprocess')
             return
         case 'reorder':
+            orders = verify_vertex_orders(orders, config.settings)
+            execute.main(graph_type, graph_ns, 'reorder', orders)
             return
         case 'plot':
+            #todo
+            print("Unimplemented")
             return
-        case 'pr_expt':
+        case 'pr-expt':
+            orders = verify_vertex_orders(orders, config.settings)
+            execute.main(graph_type, graph_ns, 'pr_expt', list(orders) + ['orig'])
             return
         case _:
             print(f"Unsupported execution mode on cluster: {exec_mode}")
@@ -92,7 +105,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
 
-    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr_expt'}
+    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
                         "\{'download', 'preprocess', 'reorder', 'plot', "
@@ -110,8 +123,8 @@ if __name__ == '__main__':
                         'is [0, 100) ')
 
     parser.add_argument('-a', '--data-dir', help='Absolute path to the '
-    'directory that should store all graphs, orderings, plots, etc.\n'
-    'If supplied, will overwrite path given by config.py')
+                        'directory that should store all graphs, orderings, plots, etc.\n'
+                        'If supplied, will overwrite path given by config.py')
 
     parser.add_argument('-i', '--io-modes', nargs='+',
                         help='The IO mode that the graphs and isomorphisms will be saved as.'
@@ -133,10 +146,6 @@ if __name__ == '__main__':
 
     parser.add_argument('-l', '--plot', action=argparse.BooleanOptionalAction,
                         help='Whether to plot the adjacency matrices or not.',)
-
-    parser.add_argument('-e', '--run-pr-expts',
-                        action=argparse.BooleanOptionalAction,
-                        help='Whether to run Edge-Centric PageRank computation experiments or not.')
 
     parser.add_argument('--debug',
                         action=argparse.BooleanOptionalAction,
