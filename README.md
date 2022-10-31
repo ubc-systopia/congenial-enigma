@@ -170,4 +170,3 @@ Record the total time to compute the PageRank using all `<vertex order, edge ord
 - Text network
 - Trophic network
 
-

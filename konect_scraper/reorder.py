@@ -21,6 +21,12 @@ def compute_dbg_order(graph_name, order_str):
     max_iters = settings['dbg']['max_iters']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
     order_file = os.path.join(dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
+
+    graphs_dir = settings['graphs_dir']
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    order_file = os.path.join(graph_dir, f"{dbg_order_idx}.map")
+    # order_file = os.path.join(dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
+
     n = get_n(graph_name)
     m = get_m(graph_name)
     args = [
@@ -34,14 +40,22 @@ def compute_dbg_order(graph_name, order_str):
         f"NUM_EDGES={m}",
         f"GRAPH_NAME={graph_name}",
         f"SQLITE_DB_PATH={sqlite3_db_path}",
+        f"GPATH={graph_dir}",
+        f"DBG_ROOT={dbg_home}",
+        f"COMPRESSED_EDGE_LIST_FNAME={settings['compressed_el_file_name']}",
         "run-PageRank",
     ]
     env = {
         **os.environ,
-        "DBG_ROOT": dbg_home,
+        # "DBG_ROOT": dbg_home,
     }
+    print(f'{dbg_home=}')
+    print(f'{dbg_apps_dir=}')
     logging.info(f"Executing: " + ' '.join(args))
+    print(f"Executing: " + ' '.join(args))
     res = subprocess.check_output(args, cwd=dbg_apps_dir, env=env)
+    print(res.decode('utf-8'))
+
     # copy the map from dbg dataset dir
     # reprocess map file to match format used by app
     shutil.copy(
@@ -60,7 +74,6 @@ def compute_dbg_order(graph_name, order_str):
         pass
 
     # print(' '.join(args))
-    # print(res.decode('ascii'))
 
     return
 

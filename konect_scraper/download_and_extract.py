@@ -212,19 +212,18 @@ def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes, grap
     }
     args = [
         dbg_clean_el_executable,
-        f"{output_path}.net", os.path.join(dbg_datasets_dir, f"{graph_name}.el")
+        f"{output_path}.net",  f"{output_path}.el" # save to same dir
     ]
     logging.info(f"Executing: " + ' '.join(args))
     res = subprocess.check_output(args, env=env)
 
     args = [
         dbg_convert_script,
-        os.path.join(dbg_datasets_dir, graph_name)
+        # os.path.join(dbg_datasets_dir, graph_name),
+        output_path
     ]
     logging.info(f"Executing: " + ' '.join(args))
     res = subprocess.check_output(args, env=env)
-
-
 
     return n, m
 
