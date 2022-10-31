@@ -370,3 +370,8 @@ venv/**
 
 *.sif
 konect_scraper/cluster/csvs/*
+
+# ignore side effects of slurm batch array execution
+
+core.*
+./dbg/apps/core.*

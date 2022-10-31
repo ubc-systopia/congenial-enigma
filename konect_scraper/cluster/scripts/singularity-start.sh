@@ -26,7 +26,7 @@ echo "enqueue ${NUM_CONFIGS} jobs..."
 MAX_ARRAY_JOBS=$(scontrol show config | grep MaxArraySize | cut -d= -f2)
 ARRAY_START=0
 
-ARRAY_END=$((MAX_ARRAY_JOBS - 1))
+ARRAY_END=$((MAX_ARRAY_JOBS))
 while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   # calculate the end of the array
 
