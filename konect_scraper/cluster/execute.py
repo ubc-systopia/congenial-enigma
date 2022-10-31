@@ -43,7 +43,6 @@ def main(graph_type, graph_ns, mode_str, vertex_orders=None):
     settings = config.settings
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
     df = rows_to_df(rows)
-    print(df['graph_name'].values)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
 
     if mode_str == 'reorder' or mode_str == 'pr_expt':

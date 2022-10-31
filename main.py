@@ -5,6 +5,7 @@ import os
 from argparse import RawTextHelpFormatter
 from datetime import datetime
 
+
 import konect_scraper.column_names as column_names
 import konect_scraper.config as config
 import konect_scraper.plot as plotting
@@ -18,7 +19,8 @@ from konect_scraper.util import \
     get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
 
 from konect_scraper.cluster import execute as cc_download
-
+from konect_scraper.cluster.util import rows_to_df
+from konect_scraper.sql import get_graphs_by_graph_numbers
 def get_io_modes(io_modes):
     # if io mode is unspecified, use both binary and text as default
     if not io_modes:
@@ -64,35 +66,12 @@ def main(args):
     else:
         graph_type = 'undirected'
 
-    
-    directed = True
-    if directed:
-        rows = get_all_unipartite_directed_graphs()
-    else:
-        rows = get_all_unipartite_undirected_graphs()
-    n_unipartite_graphs = len(rows)
-    graph_names = [r['graph_name'] for r in rows]
-    print(f"{len(graph_names)} unipartite graphs in dataset.")
+    graph_ns = list(map(int, args.graph_numbers))
 
-    # a selection of relevant graph_names have been identified,
-    # download, reorder, and plot them
+    rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
+    df = rows_to_df(rows)
+    rows = get_all_graphs_by_graph_names(df['graph_name'].values)
 
-    graph_names = [r['graph_name'] for r in rows]
-    rows = get_all_downloadable_graphs(graph_names)[:]
-    graph_names = get_unimputed_features([r['graph_name'] for r in rows])
-    if json_args_path:
-        with open(json_args_path, 'r') as j:
-            json_args = json.loads(j.read())
-        graph_names = json_args['graph_names']
-    rows = get_all_graphs_by_graph_names(graph_names)
-    # print(rows)
-    graph_name_start_idx = 283
-    graph_name_end_idx = -2
-    # graph_name_end_idx = len(rows)
-    rows = sorted(rows, key=lambda r: get_pr_struct_size(
-        r['graph_name']), reverse=False)
-
-    rows = rows[graph_name_start_idx:graph_name_end_idx]
 
     # print heading
     print(f"{'Index' : <5} {'Graph Name' : <40}"
@@ -105,39 +84,47 @@ def main(args):
     for i, row in enumerate(rows):
         # if int(get_directed(row['graph_name'])) == 1:
         #     continue
-        print(f"{i + graph_name_start_idx: <5} {row['graph_name'] : <40}"
+        print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
-              f"{str(size) + size_string: <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
-    # return
-    if download:
-        download_and_extract.main(rows, io_modes)
 
-    if orders:
-        if orders == ['all']:
-            orders = config.settings['orderings'].keys()
-        # verify that the requested ordering to compute are supported
-        assert valid_orderings(orders)
-        reorder.main(rows, orders)
+    match args.mode:
+        case 'download':
+            download_and_extract.main(rows, io_modes)
+            return
 
-    if plot:
-        plotting.main(rows, orders)
+        case 'reorder':
+            if orders:
+                if orders == ['all']:
+                    orders = config.settings['orderings'].keys()
+                # verify that the requested ordering to compute are supported
+                assert valid_orderings(orders)
+                reorder.main(rows, orders)
+            return
 
-    if run_pr_expts:
-        pr_experiments.main(rows, list(orders) + ['orig'])
-        # DEBUG - plot the edge orderings
-        if debug:
-            for vorder_str in orders:
-                plotting.plot_edge_orderings(rows, vorder_str)
-            assert valid_pr(rows)
+        case 'plot':
+            if orders:
+                if orders == ['all']:
+                    orders = config.settings['orderings'].keys()
+                # verify that the requested ordering to compute are supported
+                assert valid_orderings(orders)
+            plotting.main(rows, orders)
+            return
 
+        case 'pr-expt':
+            pr_experiments.main(rows, list(orders) + ['orig'])
+            # DEBUG - plot the edge orderings
+            if debug:
+                for vorder_str in orders:
+                    plotting.plot_edge_orderings(rows, vorder_str)
+                assert valid_pr(rows)
+            return
     return
 
 
 if __name__ == '__main__':
-    config.init()
     column_names.init()
     argparse_desc = """
     Konect Scraper: a driver that performs the following functions:
@@ -176,6 +163,8 @@ if __name__ == '__main__':
                         help='If specified, only download and scrape these graphs\n'
                         'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
                         'is [0, 100) ')
+    parser.add_argument('-a', '--data-dir', required=True, 
+                        help="Absolute to the data directory containing graphs.db and all graph files.")
 
     parser.add_argument('-i', '--io-modes', nargs='+',
                         help='The IO mode that the graphs and isomorphisms will be saved as.'
@@ -209,8 +198,10 @@ if __name__ == '__main__':
     parser.add_argument('--json-args',
                         help="Path to json file containing arguments listing which graphs"
                              "to preprocess, run experiments on etc.")
+    args = parser.parse_args()
+    config.init(args.data_dir)
 
-    main(parser.parse_args())
+    main(args)
 
 
 """Examples
