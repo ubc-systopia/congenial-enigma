@@ -370,3 +370,4 @@ venv/**
 
 *.sif
 konect_scraper/cluster/csvs/*
+wing_width_ratio_comparison.csv

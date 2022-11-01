@@ -190,6 +190,9 @@ def create_log_dir_if_not_exists():
 
     [Path(data_dir).mkdir(parents=True, exist_ok=True) for data_dir in data_dirs]
 
+def create_dir_if_not_exists(path_to_dir):
+    Path(path_to_dir).mkdir(parents=True, exist_ok=True)
+
 
 def create_data_dirs_if_not_exists():
     data_dir_names = [

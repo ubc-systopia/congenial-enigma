@@ -12,6 +12,7 @@ def main():
     Returns:
 
     """
+    print(f"{config.settings['sqlite3']['sqlite3_db_path']=}")
     cnx = sqlite3.connect(config.settings['sqlite3']['sqlite3_db_path'])
 
     df = pd.read_sql_query(f"SELECT * FROM 'statistics'", cnx)

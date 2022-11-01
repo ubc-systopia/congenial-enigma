@@ -58,7 +58,7 @@ def init(input_data_dir=None):
     # data_dir = '/media/atrostan/patterson_backup/data/'
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
-    # sqlite3_db_path = "/home/atrostan/workspace/repos/graphs_dbs/graphs.db"# todo replace
+    # sqlite3_db_path = "/home/atrostan/workspace/data/graphs.db"# todo replace
     datasets_json_path = os.path.join(repo_home, "datasets.json")
     dataframes_dir = os.path.join(repo_root, "konect_dataframes")
     graphs_dir = os.path.join(data_dir, "graphs")
