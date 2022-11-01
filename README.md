@@ -94,8 +94,8 @@ Download and extract all directed graphs to `--data-dir` whose `graph-number` is
 (venv) $ python -m konect_scraper.cluster.main \
 	--mode download \
 	--directed \
-	--graph-numbers 20 30 \
-	--data-dir /home/atrostan/scratch/data
+	--data-dir /home/atrostan/scratch/data \
+	--graph-numbers 20 30 
 ```
 ---
 #### `preprocess`
@@ -106,8 +106,8 @@ Preprocess (simplify, "densify") all directed graphs to `--data-dir` whose `grap
 (venv) $ python -m konect_scraper.cluster.main \
 	--mode preprocess \
 	--directed \
-	--graph-numbers 20 30 \
-	--data-dir /home/atrostan/scratch/data
+	--data-dir /home/atrostan/scratch/data \
+	--graph-numbers 20 30 
 ```
 ---
 #### `reorder`
@@ -119,9 +119,9 @@ Degree Based Grouping])
 (venv) $ python -m konect_scraper.cluster.main \
 	--mode reorder \
 	--directed \
-	--graph-numbers 20 30 \
 	--reorder all \
-	--data-dir /home/atrostan/scratch/data
+	--data-dir /home/atrostan/scratch/data \
+	--graph-numbers 20 30 
 ```
 ---
 #### `pr_expt`
@@ -137,9 +137,9 @@ Record the total time to compute the PageRank using all `<vertex order, edge ord
 (venv) $ python -m konect_scraper.cluster.main \
 	--mode pr-expt \
 	--directed \
-	--graph-numbers 20 30 \
 	--reorder all \
-	--data-dir /home/atrostan/scratch/data
+	--data-dir /home/atrostan/scratch/data \
+	--graph-numbers 20 30 
 ```
 # SQL
 

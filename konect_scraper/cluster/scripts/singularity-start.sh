@@ -44,7 +44,7 @@ while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   sleep 2
 done
 
-ARRAY_END=$((NUM_CONFIGS - 1))
+ARRAY_END=$((NUM_CONFIGS))
 
 # enqueue the remainder
 echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"

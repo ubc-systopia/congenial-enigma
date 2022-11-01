@@ -2,7 +2,7 @@
 # set the variables
 CFG_FILE=$1     # the configuration csv file
 CFG_INDEX=$2    # the index into the csv file
-MODE=${3}       # execution mode -- one of {download, preprocess, reorder, plot, pr_expt}
+MODE=$3         # execution mode -- one of {download, preprocess, reorder, plot, pr_expt}
 
 cd /congenial-enigma
 

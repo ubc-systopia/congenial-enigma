@@ -174,6 +174,7 @@ int main(int argc, char *argv[]) {
 					pr.runtime,
 			};
 
+			// todo modify results to be written to csv
 			insert_or_ignore_into_pr_expts(r, sqlite_db_path);
 
 		}

@@ -1,4 +1,6 @@
 import logging
+
+from konect_scraper.util import remove_all_files_in_directory
 from ..sql import *
 from .. import config
 from .util import *
@@ -60,15 +62,18 @@ def main(graph_type, graph_ns, mode_str, vertex_orders=None):
         'cluster', 'csvs', f'{mode_str}.csv',
     )
 
+    # clean slurm logs from previous execution
+    log_dir = os.path.join(
+        config.settings['logging']['slurm_log_dir'],
+        mode_str
+    )
+    remove_all_files_in_directory(log_dir)
+
     args = [
         os.path.join(scripts_dir, 'singularity-start.sh'),
         local_config,
         mounted_config,
-        # LOGDIR
-        os.path.join(
-            config.settings['logging']['slurm_log_dir'],
-            mode_str
-        ),
+        log_dir,
         config.settings['compute_canada']['image'],  # IMAGE
         str(config.settings['compute_canada']['repo_root']),  # REPO_HOME
         config.settings['compute_canada']['data_dir'],  # DATA_DIR

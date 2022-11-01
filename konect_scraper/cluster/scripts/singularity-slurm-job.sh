@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH --time=00-00:15:00     	# DD-HH:MM:SS
+#SBATCH --time=00-00:30:00     	# DD-HH:MM:SS
 #SBATCH --output=%x-%j.out
-#SBATCH --mem=64G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
+#SBATCH --mem=125G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
 #SBATCH --nodes=1-16
-#SBATCH --cpus-per-task=16  # request 16 cores
+#SBATCH --cpus-per-task=16  # request 32 cores
 #SBATCH --constraint=broadwell 	# Request Broadwell processor
 
 module load singularity/3.7

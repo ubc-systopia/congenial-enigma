@@ -1,3 +1,4 @@
+import shutil
 import sqlite3
 import os
 import json
@@ -177,6 +178,17 @@ def create_plot_dirs_if_not_exists(graph_name):
     Path(adj_mat_dir).mkdir(parents=True, exist_ok=True)
     Path(spy_dir).mkdir(parents=True, exist_ok=True)
 
+
+def remove_all_files_in_directory(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def create_log_dir_if_not_exists():
     slurm_log_dir = config.settings['logging']['slurm_log_dir']
