@@ -114,6 +114,11 @@ def main(args):
             return
 
         case 'pr-expt':
+            if orders:
+                if orders == ['all']:
+                    orders = config.settings['orderings'].keys()
+                # verify that the requested ordering to compute are supported
+                assert valid_orderings(orders)
             pr_experiments.main(rows, list(orders) + ['orig'])
             # DEBUG - plot the edge orderings
             if debug:
@@ -163,8 +168,9 @@ if __name__ == '__main__':
                         help='If specified, only download and scrape these graphs\n'
                         'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
                         'is [0, 100) ')
+
     parser.add_argument('-a', '--data-dir', required=True, 
-                        help="Absolute to the data directory containing graphs.db and all graph files.")
+                        help="Absolute path to the data directory containing graphs.db and all graph files.")
 
     parser.add_argument('-i', '--io-modes', nargs='+',
                         help='The IO mode that the graphs and isomorphisms will be saved as.'

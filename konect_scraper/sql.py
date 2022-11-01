@@ -51,6 +51,18 @@ def print_row(r):
     return
 
 
+def append_df_to_table(df, table):
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+
+    df.to_sql(table, index=False, con=conn, if_exists='append')
+
+    # col_names_str = ','.join(df.columns)
+    # vals_str = ','.join(['?'] * len(df.columns))
+    # query=f"insert or replace into {table} ({col_names_str}) values ({vals_str})"
+    # conn.executemany(query, df.to_records(index=False))
+    conn.commit()
+
 def get_graphs_by_graph_numbers(ns, graph_type):
     """given a min, max graph numbers and a graph type, return all relevant rows
 

@@ -38,8 +38,9 @@ int main(int argc, char *argv[]) {
 	std::string input_dir;
 	std::string vorder_str;
 	std::string sqlite_db_path;
+	std::string results_path;
 
-	while ((opt = getopt(argc, argv, "den:m:i:x:p:g:b:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "den:m:i:x:p:g:b:o:r:")) != -1) {
 		switch (opt) {
 			case 'd':
 				directed = !directed;
@@ -71,6 +72,9 @@ int main(int argc, char *argv[]) {
 			case 'o':
 				vorder_str = optarg;
 				break;
+			case 'r':
+				results_path = optarg;
+				break;
 			case '?':
 				if (optopt == 'k')
 					printf("Option -%c requires a long long.\n", optopt);
@@ -96,6 +100,18 @@ int main(int argc, char *argv[]) {
 	std::vector<Edge> mapped_edges(num_edges);
 	std::vector<ul> iso_map;
 	iso_map.resize(num_vertices, -1);
+
+	// write header row to results csv
+	std::ofstream outfile(results_path);
+	outfile << 	"graph_name,"   <<
+				"datetime,"     <<
+				"expt_num,"     << 
+				"num_iters,"    <<
+				"vertex_order," <<
+				"edge_order,"   << 
+				"runtime\n";
+	outfile.close();
+
 
 
 	// read binary edge list
@@ -173,9 +189,8 @@ int main(int argc, char *argv[]) {
 					eorder_str,
 					pr.runtime,
 			};
-
-			// todo modify results to be written to csv
-			insert_or_ignore_into_pr_expts(r, sqlite_db_path);
+			write_row_to_csv(r, results_path);
+			// insert_or_ignore_into_pr_expts(r, sqlite_db_path);
 
 		}
 

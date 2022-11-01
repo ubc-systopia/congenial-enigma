@@ -1,10 +1,13 @@
 import logging
 import os
 import subprocess
+from konect_scraper.util import create_dir_if_not_exists
 
 import konect_scraper.config as config
 from konect_scraper.util import get_directed, get_n, get_m
-
+from konect_scraper.sql import append_df_to_table
+import pandas as pd
+import datetime
 
 def run_pr_expt(graph_name, order_str):
     settings = config.settings
@@ -17,6 +20,15 @@ def run_pr_expt(graph_name, order_str):
     damping_factor = settings['hyperparameters']['pr-experiments']['damping_factor']
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
+    results_dir = settings['results_dir']
+    create_dir_if_not_exists(results_dir)
+    
+    date_str = datetime.datetime.utcnow().strftime("%a_%b_%d_%H_%M_%S_UTC_%Y")
+    results_path = os.path.join(
+        results_dir,
+        f'{graph_name}_{order_str}_{date_str}.csv'
+    )
+    print(f'{results_path=}')
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
     pr_experiments_executable = settings['pr_experiments_executable']
     args = [pr_experiments_executable]
@@ -32,12 +44,19 @@ def run_pr_expt(graph_name, order_str):
         '-p', str(damping_factor),
         '-g', str(graph_dir),
         '-b', str(sqlite3_db_path),
-        '-o', str(order_str)
+        '-o', str(order_str),
+        '-r', str(results_path)
     ]
 
     logging.info(f"Executing: " + ' '.join(args))
 
     res = subprocess.check_output(args)
+
+    # after execution, read the results csv and append to sqlite3 table
+    append_df_to_table(
+        pd.read_csv(results_path),
+        'pr_expts'
+    )
 
     return
 
