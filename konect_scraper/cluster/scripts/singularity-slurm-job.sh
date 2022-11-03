@@ -1,10 +1,7 @@
 #!/bin/bash
 
-#SBATCH --time=00-00:30:00     	# DD-HH:MM:SS
 #SBATCH --output=%x-%j.out
-#SBATCH --mem=125G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
-#SBATCH --nodes=1-16
-#SBATCH --cpus-per-task=16  # request 32 cores
+#SBATCH --nodes=1-1
 #SBATCH --constraint=broadwell 	# Request Broadwell processor
 
 module load singularity/3.7
@@ -47,6 +44,11 @@ echo "${SCRIPTS_DIR}singularity-exec-${MODE}.sh"
 singularity exec --bind ${DATA_DIR}:/data,${REPO_HOME}:/congenial-enigma \
     ${IMAGE} \
     ${SCRIPTS_DIR}singularity-exec.sh ${CFG_FILE} ${CONFIG_ID} ${MODE}
+
+    
 #SBATCH --constraint=broadwell 	# Request Broadwell processor
 #SBATCH --time=0-01:00     	# DD-HH:MM:SS
 #SBATCH --nodes=1-1
+#SBATCH --time=00-02:00:00     	# DD-HH:MM:SS
+#SBATCH --mem=125G       	# Memory proportional to GPUs: 32000 Cedar, 47000 Béluga, 64000 Graham.
+#SBATCH --cpus-per-task=32  

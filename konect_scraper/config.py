@@ -30,7 +30,7 @@ class IOMode(Enum):
 def init(input_data_dir=None):
     global settings
 
-    debug = True
+    debug = False
     
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent

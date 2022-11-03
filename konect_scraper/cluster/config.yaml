@@ -1,0 +1,13 @@
+mode: preprocess
+directed: true
+reorder: all
+data-dir: /home/atrostan/scratch/data
+graph-numbers:
+  min: 300
+  max: 300
+overwrite: true
+
+# sbatch parameters
+time: 00-00:30:00 # DD-HH:MM:SS
+mem: 32G
+cpus-per-task: 16

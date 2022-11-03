@@ -7,6 +7,10 @@ IMAGE=$4
 REPO_HOME=$5
 DATA_DIR=$6
 MODE=$7
+TIME=$8
+MEM=$9
+CPUS_PER_TASK=${10}
+
 # get the number of configuration lines
 NUM_LINES=$(wc -l ${LOCAL_CONFIG} | cut -f 1 -d ' ')
 NUM_CONFIGS=$((NUM_LINES - 2)) # include csv header
@@ -19,6 +23,7 @@ JOB_FILE=${SCRIPT_DIR}/singularity-slurm-job.sh
 echo "log directory: " ${LOGDIR}
 echo "slurm output file: ${OUT_FILE}"
 echo "slurm job file: ${JOB_FILE}"
+echo "--CPUS_PER_TASK=${CPUS_PER_TASK}"
 
 echo "---------------------------------------"
 echo "enqueue ${NUM_CONFIGS} jobs..."
@@ -31,9 +36,8 @@ while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   # calculate the end of the array
 
   # enqueue the batch for the current values
-  # todo depending on MODE, pass additional arguments to sbatch to ask for appropriate --cpus-per-task, --mem
-  echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-  sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+  echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+  sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
 
   # calculate the new array start
   ARRAY_START=$((ARRAY_START + MAX_ARRAY_JOBS))
@@ -47,5 +51,5 @@ done
 ARRAY_END=$((NUM_CONFIGS))
 
 # enqueue the remainder
-echo "sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-sbatch --array=0-${ARRAY_END}  -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}

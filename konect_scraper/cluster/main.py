@@ -26,6 +26,7 @@ def get_io_modes(io_modes):
         io_modes = modes
     return io_modes
 
+
 def parse_and_init_data_dir():
     prsr = argparse.ArgumentParser()
     prsr.add_argument('config_path')
@@ -33,10 +34,12 @@ def parse_and_init_data_dir():
     prsr.add_argument('data_dir')
     return prsr.parse_args()
 
+
 def main(args):
 
     create_log_dir_if_not_exists()
     plot = args.plot
+    overwrite = args.overwrite
     orders = args.reorder
     io_modes = args.io_modes
     directed = args.directed
@@ -55,6 +58,12 @@ def main(args):
     log_file_name = os.path.join(log_dir, log_path + '.' + 'log')
     init_logger(log_file_name)
 
+    slurm_params = {
+        'time': args.time,
+        'mem': args.mem,
+        'cpus-per-task': args.cpus_per_task,
+    }
+
     if directed:
         graph_type = 'directed'
     else:
@@ -64,22 +73,24 @@ def main(args):
         case 'download':
             print(
                 f"Downloading {graph_ns[1] - graph_ns[0]} graphs to {config.settings['graphs_dir']}")
-            execute.main(graph_type, graph_ns, 'download')
+            execute.main(graph_type, graph_ns, slurm_params, 'download')
             return
         case 'preprocess':
-            execute.main(graph_type, graph_ns, 'preprocess')
+            execute.main(graph_type, graph_ns, slurm_params, 'preprocess')
             return
         case 'reorder':
             orders = verify_vertex_orders(orders, config.settings)
-            execute.main(graph_type, graph_ns, 'reorder', orders)
+            execute.main(graph_type, graph_ns, slurm_params,
+                         'reorder', orders, overwrite)
             return
         case 'plot':
-            #todo
+            # todo
             print("Unimplemented")
             return
         case 'pr-expt':
             orders = verify_vertex_orders(orders, config.settings)
-            execute.main(graph_type, graph_ns, 'pr_expt', list(orders) + ['orig'])
+            execute.main(graph_type, graph_ns, slurm_params, 'pr_expt',
+                         list(orders) + ['orig'])
             return
         case _:
             print(f"Unsupported execution mode on cluster: {exec_mode}")
@@ -89,7 +100,7 @@ def main(args):
 if __name__ == '__main__':
 
     argparse_desc = """
-    Konect Scraper: a driver that performs the following functions:
+    Konect Scraper: a driver that performs the following functions on:
     1. Downloads graphs from konect.cc
     2. Preprocesses downloaded graphs
         - removes duplicate edges, self-loops
@@ -101,6 +112,8 @@ if __name__ == '__main__':
     5. Runs PageRank Experiments
         - each experiment consists of iterating over all the edges of the graph
           using a pair of <vertex order, edge order> combination
+    Meant to be executed on a cluster using Slurm - 1-5 are executed using 
+    `sbatch`
     """
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
@@ -144,6 +157,10 @@ if __name__ == '__main__':
                              '  `all:  All the above orderings.\n'
                              '}')
 
+    parser.add_argument('-o', '--overwrite', action='store_true',
+                        help='If true, previous graphs/compressed graphs/vertex'
+                        'orders will be redownloaded/recompressed/re-reordered.')
+
     parser.add_argument('-l', '--plot', action=argparse.BooleanOptionalAction,
                         help='Whether to plot the adjacency matrices or not.',)
 
@@ -154,6 +171,18 @@ if __name__ == '__main__':
     parser.add_argument('--json-args',
                         help="Path to json file containing arguments listing which graphs"
                              "to preprocess, run experiments on etc.")
+
+    # required slurm params
+    parser.add_argument('--time', required=True,
+                        help='maximum time given to each sbatch job. DD-HH:MM:SS')
+
+    parser.add_argument('--mem', required=True,
+                        help='minimum memory required for each sbatch job')
+
+    parser.add_argument('--cpus-per-task', required=True,
+                        help='Since task are exclusively run on single nodes'
+                        ', e.g. --nodes=1-1, cpus-per-task dictates the number'
+                        'of cores used.')
 
     args = parser.parse_args()
 

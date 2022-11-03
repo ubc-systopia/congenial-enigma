@@ -194,7 +194,7 @@ def compute_cuthill_mckee(graph_path, n, m):
     return
 
 
-def compute_ordering(graph_name, order):
+def compute_ordering(graph_name, order, ovewrite):
     settings = config.settings
 
     orderings = settings['orderings']
@@ -212,7 +212,7 @@ def compute_ordering(graph_name, order):
 
     order_path = os.path.join(graph_dir, order)
 
-    if Path(order_path).is_file():  # if already computed, skip
+    if Path(order_path).is_file() and not ovewrite:  # if already computed, skip
         logging.info(f"{graph_name}-{order_str} already computed; skipping.")
         return
 

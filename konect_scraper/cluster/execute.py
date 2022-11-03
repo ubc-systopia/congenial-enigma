@@ -16,7 +16,7 @@ So, if given a 100 graphs to download, assume 100 sbatch jobs will be submitted
 """
 
 
-def write_sbatch_array_csv(rows, name, vertex_orders=None):
+def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
     # each row corresponds to `graph_name, konect_url, data_url`
     csvs_dir = config.settings['compute_canada']['job_array_dir']
     Path(csvs_dir).mkdir(parents=True, exist_ok=True)
@@ -26,6 +26,8 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None):
     lines = []
     if vertex_orders:
         column_names += ['vertex_order']
+    if overwrite:
+        column_names += ['overwrite']
 
     lines.append(",".join(column_names))  # header
 
@@ -33,7 +35,13 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None):
         line = ",".join([str(row[k]) for k in graph_column_names])
         if vertex_orders:
             for vertex_order in vertex_orders:
-                lines.append(line + f',{vertex_order}')
+                line += f',{vertex_order}'
+                if overwrite:
+                    line += f',1'
+                else:
+                    line += f',0'
+                lines.append(line)
+
         else:
             lines.append(line)
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
@@ -41,16 +49,18 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None):
             f.write(f'{l}\n')
 
 
-def main(graph_type, graph_ns, mode_str, vertex_orders=None):
+def main(graph_type, graph_ns, slurm_params, mode_str,
+         vertex_orders=None, overwrite=False):
     settings = config.settings
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
 
     if mode_str == 'reorder' or mode_str == 'pr_expt':
-        write_sbatch_array_csv(rows, mode_str, vertex_orders)
+        write_sbatch_array_csv(
+            rows, mode_str, vertex_orders, overwrite=overwrite)
     else:
-        write_sbatch_array_csv(rows, mode_str)
+        write_sbatch_array_csv(rows, mode_str, overwrite=overwrite)
 
     scripts_dir = config.settings['compute_canada']['scripts_dir']
     csvs_dir = config.settings['compute_canada']['job_array_dir']
@@ -74,12 +84,15 @@ def main(graph_type, graph_ns, mode_str, vertex_orders=None):
         local_config,
         mounted_config,
         log_dir,
-        config.settings['compute_canada']['image'],  # IMAGE
-        str(config.settings['compute_canada']['repo_root']),  # REPO_HOME
-        config.settings['compute_canada']['data_dir'],  # DATA_DIR
-        mode_str
+        config.settings['compute_canada']['image'],
+        str(config.settings['compute_canada']['repo_root']),
+        config.settings['compute_canada']['data_dir'],
+        mode_str,
+        slurm_params['time'],
+        slurm_params['mem'],
+        slurm_params['cpus-per-task'],
     ]
-    print(" ".join(args))
+    print("CALLING: " + " ".join(args))
     # run the sbatch command
     res = subprocess.check_output(args)
     print(res.decode('utf-8'))

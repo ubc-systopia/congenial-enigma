@@ -13,7 +13,8 @@ def main(config_path, config_idx):
     row = df.iloc[int(config_idx)]
     graph_name = row['graph_name']
     vertex_order = row['vertex_order']
-    compute_ordering(graph_name, vertex_order)
+    overwrite = bool(row['overwrite'])
+    compute_ordering(graph_name, vertex_order, overwrite)
     return 
 
 

@@ -111,9 +111,10 @@ Preprocess (simplify, "densify") all directed graphs to `--data-dir` whose `grap
 ```
 ---
 #### `reorder`
-Reorder all directed graphs whose whose `graph-number` is [20, 30) using the given vertex orderings.  
-(`all` = [Random, Rabbit, SlashBurn, Parallel SlashBurn, Descending Degree Sort, HubCluster, HubSort, 
-Degree Based Grouping])  
+Reorder all directed graphs whose whose `graph-number` is [20, 30) using the given vertex orderings.
+`--overwrite`: if a vertex ordering has already been done, recompute it.  
+`all` = [Random, Rabbit, SlashBurn, Parallel SlashBurn, Descending Degree Sort, HubCluster, HubSort, 
+Degree Based Grouping]
 (See [config.py](./konect_scraper/config.py) - `settings['orderings']` for a list of supported vertex orders.)
 ```
 (venv) $ python -m konect_scraper.cluster.main \
@@ -121,7 +122,8 @@ Degree Based Grouping])
 	--directed \
 	--reorder all \
 	--data-dir /home/atrostan/scratch/data \
-	--graph-numbers 20 30 
+	--graph-numbers 20 30 \
+	--overwrite
 ```
 ---
 #### `pr_expt`
