@@ -13,7 +13,7 @@ def construct_main_args_from_config(config_path):
             print(exc)
 
     args = ['python', '-m', 'konect_scraper.cluster.main']
-    val_args = ['mode', 'reorder', 'data-dir', 'time', 'mem', 'cpus-per-task']
+    val_args = ['mode', 'reorder', 'data-dir', 'time', 'mem', 'cpus-per-task', 'constraint']
     bool_args = ['directed', 'overwrite']
     for val_arg in val_args:
         args += [f'--{val_arg}', str(data[val_arg])]

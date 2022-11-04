@@ -36,8 +36,18 @@ while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   # calculate the end of the array
 
   # enqueue the batch for the current values
-  echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-  sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+
+  if [ ! -z ${11} ] 
+  then 
+      : # --constraint was given
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+  else
+      : # --constraint was not given
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+  fi
+
 
   # calculate the new array start
   ARRAY_START=$((ARRAY_START + MAX_ARRAY_JOBS))
@@ -51,5 +61,13 @@ done
 ARRAY_END=$((NUM_CONFIGS))
 
 # enqueue the remainder
-echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+if [ ! -z ${11} ] 
+  then 
+      : # --constraint was given
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+  else
+      : # --constraint was not given
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+  fi

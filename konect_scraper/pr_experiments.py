@@ -48,7 +48,7 @@ def run_pr_expt(graph_name, order_str):
         '-r', str(results_path)
     ]
 
-    logging.info(f"Executing: " + ' '.join(args))
+    print(f"Executing: " + ' '.join(args))
 
     res = subprocess.check_output(args)
 

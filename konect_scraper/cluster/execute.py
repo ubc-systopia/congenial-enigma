@@ -26,8 +26,7 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
     lines = []
     if vertex_orders:
         column_names += ['vertex_order']
-    if overwrite:
-        column_names += ['overwrite']
+    column_names += ['overwrite']
 
     lines.append(",".join(column_names))  # header
 
@@ -35,13 +34,10 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
         line = ",".join([str(row[k]) for k in graph_column_names])
         if vertex_orders:
             for vertex_order in vertex_orders:
-                line += f',{vertex_order}'
                 if overwrite:
-                    line += f',1'
+                    lines.append(line + f',{vertex_order}' + f',1')
                 else:
-                    line += f',0'
-                lines.append(line)
-
+                    lines.append(line + f',{vertex_order}' + f',0')
         else:
             lines.append(line)
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
@@ -77,6 +73,7 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
         config.settings['logging']['slurm_log_dir'],
         mode_str
     )
+
     remove_all_files_in_directory(log_dir)
 
     args = [
@@ -92,6 +89,9 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
         slurm_params['mem'],
         slurm_params['cpus-per-task'],
     ]
+
+    if 'constraint' in slurm_params: args += [slurm_params['constraint']]
+
     print("CALLING: " + " ".join(args))
     # run the sbatch command
     res = subprocess.check_output(args)

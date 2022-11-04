@@ -64,6 +64,9 @@ def main(args):
         'cpus-per-task': args.cpus_per_task,
     }
 
+    if args.constraint:
+        slurm_params['constraint'] = args.constraint
+
     if directed:
         graph_type = 'directed'
     else:
@@ -183,6 +186,10 @@ if __name__ == '__main__':
                         help='Since task are exclusively run on single nodes'
                         ', e.g. --nodes=1-1, cpus-per-task dictates the number'
                         'of cores used.')
+
+    parser.add_argument('--constraint',
+                        help='One of broadwell, cascade, skylake. If any are sufficient, can be specified as e.g. '
+                        '[skylake|cascade]')
 
     args = parser.parse_args()
 
