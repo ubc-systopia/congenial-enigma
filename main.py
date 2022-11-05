@@ -41,6 +41,7 @@ def get_io_modes(io_modes):
 def main(args):
     create_log_dir_if_not_exists()
     plot = args.plot
+    overwrite = args.overwrite
     orders = args.reorder
     io_modes = args.io_modes
     directed = args.directed
@@ -49,7 +50,6 @@ def main(args):
     debug = args.debug
     graph_ns = list(map(int, args.graph_numbers))
     exec_mode = args.mode
-    environment = args.environment
 
     io_modes = get_io_modes(io_modes)
 
@@ -89,7 +89,7 @@ def main(args):
               f"{get_n_edges(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
-
+    # return
     match args.mode:
         case 'download':
             download_and_extract.main(rows, io_modes)
@@ -99,9 +99,10 @@ def main(args):
             if orders:
                 if orders == ['all']:
                     orders = config.settings['orderings'].keys()
+                
                 # verify that the requested ordering to compute are supported
                 assert valid_orderings(orders)
-                reorder.main(rows, orders)
+                reorder.main(rows, orders, overwrite)
             return
 
         case 'plot':
@@ -148,9 +149,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=RawTextHelpFormatter)
 
-    parser.add_argument('-v', '--environment', choices={'local', 'cluster'},
-                        required=True, help="Whether to run konect scraper and"
-                        "preprocess locally or on Compute Canada")
 
     exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
@@ -196,6 +194,10 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--run-pr-expts',
                         action=argparse.BooleanOptionalAction,
                         help='Whether to run Edge-Centric PageRank computation experiments or not.')
+
+    parser.add_argument('-o', '--overwrite', action='store_true',
+                        help='If true, previous graphs/compressed graphs/vertex'
+                        'orders will be redownloaded/recompressed/re-reordered.')
 
     parser.add_argument('--debug',
                         action=argparse.BooleanOptionalAction,

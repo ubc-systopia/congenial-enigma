@@ -253,7 +253,7 @@ def compute_ordering(graph_name, order, ovewrite):
         # case ""
 
 
-def main(rows, orders):
+def main(rows, orders, overwrite):
     settings = config.settings
 
     # compute the given orders for each of the datasets
@@ -261,9 +261,9 @@ def main(rows, orders):
         graph_name = row['graph_name']
 
         for order in orders:
-            compute_ordering(graph_name, order)
+            compute_ordering(graph_name, order, overwrite)
     return
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
