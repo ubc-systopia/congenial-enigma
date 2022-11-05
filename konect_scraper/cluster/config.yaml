@@ -1,10 +1,25 @@
-mode: reorder
-directed: true
+# This file configures the execution mode of `konect_scraper.cluster.driver`
+
+# one of: download, preprocess, reorder, pr_expt
+mode: reorder  
+
+# is the graph directed
+directed: true 
+
+# if applicable, which vertex orderings to compute
 reorder: all
+
+# location of graphs.db and graph files
 data-dir: /home/atrostan/scratch/data
+
+# given {directed/undirected}.csv, the inclusive range of row numbers defined
+# by [graph_numbers.min, graph_numbers.max] will be the graphs that will be
+# downloaded/preprocessed/etc..
 graph-numbers:
   min: 297
   max: 297
+
+# if computing the vertex reordering, overwrite any existing files
 overwrite: true
 
 # sbatch parameters
