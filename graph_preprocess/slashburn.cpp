@@ -111,6 +111,7 @@ int main(int argc, char *argv[]) {
 	auto start = std::chrono::high_resolution_clock::now();
 	while (prev->n >= k) {
 		fmt::print("gcc.n: {}, hub_idx: {}, k: {}, spokes_end_idx: {}\n", prev->n, hub_idx, k, spokes_end_idx);
+//		fmt::print("rank: {}\n", rank);
 		res = order_igraph_slashburn(*prev, k, rank, hub_idx, spokes_end_idx);
 
 		curr = get<0>(res);

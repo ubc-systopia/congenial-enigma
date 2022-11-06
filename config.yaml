@@ -1,7 +1,7 @@
 # This file configures the execution mode of `main.py`
 
-# one of: download (download+preprocess), reorder, pr_expt
-mode: reorder
+# one of: download (download+preprocess), reorder, plot, pr_expt
+mode: plot
 
 # is the graph directed
 directed: true 
@@ -16,8 +16,8 @@ data-dir: /home/atrostan/Workspace/repos/congenial-enigma/konect_scraper/data
 # by [graph_numbers.min, graph_numbers.max] will be the graphs that will be
 # downloaded/preprocessed/etc..
 graph-numbers:
-  min: 20
-  max: 30
+  min: 40
+  max: 60
 
 # if computing the vertex reordering, overwrite any existing files
 overwrite: true
