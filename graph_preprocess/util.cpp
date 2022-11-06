@@ -36,7 +36,11 @@ void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &r
 	}
 
 	std::sort(dpl::execution::par_unseq, vertices.begin(), vertices.end(), sortByDescendingDegree);
-
+//	fmt::print("vertices: \n");
+//	for (const auto &v: vertices) {
+//		fmt::print("[{} {}], ", v.id, v.degree);
+//	}
+//	fmt::print("\n");
 	igraph_vector_int_t hubs_to_remove;
 	igraph_vector_int_init(&hubs_to_remove, k);
 	ul j;
@@ -164,9 +168,9 @@ std::ostream &operator<<(std::ostream &os, Direction ec) {
 
 void print_quad(Quadrant &q) {
 	fmt::print(
-			"[idx: {:<4} rot: {:<4} hidx: {:<4} expected: {:<5}] || sx: {:<20} | ex: {:<20} | sy: {:<20} | ey: {:<20} || {:<15}->{:<15}\n",
-			q.idx, q.rot, q.hidx, dir_str(q.expected_dir), q.start_x, q.end_x, q.start_y, q.end_y, corner_str(q.start),
-			corner_str(q.end));
+		"[idx: {:<4} rot: {:<4} hidx: {:<4} expected: {:<5}] || sx: {:<20} | ex: {:<20} | sy: {:<20} | ey: {:<20} || {:<15}->{:<15}\n",
+		q.idx, q.rot, q.hidx, dir_str(q.expected_dir), q.start_x, q.end_x, q.start_y, q.end_y, corner_str(q.start),
+		corner_str(q.end));
 }
 
 void print_seperator() {

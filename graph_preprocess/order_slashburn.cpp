@@ -62,7 +62,7 @@ order_igraph_slashburn(igraph_t &g, const int k, std::vector<ul> &rank, ul &hub_
 		// iterate through the vertices in each spoke and place them in the end of the permutation array
 		igraph_vit_t vit;
 		igraph_vit_create(spoke, igraph_vss_all(), &vit);
-//		std::cout<< "break\n";
+//		std::cout<< "spoke\n";
 		while (!IGRAPH_VIT_END(vit)) {
 
 			long int vid = (long int) IGRAPH_VIT_GET(vit);
