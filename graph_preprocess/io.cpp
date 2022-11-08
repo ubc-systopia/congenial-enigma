@@ -306,12 +306,11 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 		new_id += 1;
 	}
 	// remap the edges
-	ull eid = 0;
-	for (auto &edge: edges) {
-		ul src = edge.first;
-		ul dest = edge.second;
-		mapped_edges[eid] = std::make_pair(p[src], p[dest]);
-		++eid;
+#pragma omp parallel for schedule(static)
+	for (uint64_t i = 0; i < edges.size(); ++i) {
+		uint32_t src = edges[i].first;
+		uint32_t dest = edges[i].second;
+		mapped_edges[i] = {p[src], p[dest]};
 	}
 
 	// Step 4: Sort Edges
