@@ -1,20 +1,21 @@
 # This file configures the execution mode of `konect_scraper.cluster.driver`
 
-# one of: download, preprocess, reorder, pr_expt
-mode: preprocess  
+# one of: download, preprocess, reorder, pr-expt
+mode: pr-expt
 
 # is the graph directed
 directed: true 
 
 # if applicable, which vertex orderings to compute
-reorder: all
+reorder: [rnd, rbt, sb, srt, hc, hs, dbg]
+# reorder: [sb]
 
 # location of graphs.db and graph directories
 data-dir: /scratch/atrostan/data
 
-# given {directed/undirected}.csv, the inclusive range of row numbers defined
-# by [graph_numbers.min, graph_numbers.max] will be the graphs that will be
+# the inclusive range of row numbers defined [graph_numbers.min, graph_numbers.max] will be the graphs that will be
 # downloaded/preprocessed/etc..
+# graph-numbers correspond to the line numbers in {directed/undirected}.csv, 
 graph-numbers:
   min: 322
   max: 322
@@ -23,8 +24,9 @@ graph-numbers:
 overwrite: true
 
 # sbatch parameters
-time: 00-08:00:00 # DD-HH:MM:SS
+time: 00-12:00:00 # DD-HH:MM:SS
 mem: 187G
 cpus-per-task: 48
-constraint: "[skylake|cascade]"
-# constraint: cascade
+# constraint: "[skylake|cascade|broadwell]"
+# constraint: "[skylake|cascade]"
+constraint: cascade
