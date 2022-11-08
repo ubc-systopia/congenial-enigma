@@ -1,4 +1,6 @@
+import argparse
 import os
+from pathlib import Path
 
 from konect_scraper import config, column_names
 import numpy as np
@@ -24,6 +26,10 @@ def plot_pr_results(graph_name, df):
     size, size_str = convert_size(pr_struct_size)
 
     results_dir = config.settings['results_dir']
+
+    # make results dir if note exists    
+    Path(results_dir).mkdir(parents=True, exist_ok=True)
+
     dpi = config.settings['plot']['dpi']
     plot_format = config.settings['plot']['format']
     n = len(vorder_strs) * len(eorder_strs)
@@ -52,7 +58,7 @@ def plot_pr_results(graph_name, df):
         plt.bar(position, value, yerr=std, width=w, label=eorder_str)
 
     vorder_strs = [vorder_map[i] for i in vorder_strs]
-    offset = 3.375
+    offset = 3.0
     plt.xticks(x - offset, vorder_strs, rotation=45)
     plt.ylabel("Runtime (ms)")
     plt.legend()
@@ -83,12 +89,12 @@ def plot_pr_results(graph_name, df):
     return
 
 
-def main():
+def main(args):
     settings = config.settings
     pr_df = read_table_as_table('pr_expts')
     pr_df['datetime'] = pd.to_datetime(pr_df['datetime'], format='%d-%m-%Y %H-%M-%S')
 
-    filter_datetime = '18-10-2022 15-16-45'  # only look at experiments after this date
+    filter_datetime = args.min_date  # only look at experiments after this date
     pr_df = pr_df[
         (pr_df['datetime'] >= pd.to_datetime(filter_datetime, format='%d-%m-%Y %H-%M-%S'))
     ]
@@ -117,6 +123,19 @@ def main():
 
 
 if __name__ == '__main__':
-    config.init()
+    argparse_desc = """
+    A module that plots the results of PageRank experiments using a 
+    multicoloured bar plot
+    """
+    parser = argparse.ArgumentParser(
+        description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-d', '--data-dir', required=True,
+                        help="Path to directory that should store sqlite3.db")
+    parser.add_argument('-m', '--min-date', required=True,
+                        help="Only plot experimental results after this date. "
+                        "Expected format: 'd-m-Y H-M-S' "
+                        "e.g. 18-10-2022 15-16-45" )
+    args = parser.parse_args()
+    config.init(args.data_dir)
     column_names.init()
-    main()
+    main(args)
