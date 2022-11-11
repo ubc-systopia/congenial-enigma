@@ -1,23 +1,23 @@
 # This file configures the execution mode of `main.py`
 
 # one of: download (download+preprocess), reorder, plot, pr_expt
-mode: plot
+mode: reorder
 
 # is the graph directed
 directed: true 
 
 # if applicable, which vertex orderings to compute
-reorder: [parsb, sb]
+reorder: [parsb]
 
 # location of graphs.db and graph files
-data-dir: /home/atrostan/Workspace/repos/congenial-enigma/konect_scraper/data
+data-dir: /home/atrostan/workspace/repos/congenial-enigma/data
 
 # given {directed/undirected}.csv, the inclusive range of row numbers defined
 # by [graph_numbers.min, graph_numbers.max] will be the graphs that will be
 # downloaded/preprocessed/etc..
 graph-numbers:
-  min: 40
-  max: 60
+  min: 200
+  max: 260
 
 # if computing the vertex reordering, overwrite any existing files
 overwrite: true

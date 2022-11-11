@@ -9,6 +9,8 @@ import subprocess
 import os
 import gc
 
+import multiprocessing
+
 from matplotlib import patches, cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as plticker
@@ -355,6 +357,52 @@ def plot_edge_ordering(graph_name, vorder_str, eorder_str):
 
     return
 
+def plot_graph(graph_name, orders, settings):
+    logging.info(f"Plotting {graph_name}..")
+    create_plot_dirs_if_not_exists(graph_name)
+
+    directed = bool(get_directed(graph_name))
+    m = get_m(graph_name)
+
+    n = get_n(graph_name)
+    ax_size = settings['plot']['ax_size']
+    max_n = settings['plot']['max_n']
+    dpi = settings['plot']['dpi']
+
+    # if n > max_n:
+    #     logging.error(f"Not plotting {graph_name} - {n} is too many nodes!")
+    # plot_orig(plt, graph_name, directed)
+    # plot_compressed(plt, graph_name, directed)
+    markersize = get_markersize(n)
+    plots_dir = settings['plots_dir']
+    plot_type = "spy"
+
+    figsize = get_figsize(ax_size, n)
+    fmt = settings['plot']['format']
+
+    # plot the original adjacency matrix
+    ax_plot_and_clear(graph_name, directed, "orig", "orig_el_file_name", fmt, markersize, figsize, plots_dir, dpi,
+                        ax_plot_adj_mat, plot_type)
+    # plot the compressed adjacency matrix
+    ax_plot_and_clear(graph_name, directed, "comp", "compressed_el_file_name", fmt, markersize, figsize, plots_dir,
+                        dpi,
+                        ax_plot_adj_mat, plot_type)
+
+    # adj_mat_fig, adj_mat_axs = plt.subplots(nrows, ncols, figsize=figsize)
+    # spy_fig, spy_axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+    # all_axs = [spy_axs]
+    plot_types = ["adj_mat", "spy"]
+    plot_types = ["spy"]
+
+    for order_idx, order in enumerate(orders):
+        # plot_ordering(plt, graph_name, directed, order)
+        for plot_type in plot_types:
+            ax_plot_and_clear(graph_name, directed, order, None, fmt, markersize, figsize,
+                                plots_dir,
+                                dpi,
+                                ax_plot_order, plot_type)
+
+    gc.collect()
 
 def main(rows, orders):
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
@@ -367,6 +415,7 @@ def main(rows, orders):
         plot_fn = getattr(plot_module, "adj_mat_spy")
     else:
         plot_fn = getattr(plot_module, "adj_matshow")
+    fmt = settings['plot']['format']
 
     nrows = len(rows)
     ncols = len(orders) + 2  # plot all orders + original and compressed isomorphisms
@@ -374,55 +423,27 @@ def main(rows, orders):
     max_n = settings['plot']['max_n']
     figsize = (ncols * ax_size, nrows * ax_size,)
 
-    # adj_mat_fig, adj_mat_axs = plt.subplots(nrows, ncols, figsize=figsize)
-    # spy_fig, spy_axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-    # all_axs = [spy_axs]
-    plot_types = ["adj_mat", "spy"]
-    plot_types = ["spy"]
-
+    from multiprocessing import Process
+    procs = []
     # compute the given orders for each of the datasets
     for row_idx, row in enumerate(rows):
 
         graph_name = row['graph_name']
-        logging.info(f"Plotting {graph_name}..")
-        create_plot_dirs_if_not_exists(graph_name)
-
-        directed = bool(get_directed(graph_name))
-        m = get_m(graph_name)
-
-        n = get_n(graph_name)
-
-        if n > max_n:
-            logging.error(f"Not plotting {graph_name} - {n} is too many nodes!")
-        # plot_orig(plt, graph_name, directed)
-        # plot_compressed(plt, graph_name, directed)
-        markersize = get_markersize(n)
-        plots_dir = settings['plots_dir']
-        plot_type = "spy"
-
-        figsize = get_figsize(ax_size, n)
-        fmt = settings['plot']['format']
-
-        # plot the original adjacency matrix
-        ax_plot_and_clear(graph_name, directed, "orig", "orig_el_file_name", fmt, markersize, figsize, plots_dir, dpi,
-                          ax_plot_adj_mat, plot_type)
-        # plot the compressed adjacency matrix
-        ax_plot_and_clear(graph_name, directed, "comp", "compressed_el_file_name", fmt, markersize, figsize, plots_dir,
-                          dpi,
-                          ax_plot_adj_mat, plot_type)
-
-        for order_idx, order in enumerate(orders):
-            # plot_ordering(plt, graph_name, directed, order)
-            for plot_type in plot_types:
-                ax_plot_and_clear(graph_name, directed, order, None, fmt, markersize, figsize,
-                                  plots_dir,
-                                  dpi,
-                                  ax_plot_order, plot_type)
-
-
-
-
-        gc.collect()
+        args = [graph_name, orders, settings]
+        args = {
+            'graph_name': graph_name,
+            'orders': orders,
+            'settings': settings
+        }
+        print(args)
+        proc = Process(target=plot_graph, kwargs=args)
+        procs.append(proc)
+        proc.start()
+        # pool.map(plot_graph, args=(args,))
+        # plot_graph(graph_name, orders, settings)
+    # complete the processes
+    for proc in procs:
+        proc.join()
 
     graph_names = [row['graph_name'] for row in rows]
 

@@ -60,7 +60,14 @@ apt-get install g++-11
 - `slashburn`:  
   `$ cmake --build ./graph_preprocess/<cmake build directory name> --target slashshburn -j <num threads>`
 
-# Examples
+# Execution
+Supply `driver.py` with a configuration file and an optional cluster mode (`--slurm`).  
+See [`local_config.yaml`](./local_config.yaml) and [`cluster_config.yaml`](./konect_scraper/cluster/cluster_config.yaml) for examples of configuration files for  local and cluster executions.  
+e.g.
+```
+$ python driver.py --config-path <path-to-config-file> --slurm
+```
+
 ## Local
 1. Download and compress `petster-hamster-household` and `opsahl-powergrid` graphs from konect, compute the `slashburn`
    order of those graphs, and plot the spy plots of the results.

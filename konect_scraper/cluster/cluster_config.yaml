@@ -7,7 +7,8 @@ mode: pr-expt
 directed: true 
 
 # if applicable, which vertex orderings to compute
-reorder: [rnd, rbt, sb, srt, hc, hs, dbg]
+reorder: all
+# reorder: [rnd, rbt, sb, srt, hc, hs, dbg]
 # reorder: [sb]
 
 # location of graphs.db and graph directories
