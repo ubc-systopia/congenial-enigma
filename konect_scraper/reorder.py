@@ -101,7 +101,7 @@ def compute_par_slashburn(graph_path, order_path):
     args = [executable]
     args += [
         '-f', graph_path,
-        # '-s',
+        '-s',
         '-o', order_path,
         '-d', sqlite3_db_path,
         '-p', str(percent)
@@ -255,13 +255,14 @@ def compute_ordering(graph_name, order, ovewrite):
 
 def main(rows, orders, overwrite):
     settings = config.settings
+    
+    for i in range(30):
+        # compute the given orders for each of the datasets
+        for row in rows:
+            graph_name = row['graph_name']
 
-    # compute the given orders for each of the datasets
-    for row in rows:
-        graph_name = row['graph_name']
-
-        for order in orders:
-            compute_ordering(graph_name, order, overwrite)
+            for order in orders:
+                compute_ordering(graph_name, order, overwrite)
     return
 
 

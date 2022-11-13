@@ -26,10 +26,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../ParallelBatchRCM" beforeDir="false" afterPath="$PROJECT_DIR$/../ParallelBatchRCM" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../dbg" beforeDir="false" afterPath="$PROJECT_DIR$/../dbg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/utilities/plot_pr_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/utilities/plot_pr_results.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rabbit_order" beforeDir="false" afterPath="$PROJECT_DIR$/../rabbit_order" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +66,7 @@
     "cf.advertisement.text.has.clang-format": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/atrostan/Workspace/repos/congenial-enigma/graph_preprocess",
+    "last_opened_file_path": "/home/atrostan/Workspace/repos/congenial-enigma/par_slashburn",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -77,9 +77,9 @@
   }
 }]]></component>
   <component name="RunManager" selected="CMake Application.slashburn">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
     <configuration name="cuthill_mckee" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 1601787 -m 8063026 -g $PROJECT_DIR$/../konect_scraper/data/graphs/trec-wt10g/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cuthill_mckee" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cuthill_mckee">
@@ -162,6 +162,7 @@
       <workItem from="1665965898621" duration="8245000" />
       <workItem from="1666390516371" duration="624000" />
       <workItem from="1667689079713" duration="5910000" />
+      <workItem from="1668196798172" duration="14000" />
     </task>
     <servers />
   </component>

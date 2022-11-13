@@ -423,8 +423,6 @@ def main(rows, orders):
     max_n = settings['plot']['max_n']
     figsize = (ncols * ax_size, nrows * ax_size,)
 
-    from multiprocessing import Process
-    procs = []
     # compute the given orders for each of the datasets
     for row_idx, row in enumerate(rows):
 
@@ -436,14 +434,7 @@ def main(rows, orders):
             'settings': settings
         }
         print(args)
-        proc = Process(target=plot_graph, kwargs=args)
-        procs.append(proc)
-        proc.start()
-        # pool.map(plot_graph, args=(args,))
-        # plot_graph(graph_name, orders, settings)
-    # complete the processes
-    for proc in procs:
-        proc.join()
+        plot_graph(**args)
 
     graph_names = [row['graph_name'] for row in rows]
 
