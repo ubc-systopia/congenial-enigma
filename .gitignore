@@ -283,6 +283,9 @@ _deps
 *.out
 *.app
 
+# slurm error output
+*.err
+
 # Prerequisites
 *.d
 

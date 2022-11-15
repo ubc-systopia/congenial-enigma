@@ -6,6 +6,46 @@ from konect_scraper.download_and_extract import compress
 from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_ground_truth_pr, set_n_m, single_val_numeric_set
 
 
+def process(graph_name, io_modes, overwrite):
+
+    settings = config.settings
+    graphs_dir = settings['graphs_dir']
+
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    compressed_edge_list_path = os.path.join(
+        graph_dir, f"{settings['compressed_el_file_name']}.net")
+    if Path(compressed_edge_list_path).is_file():
+        if overwrite:
+            logging.info(f"{graph_name} already compressed; Overwriting.")
+        else:
+            logging.info(f"{graph_name} already compressed; skipping.")
+            return
+
+    # compress the graph's edgelist
+    directed = bool(get_directed(graph_name))
+    sz = get_size(graph_name)
+    vol = get_volume(graph_name)
+    n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
+    set_n_m(graph_name, n, m)
+    # update the PageRank experiments structs size in db
+    get_size_in_memory(n, m)
+
+    # update the text file size in the database
+    compressed_graph_path = os.path.join(
+        graph_dir, settings["compressed_el_file_name"])
+    single_val_numeric_set('compressed_txt_file_size', 'metadata', graph_name,
+                            os.path.getsize(compressed_graph_path + ".net"))
+
+    compressed_graph_path_with_extension = \
+        os.path.join(
+            f"{compressed_graph_path}.{settings['edgelist_file_suffix']}")
+    # todo save the compressed edgelist as scipy.sparse.csr_matrix
+
+    # todo save the compressed edgelist's PageRank for verification after
+    # pr_experiments
+    logging.info(f"Computing {graph_name}'s PageRank")
+    save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
+
 def main(rows, io_modes, overwrite):
     """
     1. Compress a graph's edge list
@@ -28,40 +68,8 @@ def main(rows, io_modes, overwrite):
 
     for row in rows:
         graph_name = row['graph_name']
+        process(graph_name, io_modes, overwrite)
 
-        graph_dir = os.path.join(graphs_dir, graph_name)
-        compressed_edge_list_path = os.path.join(
-            graph_dir, f"{settings['compressed_el_file_name']}.net")
-        if Path(compressed_edge_list_path).is_file():
-            if overwrite:
-                logging.info(f"{graph_name} already compressed; Overwriting.")
-            else:
-                logging.info(f"{graph_name} already compressed; skipping.")
-                continue
-
-        # compress the graph's edgelist
-        directed = bool(get_directed(graph_name))
-        sz = get_size(graph_name)
-        vol = get_volume(graph_name)
-        n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
-        set_n_m(graph_name, n, m)
-        # update the PageRank experiments structs size in db
-        get_size_in_memory(n, m)
-
-        # update the text file size in the database
-        compressed_graph_path = os.path.join(
-            graph_dir, settings["compressed_el_file_name"])
-        single_val_numeric_set('compressed_txt_file_size', 'metadata', graph_name,
-                               os.path.getsize(compressed_graph_path + ".net"))
-
-        compressed_graph_path_with_extension = \
-            os.path.join(
-                f"{compressed_graph_path}.{settings['edgelist_file_suffix']}")
-        # todo save the compressed edgelist as scipy.sparse.csr_matrix
-
-        # todo save the compressed edgelist's PageRank for verification after
-        # pr_experiments
-        logging.info(f"Computing {graph_name}'s PageRank")
-        save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
+        
 
     return

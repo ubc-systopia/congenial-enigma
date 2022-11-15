@@ -111,7 +111,7 @@ def main(args):
     print(res.decode('utf-8'))
 
     # compile 
-    for target in ['graph_preprocess', 'slashburn', 'pr_experiments']:
+    for target in ['graph_preprocess', 'slashburn', 'pr_experiments', 'convert_map_to_binary']:
         args = [
             cmake_executable,
             "--build", cmake_build_dir,
@@ -169,15 +169,17 @@ def main(args):
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=par_slashburn_dir)
     print(res.decode('utf-8'))
-    args = [
-            cmake_executable,
-            "--build", os.path.join(par_slashburn_dir, cmake_build_dir),
-            "--target", 'par_slashburn',
-            "-j", str(n_threads)
-        ]
-    print(" ".join(args))
-    res = subprocess.check_output(args, cwd=par_slashburn_dir)
-    print(res.decode('utf-8'))
+
+    for target in ['par_slashburn', 'pr']:
+        args = [
+                cmake_executable,
+                "--build", os.path.join(par_slashburn_dir, cmake_build_dir),
+                "--target", target,
+                "-j", str(n_threads)
+            ]
+        print(" ".join(args))
+        res = subprocess.check_output(args, cwd=par_slashburn_dir)
+        print(res.decode('utf-8'))
 
     dbg_apps_dir = settings['dbg_apps_dir']
     # build dbg

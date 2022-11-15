@@ -79,7 +79,7 @@ def main(args):
             execute.main(graph_type, graph_ns, slurm_params, 'download')
             return
         case 'preprocess':
-            execute.main(graph_type, graph_ns, slurm_params, 'preprocess')
+            execute.main(graph_type, graph_ns, slurm_params, 'preprocess', overwrite=overwrite)
             return
         case 'reorder':
             orders = verify_vertex_orders(orders, config.settings)

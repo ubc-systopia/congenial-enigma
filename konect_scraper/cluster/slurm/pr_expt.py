@@ -14,6 +14,7 @@ def main(config_path, config_idx):
     graph_name = row['graph_name']
     vertex_order = row['vertex_order']
     edge_order = row['edge_order']
+    print(f"Running pr-expt on {graph_name}-{vertex_order}-{edge_order}")
     run_pr_expt(graph_name, vertex_order, edge_order)
     return 
 

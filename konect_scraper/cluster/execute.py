@@ -20,7 +20,7 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
     # each row corresponds to `graph_name, konect_url, data_url`
     csvs_dir = config.settings['compute_canada']['job_array_dir']
     Path(csvs_dir).mkdir(parents=True, exist_ok=True)
-
+    print(f'{overwrite=}')
     graph_column_names = ['graph_name', 'konect_url', 'data_url']
     column_names = graph_column_names.copy()
     lines = []
@@ -49,8 +49,13 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
                         lines.append(line + f',{vertex_order}' + f',1')
                     else:
                         lines.append(line + f',{vertex_order}' + f',0')
+            
         else:
-            lines.append(line)
+            if overwrite:
+                lines.append(line + f',1')
+            else:
+                lines.append(line + f',0')
+
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
         for l in lines:
             f.write(f'{l}\n')
@@ -58,17 +63,20 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
 
 def main(graph_type, graph_ns, slurm_params, mode_str,
          vertex_orders=None, overwrite=False):
+    print(f'{overwrite=}')
     settings = config.settings
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
+    edge_orders = list(settings['edge_orderings'].keys())
 
     if mode_str == 'reorder':
         write_sbatch_array_csv(
             rows, mode_str, vertex_orders=vertex_orders, overwrite=overwrite)
     elif mode_str == 'pr_expt':
         write_sbatch_array_csv(
-            rows, mode_str, vertex_orders=vertex_orders, overwrite=overwrite)
+            rows, mode_str, vertex_orders=vertex_orders, 
+            edge_orders=edge_orders, overwrite=overwrite)
     else:
         write_sbatch_array_csv(rows, mode_str, overwrite=overwrite)
 
