@@ -51,6 +51,7 @@ def init(input_data_dir=None):
     dbg_clean_el_executable = os.path.join(
         dbg_convert_dir, "clean_edgelist.py")
     dbg_convert_script = os.path.join(dbg_convert_dir, "convert.sh")
+    dbg_convert_executable = os.path.join(dbg_convert_dir, "convert")
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
     if input_data_dir:
@@ -147,6 +148,7 @@ def init(input_data_dir=None):
         "dbg_convert_dir": dbg_convert_dir,
         "dbg_clean_el_executable": dbg_clean_el_executable,
         "dbg_convert_script": dbg_convert_script,
+        "dbg_convert_executable": dbg_convert_executable,
         "dbg_datasets_dir": dbg_datasets_dir,
 
         "pbrcm_home": pbrcm_home,
@@ -166,7 +168,8 @@ def init(input_data_dir=None):
             # "tables": {
             #     ["metadata", "statistics"]
             # },
-            "sqlite3_db_path": sqlite3_db_path
+            "sqlite3_db_path": sqlite3_db_path,
+            "timeout": 15,
         },
         "datasets_json_path": datasets_json_path,
         "data_dir": data_dir,

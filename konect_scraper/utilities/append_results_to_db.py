@@ -23,9 +23,11 @@ def main(args):
     for path, subdirs, files in os.walk(args.results_dir):
         for name in files:
             results_path = os.path.join(path, name)
+            print(f'Appending {results_path}..')
             append_df_to_table(pd.read_csv(results_path), 'pr_expts')
 
     # delete after append
+    print(f'Deleting all contents of {args.results_dir}')
     delete_contents_of_folder(args.results_dir)
 
     return 

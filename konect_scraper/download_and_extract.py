@@ -204,6 +204,7 @@ def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes, grap
     # convert the graph to a format dbg requires
     dbg_clean_el_executable = settings['dbg_clean_el_executable']
     dbg_convert_script = settings['dbg_convert_script']
+    dbg_convert_executable = settings['dbg_convert_executable']
     dbg_datasets_dir = settings['dbg_datasets_dir']
     dbg_home = settings['dbg_home']
 
@@ -222,13 +223,15 @@ def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes, grap
     logging.info(f"Executing: " + ' '.join(args))
     res = subprocess.check_output(args, env=env)
 
-    args = [
-        dbg_convert_script,
-        # os.path.join(dbg_datasets_dir, graph_name),
-        output_path
+    dbg_convert_args = [
+        ['el', 'cvgr'],
+        ['el', 'cintgr'],
     ]
-    logging.info(f"Executing: " + ' '.join(args))
-    res = subprocess.check_output(args, env=env)
+
+    for dbg_convert_as in dbg_convert_args:
+        args = [dbg_convert_executable] + dbg_convert_as + [output_path]
+        logging.info(f"Executing: " + ' '.join(args))
+        res = subprocess.check_output(args, env=env)
 
     return n, m
 

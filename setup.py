@@ -33,6 +33,16 @@ def clean_built_submodules(settings):
         cwd=os.path.join(settings['dbg_home'], 'apps'),
     )
 
+    
+    args = [
+        'rm', '-rf',
+        f"{settings['dbg_convert_dir']}/convert",
+        f"{settings['dbg_convert_dir']}/*.o",
+    ]
+
+    print(' '.join(args))
+    subprocess.check_output(args)
+
     return
 
 
@@ -188,6 +198,20 @@ def main(args):
     args = [
         make_executable, "clean",
     ]
+
+    # compile dbg's graph-convert-utils convert
+    args = [
+        "g++", "-o"
+        f"{settings['dbg_convert_dir']}/convert",
+        '-fopenmp',
+        f"{settings['dbg_convert_dir']}/convert.cpp",
+    ]
+
+    print(dbg_home)
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=settings['dbg_convert_dir'])
+    print(res.decode('utf-8'))
+
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))

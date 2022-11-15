@@ -278,7 +278,7 @@ def get_all_konect_names():
 
 def delete_all_rows(table):
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=config.settings['sqlite3']['timeout'])
     c = conn.cursor()
     c.execute(f'DELETE FROM {table};', )
     logging.info(f'{c.rowcount} rows deleted from the {table}')
@@ -292,7 +292,7 @@ def delete_all_rows(table):
 
 def get_all_rows(table):
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=config.settings['sqlite3']['timeout'])
     conn.row_factory = sqlite3.Row
     sql = f"select * from {table}"
 
@@ -341,7 +341,7 @@ def set_m(graph_name, val):
 
 def set_n_m(graph_name, n, m):
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=config.settings['sqlite3']['timeout'])
     cursor = conn.cursor()
     query = f"insert or replace into n_m (graph_name, n, m) values (?,?,?)"
     cursor.execute(query, [graph_name, n, m])
@@ -359,7 +359,7 @@ def single_val_numeric_set(col_name, table_name, graph_name, val):
     :return:
     """
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=config.settings['sqlite3']['timeout'])
     cursor = conn.cursor()
     query = f"update {table_name} set {col_name} = ? where graph_name = ?"
     cursor.execute(query, [val, graph_name])
@@ -651,7 +651,6 @@ def save_ground_truth_pr(edgelist_path, graph_name):
     logging.info(f"Executing: {' '.join(args)}")
     res = subprocess.check_output(args)
 
-    print(f'{pr_exec=}')
     return
 
 
