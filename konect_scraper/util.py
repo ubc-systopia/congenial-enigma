@@ -100,7 +100,8 @@ def create_pr_expt_table():
 
     # graph_name, datetime, expt_num should be unique
     column_dict = column_names.pr_expts_col_names
-    unique_cols = ["graph_name", "datetime", "expt_num", "vertex_order", "edge_order"]
+    unique_cols = ["graph_name", "datetime",
+                   "expt_num", "vertex_order", "edge_order"]
     sql_create_table = f"""CREATE TABLE IF NOT EXISTS pr_expts ("""
     for k in list(column_dict.keys()):
         v = column_dict[k]
@@ -190,17 +191,20 @@ def remove_all_files_in_directory(folder):
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
+
 def create_log_dir_if_not_exists():
     slurm_log_dir = config.settings['logging']['slurm_log_dir']
     data_dirs = [
         slurm_log_dir,
         config.settings['logging']['log_dir'],
     ] + [
-        os.path.join(slurm_log_dir, m) for m in 
+        os.path.join(slurm_log_dir, m) for m in
         config.settings['compute_canada']['execution_modes']
     ]
 
-    [Path(data_dir).mkdir(parents=True, exist_ok=True) for data_dir in data_dirs]
+    [Path(data_dir).mkdir(parents=True, exist_ok=True)
+     for data_dir in data_dirs]
+
 
 def create_dir_if_not_exists(path_to_dir):
     Path(path_to_dir).mkdir(parents=True, exist_ok=True)
@@ -253,11 +257,13 @@ def valid_orderings(orders):
     all_orders = set([k for k in orderings.keys()])
     return all([o in all_orders for o in orders])
 
+
 def valid_edge_orderings(orders):
     settings = config.settings
     orderings = settings['edge_orderings']
     all_orders = set([k for k in orderings.keys()])
     return all([o in all_orders for o in orders])
+
 
 def get_all_konect_names():
     settings = config.settings
@@ -274,7 +280,7 @@ def delete_all_rows(table):
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute(f'DELETE FROM {table};', );
+    c.execute(f'DELETE FROM {table};', )
     logging.info(f'{c.rowcount} rows deleted from the {table}')
 
     # commit the changes to db
@@ -315,7 +321,8 @@ def init_logger(log_file_name):
 
     formatter = logging.Formatter(fmt)
 
-    logging.basicConfig(filename=log_file_name, encoding='utf-8', level=logging.DEBUG, format=fmt, filemode='a')
+    logging.basicConfig(filename=log_file_name, encoding='utf-8',
+                        level=logging.DEBUG, format=fmt, filemode='a')
 
 
 def get_query_vals_str(n_vals):
@@ -409,8 +416,12 @@ def get_n(graph_name):
 
 def get_n_vertices(graph_name):
     return single_val_get('size', 'statistics', graph_name)
+
+
 def get_n_edges(graph_name):
     return single_val_get('volume', 'statistics', graph_name)
+
+
 def get_pr_struct_size(graph_name):
     return single_val_get('pr_struct_size', 'statistics', graph_name)
 
@@ -500,13 +511,15 @@ def valid_pr(rows):
         directed = get_directed(graph_name)
         settings = config.settings
         graph_dir = os.path.join(settings['graphs_dir'], graph_name)
-        graph_path = os.path.join(graph_dir, f"{settings['compressed_el_file_name']}.net")
+        graph_path = os.path.join(
+            graph_dir, f"{settings['compressed_el_file_name']}.net")
         pr_path = os.path.join(graph_dir, 'pr')
 
         pr = np.loadtxt(pr_path).astype(np.float64)
 
         # use igraph to compute pagerank
-        igraph_pr = np.array(igraph.Graph.Read_Edgelist(graph_path, directed=directed).pagerank())
+        igraph_pr = np.array(igraph.Graph.Read_Edgelist(
+            graph_path, directed=directed).pagerank())
 
         if directed:
             nx_graph = nx.DiGraph
@@ -514,7 +527,8 @@ def valid_pr(rows):
             nx_graph = nx.Graph
 
         g = nx.read_edgelist(graph_path, create_using=nx_graph)
-        nx_pr_dict = nx.pagerank(nx.read_edgelist(graph_path, create_using=nx_graph))
+        nx_pr_dict = nx.pagerank(nx.read_edgelist(
+            graph_path, create_using=nx_graph))
 
         nx_pr = np.zeros(n).astype(np.float64)
         for k, v in nx_pr_dict.items():
@@ -524,7 +538,7 @@ def valid_pr(rows):
         # print(f"{np.allclose(pr, nx_pr)=}")
 
         valid_pagerank = np.allclose(pr, igraph_pr, rtol=0, atol=1e-4) and \
-                         np.allclose(pr, nx_pr, rtol=0, atol=1e-4)
+            np.allclose(pr, nx_pr, rtol=0, atol=1e-4)
 
         # for i in range(n):
         #     print(f"{pr[i]} {igraph_pr[i]} {nx_pr[i]}")
@@ -594,13 +608,15 @@ def get_unimputed_features(graph_names):
 
     # filter for features for which we have at least min_n_data_samples
     min_n_data_samples = config.settings['modelling']['min_n_data_samples']
-    non_zero_val_dict = {k: v for k, v in non_zero_val_dict.items() if v >= min_n_data_samples}
+    non_zero_val_dict = {
+        k: v for k, v in non_zero_val_dict.items() if v >= min_n_data_samples}
 
     # ignore all graphs that have zero entries for the filtered features
     valid_cols_str = ',\n'.join(non_zero_val_dict.keys())
 
     df = df[non_zero_val_dict.keys()]
-    res = df.sort_values(by='pr_struct_size', ascending=True)['graph_name'].values
+    res = df.sort_values(by='pr_struct_size', ascending=True)[
+        'graph_name'].values
 
     sql_query = f"select {valid_cols_str} from statistics where graph_name in ({graph_name_seq}) order by pr_struct_size"
     # print(sql_query)
@@ -608,3 +624,52 @@ def get_unimputed_features(graph_names):
     # rows = cursor.fetchall()
 
     return res
+
+
+def save_ground_truth_pr(edgelist_path, graph_name):
+    """Run GapBS' Pagerank on the graph specified
+    Sideffect - Saves the Ground-Truth PageRank values in a binary file in 
+    the graph's directory (for future verification)
+
+    Args:
+        edgelist_path (str): path to the graph's text edge list
+        graph_name (str): the graph's (konect) name/label
+    """
+    settings = config.settings
+    pr_exec = settings['pr_executable']
+    pr_filename = settings['pagerank_file_name']
+    graphs_dir = settings['graphs_dir']
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    pr_path = os.path.join(graph_dir, pr_filename)
+
+    args = [
+        pr_exec,
+        '-f', edgelist_path,
+        '-c', pr_path
+
+    ]
+    logging.info(f"Executing: {' '.join(args)}")
+    res = subprocess.check_output(args)
+
+    print(f'{pr_exec=}')
+    return
+
+
+def copy_order_file_to_binary(n, input_path, output_path):
+    """Use a cpp utility to convert vertex orderings saved as text files
+    to a binary file (using boost::serialization archives)
+
+    Args:
+        n (int): number of vertices in the graph
+        input_path (string): path to vertex ordering text file
+        output_path (string): where to save the binary file
+    """
+    convert_map_to_bin_executable = config.settings['convert_map_to_bin_executable']
+    args = [
+        convert_map_to_bin_executable,
+        '-n', str(n),
+        '-i', input_path,
+        '-o', output_path,
+    ]
+    subprocess.check_output(args)
+    return

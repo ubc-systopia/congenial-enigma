@@ -16,7 +16,7 @@ So, if given a 100 graphs to download, assume 100 sbatch jobs will be submitted
 """
 
 
-def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
+def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, overwrite=False):
     # each row corresponds to `graph_name, konect_url, data_url`
     csvs_dir = config.settings['compute_canada']['job_array_dir']
     Path(csvs_dir).mkdir(parents=True, exist_ok=True)
@@ -26,6 +26,8 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
     lines = []
     if vertex_orders:
         column_names += ['vertex_order']
+    if edge_orders:
+        column_names += ['edge_order']
     column_names += ['overwrite']
 
     lines.append(",".join(column_names))  # header
@@ -34,10 +36,19 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, overwrite=False):
         line = ",".join([str(row[k]) for k in graph_column_names])
         if vertex_orders:
             for vertex_order in vertex_orders:
-                if overwrite:
-                    lines.append(line + f',{vertex_order}' + f',1')
+                if edge_orders:
+                    for edge_order in edge_orders:
+                        if overwrite:
+                            lines.append(
+                                line + f',{vertex_order}' + f',{edge_order}' + f',1')
+                        else:
+                            lines.append(
+                                line + f',{vertex_order}' + f',{edge_order}' + f',0')
                 else:
-                    lines.append(line + f',{vertex_order}' + f',0')
+                    if overwrite:
+                        lines.append(line + f',{vertex_order}' + f',1')
+                    else:
+                        lines.append(line + f',{vertex_order}' + f',0')
         else:
             lines.append(line)
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
@@ -52,9 +63,12 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
 
-    if mode_str == 'reorder' or mode_str == 'pr_expt':
+    if mode_str == 'reorder':
         write_sbatch_array_csv(
-            rows, mode_str, vertex_orders, overwrite=overwrite)
+            rows, mode_str, vertex_orders=vertex_orders, overwrite=overwrite)
+    elif mode_str == 'pr_expt':
+        write_sbatch_array_csv(
+            rows, mode_str, vertex_orders=vertex_orders, overwrite=overwrite)
     else:
         write_sbatch_array_csv(rows, mode_str, overwrite=overwrite)
 
@@ -90,7 +104,8 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
         slurm_params['cpus-per-task'],
     ]
 
-    if 'constraint' in slurm_params: args += [slurm_params['constraint']]
+    if 'constraint' in slurm_params:
+        args += [slurm_params['constraint']]
 
     print("CALLING: " + " ".join(args))
     # run the sbatch command

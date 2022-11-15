@@ -46,6 +46,7 @@ def main(args):
     print(f'{pl_fit.power_law.alpha=}')
     print(f'{pl_fit.power_law.xmin=}')
     print(f'{power_law_estimate(deg)=}')
+    print(f'{pl_fit.power_law}')
 
     return 
 

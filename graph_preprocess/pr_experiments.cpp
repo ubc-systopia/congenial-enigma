@@ -24,6 +24,7 @@
 #include <boost/filesystem/path.hpp>
 #include "PageRank.h"
 #include "sql.h"
+#include "pvector.h"
 
 int main(int argc, char *argv[]) {
 	opterr = 0;
@@ -37,10 +38,11 @@ int main(int argc, char *argv[]) {
 	int num_expts = 0;
 	std::string input_dir;
 	std::string vorder_str;
+	std::string eorder_str;
 	std::string sqlite_db_path;
 	std::string results_path;
 
-	while ((opt = getopt(argc, argv, "den:m:i:x:p:g:b:o:r:")) != -1) {
+	while ((opt = getopt(argc, argv, "den:m:i:x:p:g:b:o:r:s:")) != -1) {
 		switch (opt) {
 			case 'd':
 				directed = !directed;
@@ -75,6 +77,9 @@ int main(int argc, char *argv[]) {
 			case 'r':
 				results_path = optarg;
 				break;
+			case 's':
+				eorder_str = optarg;
+				break;
 			case '?':
 				if (optopt == 'k')
 					printf("Option -%c requires a long long.\n", optopt);
@@ -91,34 +96,36 @@ int main(int argc, char *argv[]) {
 	std::string text_graph_path = fmt::format("{}/comp.net", input_dir);
 
 	std::string order_path = fmt::format("{}/{}", input_dir, vorder_str);
+	std::string binary_order_path = fmt::format("{}/{}.bin", input_dir, vorder_str);
 
+	std::string pr_path = fmt::format("{}/pr", input_dir);
+	std::vector<double> correct_vals;
+	read_binary_container<std::vector<double>>(pr_path, correct_vals);
 	boost::filesystem::path p(input_dir);
 	std::string graph_name = p.filename().string();
 
 	// initializations
 	std::vector<std::pair<ul, ul>> orig_edges(num_edges);
 	std::vector<Edge> mapped_edges(num_edges);
-	std::vector<ul> iso_map;
+	std::vector<uint32_t> iso_map;
 	iso_map.resize(num_vertices, -1);
 
 	// write header row to results csv
 	std::ofstream outfile(results_path);
-	outfile << 	"graph_name,"   <<
-				"datetime,"     <<
-				"expt_num,"     << 
-				"num_iters,"    <<
-				"vertex_order," <<
-				"edge_order,"   << 
-				"runtime\n";
+	outfile << "graph_name," <<
+	        "datetime," <<
+	        "expt_num," <<
+	        "num_iters," <<
+	        "vertex_order," <<
+	        "edge_order," <<
+	        "runtime\n";
 	outfile.close();
-
-
 
 	// read binary edge list
 	read_binary_edge_list(binary_graph_path, orig_edges);
-//	read_text_edge_list(text_graph_path, orig_edges);
 	std::vector<Edge> indexed_edges(num_edges);
 
+# pragma omp parallel for schedule(static)
 	for (ull i = 0; i < num_edges; ++i) {
 		indexed_edges[i].source = orig_edges[i].first;
 		indexed_edges[i].dest = orig_edges[i].second;
@@ -128,11 +135,11 @@ int main(int argc, char *argv[]) {
 	std::vector<std::pair<ul, ul>>().swap(orig_edges); // delete orig edges
 
 	if (vorder_str == "orig") {  // construct the identity map
-		for (ul i = 0; i < num_vertices; ++i) {
-			iso_map[i] = i;
-		}
+# pragma omp parallel for schedule(static)
+		for (uint32_t i = 0; i < num_vertices; ++i) { iso_map[i] = i; }
 	} else {  // read (text) isomorphism map
-		read_map(order_path, iso_map);
+		// read_map(order_path, iso_map);
+		read_binary_container<std::vector<uint32_t>>(binary_order_path, iso_map);
 	}
 
 	iso_map.shrink_to_fit();
@@ -142,58 +149,72 @@ int main(int argc, char *argv[]) {
 	par_translate_edge_list(indexed_edges, mapped_edges, iso_map, num_edges);
 
 	std::string order_strings[4] = {"row", "column", "hilbert", "fgf"};
+	std::map<std::string, int> edge_order_ids = {
+		{"row",     0},
+		{"column",  1},
+		{"hilbert", 2},
+		{"fgf",     3},
+	};
 
 	// sort edges according to row, column major, or hilbert  todo slashburn fgf
 	const int num_edge_orders = End - Row;
-	for (int edge_order_id = 0; edge_order_id < num_edge_orders; ++edge_order_id) {
-		Order ord = static_cast<Order>(edge_order_id);
-		std::string eorder_str = order_strings[ord];
-		par_sort_edges(mapped_edges, ord, num_vertices);
+	int edge_order_id = edge_order_ids[eorder_str];
+	Order ord = static_cast<Order>(edge_order_id);
+	fmt::print("eorder_str: {}\n", eorder_str);
+	par_sort_edges(mapped_edges, ord, num_vertices);
 
-		if (debug) {
-			std::vector<std::pair<ul, ul>> sorted_edges;
-			// now the edgelist is sorted, remove unneeded idx
-			std::for_each(begin(mapped_edges), end(mapped_edges), [&sorted_edges](Edge e) {
-				sorted_edges.emplace_back(e.source, e.dest);
-			});
-			// write each sorted edge list to file
-			std::string eorder_path = fmt::format("{}/{}.{}", input_dir, vorder_str, eorder_str);
-			write_text_edge_list(eorder_path, sorted_edges);
+//		if (debug) {
+//			std::vector<std::pair<ul, ul>> sorted_edges;
+//			// now the edgelist is sorted, remove unneeded idx
+//			std::for_each(begin(mapped_edges), end(mapped_edges), [&sorted_edges](Edge e) {
+//				sorted_edges.emplace_back(e.source, e.dest);
+//			});
+//			// write each sorted edge list to file
+//			std::string eorder_path = fmt::format("{}/{}.{}", input_dir, vorder_str, eorder_str);
+//			write_text_edge_list(eorder_path, sorted_edges);
+//		}
+
+	// run pr experiments
+	for (int expt_idx = 0; expt_idx < num_expts; ++expt_idx) {
+
+		PageRank pr = PageRank(num_vertices, num_iters, mapped_edges, percent);
+
+		pr.compute();
+
+		pvector<double> mapped_results(num_vertices);
+#pragma omp parallel for
+		for (uint32_t i = 0; i < num_vertices; ++i) {
+			mapped_results[i] = pr.scores[iso_map[i]];
 		}
+		bool valid_pr = std::equal(dpl::execution::par_unseq,
+		                           mapped_results.begin(), mapped_results.end(),
+		                           correct_vals.begin(),
+		                           [](double value1, double value2) {
+			                           constexpr double epsilon = 1e-4;
+			                           return std::fabs(value1 - value2) < epsilon;
+		                           });
+		assert(valid_pr);
+//		fmt::print("vorder_str, eorder_str: {}, {}\n", vorder_str, eorder_str);
+//		fmt::print("valid_pr: {}\n", valid_pr);
 
-		// run pr experiments
-		for (int expt_idx = 0; expt_idx < num_expts; ++expt_idx) {
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
 
-			PageRank pr = PageRank(num_vertices, num_iters, mapped_edges, percent);
+		std::ostringstream oss;
+		oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
+		auto datetime_str = oss.str();
 
-			pr.compute();
-
-			// optional - DEBUG - write pr values to file to verify correctness
-			if (debug && expt_idx == num_expts - 1) {
-				pr.write(fmt::format("{}/pr", input_dir));
-			}
-
-			auto t = std::time(nullptr);
-			auto tm = *std::localtime(&t);
-
-			std::ostringstream oss;
-			oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
-			auto datetime_str = oss.str();
-
-			PRExptRow r = {
-					graph_name,
-					datetime_str,
-					expt_idx,
-					num_iters,
-					vorder_str,
-					eorder_str,
-					pr.runtime,
-			};
-			write_row_to_csv(r, results_path);
-			// insert_or_ignore_into_pr_expts(r, sqlite_db_path);
-
-		}
-
+		PRExptRow r = {
+			graph_name,
+			datetime_str,
+			expt_idx,
+			num_iters,
+			vorder_str,
+			eorder_str,
+			pr.runtime,
+		};
+		write_row_to_csv(r, results_path);
+		// insert_or_ignore_into_pr_expts(r, sqlite_db_path);
 
 	}
 

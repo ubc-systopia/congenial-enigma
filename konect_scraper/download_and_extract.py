@@ -17,9 +17,8 @@ import numpy as np
 from konect_scraper import config
 from konect_scraper.config import IOMode
 from konect_scraper.util import single_val_numeric_set, get_size, get_volume, get_directed, set_n, set_m, \
-    single_val_get, get_size_in_memory, set_n_m
+    single_val_get, get_size_in_memory, set_n_m, save_ground_truth_pr
 import logging
-
 
 def get_edge_list_filename(directory):
     fs = []
@@ -129,7 +128,8 @@ def download_graph(url, directory):
         with gzip.open(tmp_file, 'rb') as f_in:
             tmp_txt = os.path.splitext(tmp_file)[0]
             with open(tmp_txt, 'wb') as f_out:
-                logging.info(f"Extracting {tmp_file} into {tmp_txt} mode: gzip..")
+                logging.info(
+                    f"Extracting {tmp_file} into {tmp_txt} mode: gzip..")
                 shutil.copyfileobj(f_in, f_out)
         edge_list_filename = tmp_txt
         shutil.copyfile(edge_list_filename, graph_path)
@@ -150,6 +150,7 @@ def download_graph(url, directory):
 
     # update the graph's edgelist size (raw text file) in db
     return
+
 
 def update_meta_dir(directory, name):
     """
@@ -206,13 +207,17 @@ def run_graph_preprocess(input_path, output_path, directed, n, m, io_modes, grap
     dbg_datasets_dir = settings['dbg_datasets_dir']
     dbg_home = settings['dbg_home']
 
+    edgelist_file_suffix = settings['edgelist_file_suffix']
+    dbg_edgelist_file_suffix = settings['dbg']['edgelist_file_suffix']
+
     env = {
         **os.environ,
         "DBG_ROOT": dbg_home,
     }
     args = [
         dbg_clean_el_executable,
-        f"{output_path}.net",  f"{output_path}.el" # save to same dir
+        f"{output_path}.{edgelist_file_suffix}",
+        f"{output_path}.{dbg_edgelist_file_suffix}"  # save to same dir
     ]
     logging.info(f"Executing: " + ' '.join(args))
     res = subprocess.check_output(args, env=env)
@@ -236,8 +241,10 @@ def compress(directory, directed, n, m, io_modes, graph_name):
     """
     settings = config.settings
     graph_path = os.path.join(directory, settings["orig_el_file_name"])
-    compressed_graph_path = os.path.join(directory, settings["compressed_el_file_name"])
-    comp_n, comp_m = run_graph_preprocess(graph_path, compressed_graph_path, directed, n, m, io_modes, graph_name)
+    compressed_graph_path = os.path.join(
+        directory, settings["compressed_el_file_name"])
+    comp_n, comp_m = run_graph_preprocess(
+        graph_path, compressed_graph_path, directed, n, m, io_modes, graph_name)
 
     # TODO record the compressed raw text file in db
     return comp_n, comp_m
@@ -247,7 +254,6 @@ def main(rows, io_modes):
     """
     1. Download graph from urls specified in datasets.json
     2. Extract graph file into graph's directory
-    3. Simplify edge list
     :return:
     """
 
@@ -262,15 +268,14 @@ def main(rows, io_modes):
         data_url = row['data_url']
         if data_url == "none":
             continue
-        comp_size = single_val_get('compressed_txt_file_size', 'metadata', graph_name)
+        comp_size = single_val_get(
+            'compressed_txt_file_size', 'metadata', graph_name)
         # if comp_size > 0:  # dataset has been downloaded already
         #     continue
 
         graph_dir = os.path.join(graphs_dir, graph_name)
-        compressed_edge_list_path = os.path.join(graph_dir, f"{settings['compressed_el_file_name']}.net")
-        if Path(compressed_edge_list_path).is_file():
-            logging.info(f"{graph_name} already compressed; skipping.")
-            continue
+        compressed_edge_list_path = os.path.join(
+            graph_dir, f"{settings['compressed_el_file_name']}.net")
 
         # create directory for the graph (if not exists)
         Path(graph_dir).mkdir(parents=True, exist_ok=True)
@@ -280,25 +285,8 @@ def main(rows, io_modes):
 
         # update the text file size in the database
         graph_path = os.path.join(graph_dir, settings["orig_el_file_name"])
-        single_val_numeric_set('txt_file_size', 'metadata', graph_name, os.path.getsize(graph_path))
+        single_val_numeric_set('txt_file_size', 'metadata',
+                               graph_name, os.path.getsize(graph_path))
 
-        # compress the graph's edgelist
-        directed = bool(get_directed(graph_name))
-        sz = get_size(graph_name)
-        vol = get_volume(graph_name)
-        n, m = compress(graph_dir, directed, sz, vol, io_modes, graph_name)
-        # set_n(graph_name, n)
-        # set_m(graph_name, m)
-        set_n_m(graph_name, n, m)
-        # update the PageRank experiments structs size in db
-        get_size_in_memory(n, m)
-
-        # update the text file size in the database
-        compressed_graph_path = os.path.join(graph_dir, settings["compressed_el_file_name"])
-        single_val_numeric_set('compressed_txt_file_size', 'metadata', graph_name,
-                               os.path.getsize(compressed_graph_path + ".net"))
+        
     return
-
-
-if __name__ == '__main__':
-    main()

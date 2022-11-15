@@ -93,7 +93,7 @@ def main(args):
         case 'pr-expt':
             orders = verify_vertex_orders(orders, config.settings)
             execute.main(graph_type, graph_ns, slurm_params, 'pr_expt',
-                         list(orders) + ['orig'])
+                         list(orders))
             return
         case _:
             print(f"Unsupported execution mode on cluster: {exec_mode}")

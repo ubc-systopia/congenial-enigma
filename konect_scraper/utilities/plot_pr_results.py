@@ -25,9 +25,9 @@ def plot_pr_results(graph_name, df):
     pr_struct_size = get_pr_struct_size(graph_name)
     size, size_str = convert_size(pr_struct_size)
 
-    results_dir = config.settings['results_dir']
+    results_dir = os.path.join(config.settings['results_dir'], graph_name)
 
-    # make results dir if note exists    
+    # make results dir if not exists    
     Path(results_dir).mkdir(parents=True, exist_ok=True)
 
     dpi = config.settings['plot']['dpi']

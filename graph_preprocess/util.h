@@ -16,6 +16,8 @@ struct vertex {
 	ul degree;
 };
 
+void normalize(std::vector<double> &orig, std::vector<double> &normalized);
+
 bool sortByDescendingDegree(const vertex &lhs, const vertex &rhs);
 
 void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &rank);

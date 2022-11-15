@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 from konect_scraper import config
-from konect_scraper.util import get_directed, get_n, get_m
+from konect_scraper.util import copy_order_file_to_binary, get_directed, get_n, get_m
 
 
 def compute_dbg_order(graph_name, order_str):
@@ -26,7 +26,6 @@ def compute_dbg_order(graph_name, order_str):
     graph_dir = os.path.join(graphs_dir, graph_name)
     order_file = os.path.join(graph_dir, f"{dbg_order_idx}.map")
     # order_file = os.path.join(dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
-
     n = get_n(graph_name)
     m = get_m(graph_name)
     args = [
@@ -201,7 +200,8 @@ def compute_ordering(graph_name, order, ovewrite):
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
 
-    extension = ".bin"
+    binary_suffix = settings['binary_suffix']
+    extension = f".{binary_suffix}"
 
     comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
     directed = bool(get_directed(graph_name))
@@ -211,6 +211,7 @@ def compute_ordering(graph_name, order, ovewrite):
     order_str = orderings[order]
 
     order_path = os.path.join(graph_dir, order)
+    binary_order_path = f"{order_path}.{binary_suffix}"
 
     if Path(order_path).is_file() and not ovewrite:  # if already computed, skip
         logging.info(f"{graph_name}-{order_str} already computed; skipping.")
@@ -251,18 +252,22 @@ def compute_ordering(graph_name, order, ovewrite):
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""
+    logging.info(f"Copying {graph_name}-{order_str} to  binary")
+    copy_order_file_to_binary(n, order_path, binary_order_path)
+
+
 
 
 def main(rows, orders, overwrite):
     settings = config.settings
     
-    for i in range(30):
-        # compute the given orders for each of the datasets
-        for row in rows:
-            graph_name = row['graph_name']
+    # compute the given orders for each of the datasets
+    for row in rows:
+        graph_name = row['graph_name']
 
-            for order in orders:
-                compute_ordering(graph_name, order, overwrite)
+        for order in orders:
+            if order == 'orig': continue
+            compute_ordering(graph_name, order, overwrite)
     return
 
 

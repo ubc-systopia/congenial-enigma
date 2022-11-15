@@ -25,13 +25,21 @@ find_package(oneDPL REQUIRED)
 
 SET(CMAKE_C_COMPILER icx)
 
-add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h Hilbert.cpp Hilbert.h )
+add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h Hilbert.cpp Hilbert.h)
 
 add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h sql.h Hilbert.cpp Hilbert.h)
 
 add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h)
-add_executable(pr_experiments pr_experiments.cpp pr_experiments.h typedefs.h util.cpp util.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h PageRank.cpp PageRank.h)
+
+set(ParSlashburnDir "../par_slashburn")
+
+add_executable(pr_experiments pr_experiments.cpp pr_experiments.h typedefs.h util.cpp util.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h PageRank.cpp PageRank.h ${ParSlashburnDir}/pvector.h)
+
+target_include_directories(pr_experiments PUBLIC ${ParSlashburnDir})
+
 add_executable(sb_furhilbert sb_furhilbert.cpp sb_furhilbert.h typedefs.h util.cpp util.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h PageRank.cpp PageRank.h furhilbert.h QuadrantCalculator.cpp QuadrantCalculator.h furhilbert.cpp)
+
+add_executable(convert_map_to_binary convert_map_to_binary.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h)
 
 if (Boost_FOUND)
 
@@ -50,4 +58,6 @@ if (Boost_FOUND)
     target_link_libraries(pr_experiments PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
     target_link_libraries(sb_furhilbert PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+
+    target_link_libraries(convert_map_to_binary ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 endif ()

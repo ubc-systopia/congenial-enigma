@@ -18,6 +18,7 @@ def get_monitors_dpi():
     app.quit()
     return dpis
 
+
 def get_n_threads():
     return psutil.cpu_count()
 
@@ -31,10 +32,10 @@ def init(input_data_dir=None):
     global settings
 
     debug = False
-    
+
     # TODO update repo home
     repo_root = Path(os.path.dirname(os.path.realpath(__file__))).parent
-    
+
     repo_name = "congenial-enigma"
     app_name = "graph_preprocess"
     all_networks_url = "http://konect.cc/networks/"
@@ -47,14 +48,15 @@ def init(input_data_dir=None):
 
     dbg_apps_dir = os.path.join(dbg_home, "apps")
     dbg_convert_dir = os.path.join(dbg_home, "graph-convert-utils")
-    dbg_clean_el_executable = os.path.join(dbg_convert_dir, "clean_edgelist.py")
+    dbg_clean_el_executable = os.path.join(
+        dbg_convert_dir, "clean_edgelist.py")
     dbg_convert_script = os.path.join(dbg_convert_dir, "convert.sh")
     dbg_datasets_dir = os.path.join(dbg_home, "datasets")
 
     if input_data_dir:
         data_dir = input_data_dir
     else:
-        data_dir = os.path.join(repo_home, "data")  
+        data_dir = os.path.join(repo_home, "data")
     # data_dir = '/media/atrostan/patterson_backup/data/'
 
     sqlite3_db_path = os.path.join(data_dir, "graphs.db")
@@ -64,28 +66,44 @@ def init(input_data_dir=None):
     graphs_dir = os.path.join(data_dir, "graphs")
     plots_dir = os.path.join(data_dir, "plots")
     results_dir = os.path.join(data_dir, "results")
-    orig_el_file_name = "orig.net"
+
+    edgelist_file_suffix = 'net'
+    scipy_csr_suffix = 'npz'
+
+    orig_el_file_name = f"orig.{edgelist_file_suffix}"
     compressed_el_file_name = "comp"
+    pagerank_file_name = "pr"
+
     cmake_build_dir = "cmake-build-debug"
     graph_preprocess_dir = os.path.join(repo_root, "graph_preprocess")
 
     # EXECUTABLES
-    graph_preprocess_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
-    slashburn_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "slashburn")
-    cuthill_mckee_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
+    graph_preprocess_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "graph_preprocess")
+    slashburn_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "slashburn")
+    cuthill_mckee_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
+    convert_map_to_bin_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "convert_map_to_binary")
 
-    parallel_batch_rcm_executable = os.path.join(pbrcm_home, 'build', 'CuthillMcKee')
+    parallel_batch_rcm_executable = os.path.join(
+        pbrcm_home, 'build', 'CuthillMcKee')
 
     rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
 
-    pr_experiments_executable = os.path.join(graph_preprocess_dir, cmake_build_dir, "pr_experiments")
+    pr_experiments_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "pr_experiments")
 
     # abseil and parallel slashburn
     par_slashburn_dir = os.path.join(repo_root, 'par_slashburn')
     abseil_repo_dir = os.path.join(par_slashburn_dir, 'abseil-cpp')
-    abseil_install_include_dir = os.path.join(par_slashburn_dir, 'install', 'include')
-    par_slashburn_executable =  os.path.join(par_slashburn_dir, cmake_build_dir, 'par_slashburn')
+    abseil_install_include_dir = os.path.join(
+        par_slashburn_dir, 'install', 'include')
+    par_slashburn_executable = os.path.join(
+        par_slashburn_dir, cmake_build_dir, 'par_slashburn')
+    pr_executable = os.path.join(par_slashburn_dir, cmake_build_dir, 'pr')
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
@@ -108,7 +126,7 @@ def init(input_data_dir=None):
     ax_size = 5  # sidelength of an ax in a matrix of plots; used to calculate the total figure size
 
     # CPU INFO
-    cache_stats = get_cache_stats() # todo parse larger table if lscpu -C doesn't work
+    cache_stats = get_cache_stats()  # todo parse larger table if lscpu -C doesn't work
     if not cache_stats:
         cache_stats['line_size'] = -1
         cache_stats['l1d_size'] = -1
@@ -158,6 +176,12 @@ def init(input_data_dir=None):
         "results_dir": results_dir,
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
+        "pagerank_file_name": pagerank_file_name,
+
+        # file suffixes
+        "edgelist_file_suffix": edgelist_file_suffix,
+        "scipy_csr_suffix": scipy_csr_suffix,
+        "binary_suffix": "bin",
 
         # abseil
         "abseil_install_include_dir": abseil_install_include_dir,
@@ -174,6 +198,8 @@ def init(input_data_dir=None):
         "parallel_batch_rcm_executable": parallel_batch_rcm_executable,
         "rabbit_order_executable": rabbit_order_executable,
         "pr_experiments_executable": pr_experiments_executable,
+        "pr_executable": pr_executable,
+        "convert_map_to_bin_executable": convert_map_to_bin_executable,
 
         "comment_strings": ["%", "#"],
         "n_threads": get_n_threads(),
@@ -186,7 +212,8 @@ def init(input_data_dir=None):
             "ax_size": ax_size,
             "bbox_inches": 'tight',
             "pad_inches": 0,
-            "max_rows_per_agg_spy_plot": 5,  # the number of graphs to show per aggregated spy plot,
+            # the number of graphs to show per aggregated spy plot,
+            "max_rows_per_agg_spy_plot": 5,
             "max_n": 100_000,  # the largest graph size that is plottable as as adjacency matrix
         },
         "orderings": {
@@ -200,11 +227,13 @@ def init(input_data_dir=None):
             'hc': "hubcluster",
             'hs': "hubsort",
             'dbg': "degree-based-grouping",
+            'orig': "original",
         },
         "edge_orderings": {
             'row': "Row",
             'column': "Column",
             'hilbert': "Hilbert",
+            # 'fgf': 'FastGeneralForm',
         },
         "logging": {
             "log_dir": log_dir,
@@ -245,8 +274,10 @@ def init(input_data_dir=None):
                 'dbg': 'DBG',
             },
             "degree_used_for_reordering": 0,
-            'max_iters': 1,  # only run 1 iteration of PR - since we're interested in the ordering, not the PR
-
+            # only run 1 iteration of PR - we're interested in the ordering,
+            # not the PR
+            'max_iters': 1,
+            'edgelist_file_suffix': 'el',
         },
         "cpu-info": {
             "cache-sizes": {
@@ -258,9 +289,10 @@ def init(input_data_dir=None):
         },
         "modelling": {
             "proportion": 0.5,
-            "min_n_data_samples": 50,   # need at least this many data samples to build a dataset for the PR
-                                        # expts; this value will be used to decide which features we'll use
-                                        # to train a predictive model of vertex+edge ordering performance
+            # need at least this many data samples to build a dataset for the PR
+            "min_n_data_samples": 50,
+            # expts; this value will be used to decide which features we'll use
+            # to train a predictive model of vertex+edge ordering performance
         },
         'compute_canada': {
             'job_array_dir': os.path.join(repo_home, 'cluster', 'csvs'),
@@ -269,7 +301,7 @@ def init(input_data_dir=None):
             'data_dir': data_dir,
             'image': '/home/atrostan/singularity-images/congenial_enigma.sif',
             'execution_modes': [
-                'download', 
+                'download',
                 'preprocess',
                 'reorder',
                 'plot',
