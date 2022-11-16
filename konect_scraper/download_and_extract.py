@@ -160,7 +160,8 @@ def update_meta_dir(directory, name):
     :return:
     """
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    timeout = config.settings['sqlite3']['timeout']
+    conn = sqlite3.connect(db_path, timeout=timeout)
     cursor = conn.cursor()
     query = """update metadata set directory = ? where graph_name = ?"""
     cursor.execute(query, (directory, name))
