@@ -116,23 +116,12 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
     executable = settings['slashburn_executable']
     args = [executable]
 
-    if directed:
-        args += ['-d']
-
-    # for io_mode in io_modes:
-    #     match io_mode:
-    #         case IOMode.text:
-    #             args += ['-t']
-    #         case IOMode.binary:
-    #             args += ['-i']
-
     args += [
-        '-n', str(n),
-        '-m', str(m),
-        '-p', str(percent),
-        '-g', graph_path,
-        '-b', sqlite3_db_path,
+        '-f', graph_path,
+        '-s',
         '-o', order_path,
+        '-d', sqlite3_db_path,
+        '-p', str(percent)
     ]
 
     logging.info(f"Executing: " + ' '.join(args))
@@ -234,7 +223,7 @@ def compute_ordering(graph_name, order, ovewrite):
             compute_par_slashburn(comp_graph_path, order_path)
 
         case "sb":
-            # comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
             # compute_par_slashburn(comp_graph_path, order_path)
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 

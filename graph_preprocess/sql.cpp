@@ -2,17 +2,18 @@
 // Created by atrostan on 08/09/22.
 //
 
+#include <iostream>
 #include "sql.h"
 
 void insert_or_ignore_into_pr_expts(PRExptRow r, std::string sqlite_db_path) {
 	std::vector<std::string> col_labels{
-			"graph_name",
-			"datetime",
-			"expt_num",
-			"num_iters",
-			"vertex_order",
-			"edge_order",
-			"runtime",
+		"graph_name",
+		"datetime",
+		"expt_num",
+		"num_iters",
+		"vertex_order",
+		"edge_order",
+		"runtime",
 	};
 
 	sqlite3 *db;
@@ -94,7 +95,7 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 
 
 void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
-                        std::string graph_name, int val) {
+                        const std::string &graph_name, int val) {
 
 	sqlite3 *db;
 	sqlite3_stmt *st;
@@ -105,14 +106,22 @@ void single_val_set_int(const std::string sqlite_db_path, std::string col_name, 
 //	std::string sql = fmt::format("update {} set {} = ? where graph_name = ?", table_name, col_name);
 //	fmt::print("sql: {}\n", sql);
 
-	if (sqlite3_open(sqlite_db_path.c_str(), &db) == SQLITE_OK) {
-		sqlite3_prepare(db, sql.c_str(), -1, &st, NULL);
-		sqlite3_bind_int(st, 1, val);
-		sqlite3_bind_text(st, 2, graph_name.c_str(), graph_name.length(), SQLITE_TRANSIENT);
+		if (sqlite3_open(sqlite_db_path.c_str(), &db) == SQLITE_OK) {
+			while (true) {
+
+			int response = sqlite3_prepare(db, sql.c_str(), -1, &st, NULL);
+			if (response == SQLITE_BUSY) {
+				sqlite3_sleep(1'000);
+			} else {
+				sqlite3_bind_int(st, 1, val);
+				sqlite3_bind_text(st, 2, graph_name.c_str(), graph_name.length(), SQLITE_TRANSIENT);
+				sqlite3_step(st);
+				sqlite3_finalize(st);
+				sqlite3_close(db);
+				break;
+			}
+		}
 	}
 
 
-	sqlite3_step(st);
-	sqlite3_finalize(st);
-	sqlite3_close(db);
 }

@@ -31,11 +31,19 @@ void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &r
 	for (ul j = 0; j < g.n; ++j) {
 		vertex v;
 		v.id = j;
+
+		// igraph counts duplicate neighbours for directed graphs that were
+		// ingested as undirected
+		// e.g. [0 -> 1, 1 -> 0] --> deg(0) = 2
+		// instead iterate over in + outneighbourhoods, and count all the UNIQUE
+		// neighbours to compute a vertex's degree
 		v.degree = VECTOR(igraph_deg)[j];
 		vertices[j] = v;
 	}
 
+
 	std::sort(dpl::execution::par_unseq, vertices.begin(), vertices.end(), sortByDescendingDegree);
+
 //	fmt::print("vertices: \n");
 //	for (const auto &v: vertices) {
 //		fmt::print("[{} {}], ", v.id, v.degree);

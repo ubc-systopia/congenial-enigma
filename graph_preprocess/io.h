@@ -88,8 +88,8 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m);
 
 
-void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
-                        std::string graph_name, int val);
+//void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
+//                       std::string graph_name, int val);
 
 void write_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges, io_mode &mode);
 
