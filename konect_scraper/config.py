@@ -169,7 +169,7 @@ def init(input_data_dir=None):
             #     ["metadata", "statistics"]
             # },
             "sqlite3_db_path": sqlite3_db_path,
-            "timeout": 15,
+            "timeout": 60,
         },
         "datasets_json_path": datasets_json_path,
         "data_dir": data_dir,

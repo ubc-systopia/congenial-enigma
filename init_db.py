@@ -62,7 +62,8 @@ def main(data_dir=None):
     create_data_dirs_if_not_exists()
 
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    timeout = config.settings['sqlite3']['timeout']
+    conn = sqlite3.connect(db_path, timeout=timeout)
 
     tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'directed',
               'undirected', 'bipartite']
@@ -82,7 +83,7 @@ def main(data_dir=None):
     graph_table_names = ['directed', 'undirected', 'bipartite']
     for table_name in graph_table_names:
         df = pd.read_csv(os.path.join(settings['dataframes_dir'], f"{table_name}.csv"))
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_path, timeout=timeout)
         df.to_sql(table_name, con=conn, if_exists='replace')
 
     create_pr_expt_table()
@@ -93,7 +94,7 @@ def main(data_dir=None):
     #     delete_all_rows(table)
 
     # optionally, write konect to csv
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=timeout)
     # db_df = pd.read_sql_query("select * from konect", conn)
     # db_df.to_csv('./konect.csv', index=False)
 
