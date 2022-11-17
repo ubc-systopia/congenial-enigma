@@ -55,39 +55,49 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
                 lines.append(line + f',1')
             else:
                 lines.append(line + f',0')
-
+    
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
         for l in lines:
             f.write(f'{l}\n')
 
-
-def main(graph_type, graph_ns, slurm_params, mode_str,
+def prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
          vertex_orders=None, overwrite=False):
-    print(f'{overwrite=}')
+
     settings = config.settings
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
     edge_orders = list(settings['edge_orderings'].keys())
+    config_filename = f'{mode_str}_{graph_ns[0]}_{graph_ns[-1]}'
 
     if mode_str == 'reorder':
         write_sbatch_array_csv(
-            rows, mode_str, vertex_orders=vertex_orders, overwrite=overwrite)
+            rows, config_filename, vertex_orders=vertex_orders, overwrite=overwrite)
     elif mode_str == 'pr_expt':
         write_sbatch_array_csv(
-            rows, mode_str, vertex_orders=vertex_orders, 
+            rows, config_filename, vertex_orders=vertex_orders, 
             edge_orders=edge_orders, overwrite=overwrite)
     else:
-        write_sbatch_array_csv(rows, mode_str, overwrite=overwrite)
+        write_sbatch_array_csv(rows, config_filename, overwrite=overwrite)
 
+    return 
+
+
+def main(graph_type, graph_ns, slurm_params, mode_str,
+         vertex_orders=None, overwrite=False):
+    
+    prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
+         vertex_orders=None, overwrite=False)
+    settings = config.settings
+    config_filename = f'{mode_str}_{graph_ns[0]}_{graph_ns[-1]}'
     scripts_dir = config.settings['compute_canada']['scripts_dir']
     csvs_dir = config.settings['compute_canada']['job_array_dir']
 
-    local_config = os.path.join(csvs_dir, f'{mode_str}.csv')
+    local_config = os.path.join(csvs_dir, f'{config_filename}.csv')
     # CONFIG_FILE will be locally mounted to /
     mounted_config = os.path.join(
         '/', settings['repo_name'], 'konect_scraper',
-        'cluster', 'csvs', f'{mode_str}.csv',
+        'cluster', 'csvs', f'{config_filename}.csv',
     )
 
     # clean slurm logs from previous execution
@@ -99,21 +109,19 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
     remove_all_files_in_directory(log_dir)
 
     args = [
-        os.path.join(scripts_dir, 'singularity-start.sh'),
-        local_config,
-        mounted_config,
-        log_dir,
-        config.settings['compute_canada']['image'],
-        str(config.settings['compute_canada']['repo_root']),
-        config.settings['compute_canada']['data_dir'],
-        mode_str,
-        slurm_params['time'],
-        slurm_params['mem'],
-        slurm_params['cpus-per-task'],
+        # os.path.join(scripts_dir, 'singularity-start.sh'),
+        'python -m '
+        '--local-config', local_config,
+        '--mounted-config', mounted_config,
+        '--singularity-image', config.settings['compute_canada']['image'],
+        '--repo-root', str(config.settings['compute_canada']['repo_root']),
+        '--data-dir', config.settings['compute_canada']['data_dir'],
+        '--mode-str', mode_str,
+        '--time', slurm_params['time'],
+        '--mem', slurm_params['mem'],
+        '--cpus-per-task', slurm_params['cpus-per-task'],
+        '--constraint', slurm_params['constraint']
     ]
-
-    if 'constraint' in slurm_params:
-        args += [slurm_params['constraint']]
 
     print("CALLING: " + " ".join(args))
     # run the sbatch command

@@ -7,7 +7,7 @@ from ..column_names import *
 from ..util import *
 from . import execute
 from konect_scraper.cluster.util import verify_vertex_orders
-
+from konect_scraper.utilities import batch_submit
 
 def get_io_modes(io_modes):
     # if io mode is unspecified, use both binary and text as default
@@ -76,14 +76,15 @@ def main(args):
         case 'download':
             print(
                 f"Downloading {graph_ns[1] - graph_ns[0]} graphs to {config.settings['graphs_dir']}")
-            execute.main(graph_type, graph_ns, slurm_params, 'download')
+            # execute.main(graph_type, graph_ns, slurm_params, 'download')
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'download')
             return
         case 'preprocess':
-            execute.main(graph_type, graph_ns, slurm_params, 'preprocess', overwrite=overwrite)
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'preprocess', overwrite=overwrite)
             return
         case 'reorder':
             orders = verify_vertex_orders(orders, config.settings)
-            execute.main(graph_type, graph_ns, slurm_params,
+            batch_submit.main(graph_type, graph_ns, slurm_params,
                          'reorder', orders, overwrite)
             return
         case 'plot':
@@ -92,9 +93,26 @@ def main(args):
             return
         case 'pr-expt':
             orders = verify_vertex_orders(orders, config.settings)
-            execute.main(graph_type, graph_ns, slurm_params, 'pr_expt',
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'pr_expt',
                          list(orders))
             return
+        case 'all':
+            orders = verify_vertex_orders(orders, config.settings)
+            
+            # can ignore 'download' mode in 'all' execution mode
+            # (graphs are assumed to be downloaded)
+            # job_id = batch_submit.main(graph_type, graph_ns, slurm_params, 'download')
+
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'preprocess',
+            overwrite=overwrite)
+            
+            job_id = batch_submit.main(graph_type, graph_ns, slurm_params,
+                         'reorder', orders, overwrite)
+
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'pr_expt',
+                         list(orders))
+
+            return 
         case _:
             print(f"Unsupported execution mode on cluster: {exec_mode}")
             return
@@ -121,11 +139,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
 
-    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt'}
+    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt', 'all'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
                         "\{'download', 'preprocess', 'reorder', 'plot', "
-                        "'pr_expt'\}")
+                        "'pr_expt', 'all'\}")
 
     parser.add_argument('-d', '--directed',
                         action=argparse.BooleanOptionalAction,

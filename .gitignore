@@ -381,3 +381,5 @@ core.*
 wing_width_ratio_comparison.csv
 ./config.yaml
 config.yaml
+
+/slurm-scripts

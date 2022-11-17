@@ -302,13 +302,16 @@ def init(input_data_dir=None):
             'scripts_dir': os.path.join(repo_home, 'cluster', 'scripts'),
             'repo_root': repo_root,
             'data_dir': data_dir,
+            'account': 'def-mseltzer',
+            'user': 'atrostan',
             'image': '/home/atrostan/singularity-images/congenial_enigma.sif',
             'execution_modes': [
                 'download',
                 'preprocess',
                 'reorder',
                 'plot',
-                'pr_expt'
+                'pr_expt',
+                'all'
             ]
         }
     }
