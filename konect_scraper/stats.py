@@ -9,6 +9,7 @@ from scipy.sparse.linalg import eigs
 from scipy.sparse.csgraph import laplacian, connected_components
 import igraph as ig
 import networkx as nx
+from numba import njit, prange
 
 def algebraic_connectivity(csr_mat):
     """The Algebraic Connectivity equals the second smallest nonzero eigenvalue
@@ -18,12 +19,27 @@ def algebraic_connectivity(csr_mat):
         csr_mat (scipy.sparse.csr_matrix): A CSR matrix of a directed graph
     """
 
-    ccs = connected_components(csr_mat, connection='weak', return_labels=True)
-    print(f'{ccs=}')
-    L = laplacian(csr_mat.astype(np.int64), dtype=np.int64)
+    n_ccs, comp = connected_components(csr_mat, connection='weak', return_labels=True)
+    component_counts = np.unique(comp, return_counts=True)
+    gcc_id = component_counts[0][np.argmax(component_counts[1])]
 
+    L = extract_gcc_from_csr(gcc_id, comp, csr_mat)
+    lap = get_laplacian(L.astype(np.int64))
+    
     return
 
+
+def drop_rows_from_csr(mat, rows_to_keep):
+    return ss.lil_matrix(mat[rows_to_keep, :]).tocsr()
+
+def drop_cols_from_csr(mat, cols_to_keep):
+    return ss.lil_matrix(mat[:, cols_to_keep]).tocsr()
+
+def extract_gcc_from_csr(gcc_id, comp, csr_mat):
+    vids_in_gcc_ids = np.where(comp == gcc_id)[0]
+    mat = drop_rows_from_csr(csr_mat, vids_in_gcc_ids)
+    mat = drop_cols_from_csr(mat, vids_in_gcc_ids)
+    return mat
 
 def get_laplacian(csr_mat):
     """Return the laplacian of a directed graph
@@ -31,7 +47,7 @@ def get_laplacian(csr_mat):
     Args:
         csr_mat (scipy.sparse.csr_matrix): A CSR matrix of a directed graph
     """
-    return laplacian(csr_mat, dtype=np.int64)
+    return laplacian(csr_mat)
 
 
 def spectral_separation(l1, l2):
@@ -48,8 +64,8 @@ def spectral_separation(l1, l2):
 
     return np.abs(l1) / np.abs(l2)
 
-def get_eigenvalues(mat, k=10):
-    return eigs(mat, k, which='LM', maxiter=1_000_000_000)
+def get_eigenvalues(mat, k=10, which='LM'):
+    return eigs(mat, k, which=which)
 
 
 def read_data_file_as_coo_matrix(filename):
@@ -141,3 +157,68 @@ def fill(graph_name):
         n_possible_edges += n
 
     return m / n_possible_edges
+
+
+def controllability(graph_name):
+
+    return 
+
+def size_of_lscc(csr_mat):
+    n_ccs, comp = connected_components(csr_mat, connection='strong', return_labels=True)
+    component_counts = np.unique(comp, return_counts=True)
+    return np.max(component_counts[1])
+
+def diameter(nx_graph):
+    try:
+        diam = nx.diameter(nx_graph)
+        return diam
+    except:
+        largest = max(nx.strongly_connected_components(nx_graph), key=len)
+        return diameter(nx_graph.subgraph(largest))
+
+
+def get_degrees(csr_mat, mode='out'):
+    if mode == 'out':
+        return ss.csgraph.laplacian(csr_mat, return_diag=True, use_out_degree=True)
+    else:
+        return ss.csgraph.laplacian(csr_mat, return_diag=True, use_out_degree=False)
+
+@njit(parallel=True)
+def power_law_estimate(ds, xmin=None):
+    ds = ds[ds > 0]
+
+    mn = np.min(ds)
+    n = ds.shape[0]
+    return 1 + n * (np.reciprocal(np.sum(np.log(ds / mn))))
+
+
+@njit(parallel=True)
+def tail_power_law_estimate(ds, xmin):
+    ds = ds[ds > 0]
+    # filter out all values less than xmin
+    # this achieves us only taking into account the tail of the distribution
+    ds = ds[ds < xmin]
+    print(ds)
+    mn = np.min(ds)
+    n = ds.shape[0]
+    return 1 + n * (np.reciprocal(np.sum(np.log(ds / mn))))
+
+def plfit_stats(csr_mat):
+    out_degrees = get_degrees(csr_mat, mode='out')[1]
+    in_degrees = get_degrees(csr_mat, mode='in')[1]
+    np.savetxt('./in_degs.tmp', in_degrees.astype(np.uint32), fmt='%d')
+    # print(f'{out_degrees=}')
+    # plfit.plfit_discrete(out_degrees)
+    # plfit.plfit_discrete(out_degrees)
+    # print(plfit.alpha)
+    return 
+
+def compute_scipy_stats(graph_path):
+    """Compute graph's summary stats using scipy. Namely:
+    - 
+
+    Args:
+        graph_path (_type_): _description_
+    """
+    
+    return 
