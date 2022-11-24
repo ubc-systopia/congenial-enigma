@@ -9,7 +9,7 @@ NC='\033[0m'
 BASENAME=$(basename $0)
 HOSTNAME=$(hostname)
 
-FENNEL_OUTPUT_PAT='*fennel*.output'
+FENNEL_OUTPUT_PAT=*fennel*.output
 
 LOG () {
 		COLOR=$2
@@ -39,7 +39,7 @@ process_file () {
 		names=( $(echo $file | grep -Po "input_file=\K[^,]*") )
 		fnl_part_file=( $(echo $file | grep -Po "output_file=\K[^,]*") )
 
-		echo ${names[@]} "length:" ${#names[@]}
+		# echo ${names[@]} "length:" ${#names[@]}
 		# echo "-----------------"
 		num_nodes=( $(echo $file | grep -Po "number_nodes=\K[^,]*") )
 		num_edges=( $(echo $file | grep -Po "number_edges=\K[^,]*") )
@@ -76,15 +76,15 @@ process_file () {
 		all_perf_times=( $(echo $perf_output | tr -s '[ \t]*' ' ' | grep -Po "\K([+-]?\d+.\d+) ") )
 
 		# last index of all_perf_times is the total time
-		echo "Total time: ${all_perf_times[@]}"
+		# echo "Total time: ${all_perf_times[@]}"
 		perf_total_time=${all_perf_times[-2]}
 		perf_std=${all_perf_times[-1]}
 		
-		echo "Total time: $perf_total_time" "std: $perf_std"
+		# echo "Total time: $perf_total_time" "std: $perf_std"
 
 		# iterate from 0 to the lengthg of names 
 		for i in $(seq 0 ${expr_length}); do 
-				echo ${i}
+				# echo ${i}
 				# if the file is valid, then we can print the results
 				name=$(basename ${names[$i]})
 				write_to_file "${name}" "${num_parts[$i]}" "${num_nodes[$i]}" "${num_edges[$i]}" "${part_times[$i]}" "${sys_times[$i]}" "${comm_vols[$i]}" "${edge_cuts[$i]}" "${avg_partition_sizes[$i]}" "${std_partition_sizes[$i]}" "${min_partition_sizes[$i]}" "${max_partition_sizes[$i]}" "${all_perf_times[$i]}" "${perf_total_time}" "${perf_std}" $output_file
@@ -115,12 +115,13 @@ if [ ! -d $TARGET_DIR ]; then
 fi
 
 # if there are no files, then exit
-if [ -z "$(find $TARGET_DIR -name $FENNEL_OUTPUT_PAT)" ]; then
+# find $TARGET_DIR -name "*fennel*.output"
+if [ -z "$(find $TARGET_DIR -name '*fennel*.output')" ]; then
 		LOG "No .output files found in $TARGET_DIR" ${RED}
 		exit 1
 fi
 
-LOG "Total number of files to process: $(find $TARGET_DIR -name $FENNEL_OUTPUT_PAT | wc -l)"
+LOG "Total number of files to process: $(find $TARGET_DIR -name "$FENNEL_OUTPUT_PAT" | wc -l)"
 LOG "Processing files in $TARGET_DIR directory"
 
 # if -y is given, then overwrite the output file 
@@ -149,7 +150,7 @@ LOG "Starting processing"
 write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "sys_time" "comm_vol" "edge_cut" "avg_part_size" "std_part_size" "min_part_size" "max_part_size" "perf_time" "perf_total_time" "perf_std" $output_file
 
 # find $TARGET_DIR -name "*.output"  | while read file; do process_file "$file"; done
-for file in $(find $TARGET_DIR -name $FENNEL_OUTPUT_PAT); do
+for file in $(find $TARGET_DIR -name "$FENNEL_OUTPUT_PAT"); do
 		echo "Processing file $file"
 		process_file "$file" 
 done

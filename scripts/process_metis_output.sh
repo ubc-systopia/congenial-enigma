@@ -58,7 +58,8 @@ process_file () {
 		# if any of these are empty list then something went wrong 
 		if [ -z "$names" ] || [ -z "$num_vertices" ] || [ -z "$num_edges" ] || [ -z "$num_parts" ] || [ -z "$comm_vols" ] || [ -z "$edge_cuts" ] || [ -z "$part_times" ] || [ -z "$io_times" ] || [ -z "$max_mem_used_list" ] || [ -z "$rusage_ru_maxrss_list" ]; then
 				LOG "File $1 is missing some information, exiting" $RED
-				exit 1
+				# move to the next file
+				return
 		fi
 
 		expr_length=${#names[@]}
@@ -143,7 +144,8 @@ fi
 LOG "Starting processing"
 write_to_file "name" "num_parts" "num_vertices" "num_edges" "part_time" "io_time"  "comm_vol" "edge_cut" "max_mem_used" "rusage_ru_maxrss" $output_file "obj_type" "report_time" "perf_time" "perf_total_time" "perf_std"
 # find $TARGET_DIR -name "*.output"  | while read file; do process_file "$file"; done
-for file in $(find $TARGET_DIR -name "*.output"); do
+LOG "Number of files to process: $(find $TARGET_DIR -name "*metis.part.*.output" | wc -l)"
+for file in $(find $TARGET_DIR -name "*metis.part.*.output"); do
 		echo "Processing file $file"
 		process_file "$file" 
 done
