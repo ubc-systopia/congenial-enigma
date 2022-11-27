@@ -14,6 +14,7 @@ def main(config_path, config_idx):
     graph_name = row['graph_name']
     vertex_order = row['vertex_order']
     overwrite = bool(row['overwrite'])
+    print(f"Computing {graph_name}-{vertex_order}")
     compute_ordering(graph_name, vertex_order, overwrite)
     return 
 

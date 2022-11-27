@@ -12,10 +12,7 @@
 #include "io.h"
 #include <boost/algorithm/string.hpp>
 #include <chrono>
-#include <boost/serialization/vector.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/utility.hpp>
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -49,7 +46,6 @@ void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m) {
 
 	outfile.close();
 }
-
 
 void write_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
 	std::ofstream outfile(path);
@@ -371,3 +367,4 @@ void read_map(std::string in_path, std::vector<ul> &mp) {
 		}
 	}
 }
+

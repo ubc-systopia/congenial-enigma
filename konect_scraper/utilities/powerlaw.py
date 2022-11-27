@@ -14,11 +14,12 @@ import numpy as np
 
 @njit(parallel=True)
 def power_law_estimate(ds):
-    ds = ds[ds > 0]
+    # ds = ds[ds > 0]
     mn = np.min(ds)
     print(mn)
     n = ds.shape[0]
-    return 1 + n * (np.reciprocal(np.sum(np.log(ds) / mn)))
+    print(n)
+    return 1 + n * (np.reciprocal(np.sum(np.log(ds / mn))))
 
 # @njit(parallel=True)
 def degrees(g, mode='all'):
@@ -46,6 +47,7 @@ def main(args):
     print(f'{pl_fit.power_law.alpha=}')
     print(f'{pl_fit.power_law.xmin=}')
     print(f'{power_law_estimate(deg)=}')
+    print(f'{pl_fit.power_law}')
 
     return 
 

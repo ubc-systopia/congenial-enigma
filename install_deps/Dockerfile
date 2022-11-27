@@ -13,8 +13,8 @@ RUN apt-get update \
 
 # This variable specifices the system packages needed to be installed
 # nvidia-cuda-toolkit needed for ParBatchRCM can be ignored for now
-ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \ 
-    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build g++-11 python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libpthread-stubs0-dev" 
+ENV BUILD_DEPS="build-essential cmake flex bison libgl1 pkg-config" \
+    APP_DEPS="curl wget git apt-transport-https ca-certificates gnupg-agent software-properties-common sqlite3 libsqlite3-dev libgoogle-perftools-dev numactl libnuma-dev python3.10 python3.10-distutils ninja-build g++-11 python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libpthread-stubs0-dev swig openjdk-11-jdk ant libunittest++-dev" 
 
 RUN add-apt-repository ppa:deadsnakes/ppa \
     && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
@@ -66,13 +66,39 @@ RUN cd ${BOOST_VERSION_FNAME} \
     && echo "Available CPU cores: "$cpuCores \
     && ./b2 --with-program_options --with-atomic --with-serialization --with-graph --with-filesystem --with-system -j $cpuCores install 
 
-
 # copy reqs txt from local to image
 COPY requirements.txt requirements.txt
 # install all python3.10 requirements
-RUN which pip3
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+
+# before installing requirements.txt install intel-scipy and intel-numpy
+RUN python3.10 -m pip install -i https://pypi.anaconda.org/intel/simple --extra-index-url https://pypi.org/simple scipy==1.7.3 numpy==1.21.4
+
+# install the rest of required pip packages
 RUN pip3.10 install -r requirements.txt
 
+ENV IVY_VERSION_MAJOR=2
+ENV IVY_VERSION_MINOR=5
+ENV IVY_VERSION_REVISION=1
+
+ENV IVY_VERSION_FNAME="ivy-${IVY_VERSION_MAJOR}.${IVY_VERSION_MINOR}.${IVY_VERSION_REVISION}"
+ENV IVY_URL="https://dlcdn.apache.org/ant/ivy/${IVY_VERSION_MAJOR}.${IVY_VERSION_MINOR}.${IVY_VERSION_REVISION}/apache-${IVY_VERSION_FNAME}-bin.tar.gz"
+
+# download ivy jar and copy to ant lib
+RUN wget ${IVY_URL} \
+    && tar -xzvf apache-${IVY_VERSION_FNAME}-bin.tar.gz \
+    && cp apache-${IVY_VERSION_FNAME}/${IVY_VERSION_FNAME}.jar /usr/share/ant/lib
+    
+# install plfit 
+RUN git clone https://github.com/ntamas/plfit.git \
+    && cd plfit \
+    && mkdir build && cd build \
+    && cmake .. -DPLFIT_COMPILE_PYTHON_MODULE=ON -DPLFIT_USE_OPENMP=ON \
+    && make install
+
+## install webgraph (for Hyperball which provides neighbourhood function)
+#RUN git clone https://github.com/vigna/webgraph.git \
+#    && cd webgraph \
+#    && ant ivy-setupjars jar
 
 

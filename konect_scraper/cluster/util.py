@@ -1,3 +1,5 @@
+import json
+import subprocess
 import pandas as pd
 
 from konect_scraper.util import valid_orderings
@@ -25,3 +27,14 @@ def verify_vertex_orders(orders, settings):
         # verify that the requested ordering to compute are supported
         assert valid_orderings(orders)
     return orders
+
+def parse_sacct(job_ids):
+    for job_id in job_ids:
+        args = [
+            'sacct', '-j', str(job_id), '--json'
+        ]
+
+        res = subprocess.check_output(args)
+        
+        slurm_res = json.loads(res.decode('utf-8'))
+        print(slurm_res['jobs'][0]['time'])

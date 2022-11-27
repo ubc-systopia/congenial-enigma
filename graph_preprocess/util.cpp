@@ -31,11 +31,19 @@ void igraph_place_hubs(igraph_t &g, const int k, ul &hub_idx, std::vector<ul> &r
 	for (ul j = 0; j < g.n; ++j) {
 		vertex v;
 		v.id = j;
+
+		// igraph counts duplicate neighbours for directed graphs that were
+		// ingested as undirected
+		// e.g. [0 -> 1, 1 -> 0] --> deg(0) = 2
+		// instead iterate over in + outneighbourhoods, and count all the UNIQUE
+		// neighbours to compute a vertex's degree
 		v.degree = VECTOR(igraph_deg)[j];
 		vertices[j] = v;
 	}
 
+
 	std::sort(dpl::execution::par_unseq, vertices.begin(), vertices.end(), sortByDescendingDegree);
+
 //	fmt::print("vertices: \n");
 //	for (const auto &v: vertices) {
 //		fmt::print("[{} {}], ", v.id, v.degree);
@@ -64,36 +72,28 @@ void create_isomorphism_map(std::vector<ul> &rank, std::map<ul, ul> &map) {
 	}
 }
 
+/**
+ * Normalize a PageRank vector so that it can be compared against ground truth
+ * @param orig
+ * @param normalized
+ */
+void normalize(std::vector<double> &orig, std::vector<double> &normalized) {
+	double sum = 0.0;
+//#pragma omp parallel for reduction(+:sum)
+	for (int n = 0; n < orig.size(); n++) {
+		sum += orig[n];
+	}
+
+//#pragma omp parallel for
+	for (int n = 0; n < orig.size(); n++) {
+		normalized[n] = orig[n] / sum;
+	}
+}
+
 void par_translate_edge_list(std::vector<Edge> &indexed_edges,
                              std::vector<Edge> &mapped_edges,
                              std::vector<ul> &iso_map, ull m) {
 
-//
-//	int n_threads = omp_get_max_threads();
-//	int tid;
-//
-//	std::vector<ul> start(n_threads);
-//	std::vector<ul> end(n_threads);
-//
-//	ul n_edges_per_thread = m / n_threads;
-//
-//	for (int i = 0; i < n_threads; ++i) {
-//		start[i] = i * n_edges_per_thread;
-//		end[i] = (i + 1) * n_edges_per_thread;
-//	}
-//
-//	// truncate the last section since it may be out of bounds
-//	end[n_threads - 1] = m - 1;
-//	fmt::print("start: {}\n", start);
-//	fmt::print("end: {}\n", end);
-//
-//	fmt::print("n_threads: {}\n", n_threads);
-//	omp_set_num_threads(n_threads);
-//#pragma omp parallel private(tid) shared(start, end) default(none)
-//	{
-//		int tid = omp_get_thread_num();
-//		fmt::print("tid: {}\n", tid);
-//	}
 #pragma omp parallel for default(none) shared(m, mapped_edges, iso_map, indexed_edges) //todo
 	for (ull i = 0; i < m; ++i) {
 		mapped_edges[i].source = iso_map[indexed_edges[i].source];

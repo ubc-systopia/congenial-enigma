@@ -20,19 +20,36 @@ def clean_built_submodules(settings):
         settings['par_slashburn_dir'],
     ]
     for submodule_path in submodule_paths:
-        print(f"rm -rf {os.path.join(submodule_path, settings['cmake_build_dir'])}")
+        print(
+            f"rm -rf {os.path.join(submodule_path, settings['cmake_build_dir'])}")
         shutil.rmtree(
             os.path.join(submodule_path, settings['cmake_build_dir']),
             ignore_errors=True
         )
-    
+
     print(f"cd {os.path.join(settings['dbg_home'], 'apps')}; make clean")
     subprocess.check_output(
-        ['make', 'clean'], 
+        ['make', 'clean'],
         cwd=os.path.join(settings['dbg_home'], 'apps'),
     )
-    
+
+    args = [
+        'rm', '-rf',
+        f"{settings['dbg_convert_dir']}/convert",
+        f"{settings['dbg_convert_dir']}/*.o",
+    ]
+
+    print(' '.join(args))
+    subprocess.check_output(args)
+
+    # build peregrine
+    prgrn_dir = settings['peregrine']['prgrn_dir']
+    args = ['make', 'clean',]
+    print(f"cd {prgrn_dir}; make clean")
+    subprocess.check_output(args, cwd=prgrn_dir)
+
     return
+
 
 def main(args):
     config.init()
@@ -42,7 +59,6 @@ def main(args):
         clean_built_submodules(settings)
         return
 
-    
     cmake_build_dir = settings['cmake_build_dir']
     rabbit_cmake_build_dir = settings['rabbit_cmake_build_dir']
     cmake_build_type = settings['cmake_build_type']
@@ -69,7 +85,7 @@ def main(args):
     # print(res.decode('ascii'))
     # res = subprocess.check_output(make_executable, cwd=pbrcm_build_dir)
     # print(res.decode('ascii'))
-    
+
     # build graph_preprocess
     args = [
         cmake_executable,
@@ -110,8 +126,9 @@ def main(args):
     res = subprocess.check_output(args)
     print(res.decode('utf-8'))
 
-    # compile 
-    for target in ['graph_preprocess', 'slashburn', 'pr_experiments']:
+    # compile
+    for target in ['graph_preprocess', 'slashburn', 'cuthill_mckee',
+                   'pr_experiments', 'convert_map_to_binary', 'compute_ccs', ]:
         args = [
             cmake_executable,
             "--build", cmake_build_dir,
@@ -121,18 +138,18 @@ def main(args):
         print(" ".join(args))
         res = subprocess.check_output(args, cwd=graph_preprocess_dir)
         print(res.decode('utf-8'))
-    
 
     # build and install abseil (only if not installed already)
     if not os.path.isdir(settings["abseil_install_include_dir"]):
         subprocess.check_output(
-            ['git', 'clone', settings['abseil_repo_url']], 
+            ['git', 'clone', settings['abseil_repo_url']],
             cwd=settings["par_slashburn_dir"]
         )
-        absl_install_dir = os.path.join(settings['par_slashburn_dir'], 'install')
+        absl_install_dir = os.path.join(
+            settings['par_slashburn_dir'], 'install')
         absl_build_dir = os.path.join(settings['abseil_repo_dir'], 'build')
-        Path(absl_install_dir).mkdir(parents=True, exist_ok=True)   
-        Path(absl_build_dir).mkdir(parents=True, exist_ok=True)   
+        Path(absl_install_dir).mkdir(parents=True, exist_ok=True)
+        Path(absl_build_dir).mkdir(parents=True, exist_ok=True)
 
         args = [
             cmake_executable,
@@ -148,7 +165,7 @@ def main(args):
             'install'
         ]
         subprocess.check_output(args, cwd=absl_build_dir)
-    cmake_open_mp_options='-DIPS4O_USE_OPENMP=ON -DONEDPL_PAR_BACKEND=openmp'
+    cmake_open_mp_options = '-DIPS4O_USE_OPENMP=ON -DONEDPL_PAR_BACKEND=openmp'
     # build and compile parallel slashburn
     # build graph_preprocess
     args = [
@@ -161,23 +178,25 @@ def main(args):
         "-G", "Ninja",
         "-S", par_slashburn_dir,
         "-B", os.path.join(par_slashburn_dir, cmake_build_dir),
-        # path to local tbb install 
+        # path to local tbb install
         # (so that we don't have to use deprecated find_TBB cmake module
         # in ips4o submodule build)
-        "-DCMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/latest"  
+        "-DCMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/latest"
     ]
     print(" ".join(args))
     res = subprocess.check_output(args, cwd=par_slashburn_dir)
     print(res.decode('utf-8'))
-    args = [
+
+    for target in ['par_slashburn', 'pr']:
+        args = [
             cmake_executable,
             "--build", os.path.join(par_slashburn_dir, cmake_build_dir),
-            "--target", 'par_slashburn',
+            "--target", target,
             "-j", str(n_threads)
         ]
-    print(" ".join(args))
-    res = subprocess.check_output(args, cwd=par_slashburn_dir)
-    print(res.decode('utf-8'))
+        print(" ".join(args))
+        res = subprocess.check_output(args, cwd=par_slashburn_dir)
+        print(res.decode('utf-8'))
 
     dbg_apps_dir = settings['dbg_apps_dir']
     # build dbg
@@ -185,6 +204,20 @@ def main(args):
     args = [
         make_executable, "clean",
     ]
+
+    # compile dbg's graph-convert-utils convert
+    args = [
+        "g++", "-o"
+        f"{settings['dbg_convert_dir']}/convert",
+        '-fopenmp',
+        f"{settings['dbg_convert_dir']}/convert.cpp",
+    ]
+
+    print(dbg_home)
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=settings['dbg_convert_dir'])
+    print(res.decode('utf-8'))
+
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))
@@ -199,13 +232,36 @@ def main(args):
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))
 
+    prgrn_dir = settings['peregrine']['prgrn_dir']
+
+    # build peregrine
+    args = [
+        make_executable,
+        "-j", str(n_threads),
+        'convert_data',
+        'count',
+    ]
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=prgrn_dir)
+    print(res.decode('utf-8'))
+
+    # build webgraph
+    webgraph_dir = settings['webgraph_dir']
+    args = ['ant', 'ivy-setupjars', 'jar']
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=webgraph_dir)
+    print(res.decode('utf-8'))
+
+
+
 if __name__ == "__main__":
     argparse_desc = """
     python script that sets up (i.e. builds and compiles) all the submodules 
     required by congenial enigma
 
     """
-    parser = argparse.ArgumentParser(description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--clean',
                         action=argparse.BooleanOptionalAction,
                         help='Clean a previously built build.')
