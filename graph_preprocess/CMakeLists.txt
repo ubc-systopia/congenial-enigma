@@ -42,6 +42,11 @@ add_executable(sb_furhilbert sb_furhilbert.cpp sb_furhilbert.h typedefs.h util.c
 
 add_executable(convert_map_to_binary convert_map_to_binary.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h)
 
+add_executable(compute_ccs compute_ccs.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h ${ParSlashburnDir}/cc.h ${ParSlashburnDir}/cc.cpp)
+
+target_include_directories(compute_ccs PUBLIC ${ParSlashburnDir})
+
+
 if (Boost_FOUND)
 
     message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
@@ -61,4 +66,6 @@ if (Boost_FOUND)
     target_link_libraries(sb_furhilbert PUBLIC ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
     target_link_libraries(convert_map_to_binary ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+
+    target_link_libraries(compute_ccs ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 endif ()

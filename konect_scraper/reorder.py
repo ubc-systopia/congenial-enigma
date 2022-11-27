@@ -228,13 +228,13 @@ def compute_ordering(graph_name, order, ovewrite):
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 
         case "cm":
-            extension = ".net"
+            extension = ".bin"
 
             comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
             cm_order_path = order_path
             rcm_order_path = os.path.join(graph_dir, 'rev_cm')
-            # compute_cuthill_mckee(comp_graph_path, n, m)
-            compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+            compute_cuthill_mckee(comp_graph_path, n, m)
+            # compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
         case "rev_cm":
             return
 

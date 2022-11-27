@@ -36,7 +36,7 @@ def get_io_modes(io_modes):
                 case 'text':
                     modes.append(IOMode.text)
                 case _:
-                    logging.error(f"{mode}: Unsupported IO mode!")
+                    logging.error(f"{io_mode}: Unsupported IO mode!")
         io_modes = modes
     return io_modes
 

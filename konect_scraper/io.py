@@ -63,12 +63,14 @@ def get_adj_mat_from_edge_list(path, directed):
 
     return adj_mat
 
+
 def read_image(path, fmt):
     match fmt:
         case 'png':
             return plt.imread(path)
         case 'pdf':
             raise Exception("PDF format - UNIMPLEMENTED!")
+
 
 def save_spy_plots(fig, axes, graph_names, order_names, path):
     settings = config.settings
@@ -86,3 +88,8 @@ def save_spy_plots(fig, axes, graph_names, order_names, path):
     fig.savefig(path, dpi=dpi)
     return
 
+
+def find(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)

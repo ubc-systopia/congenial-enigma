@@ -33,7 +33,6 @@ def clean_built_submodules(settings):
         cwd=os.path.join(settings['dbg_home'], 'apps'),
     )
 
-    
     args = [
         'rm', '-rf',
         f"{settings['dbg_convert_dir']}/convert",
@@ -42,6 +41,12 @@ def clean_built_submodules(settings):
 
     print(' '.join(args))
     subprocess.check_output(args)
+
+    # build peregrine
+    prgrn_dir = settings['peregrine']['prgrn_dir']
+    args = ['make', 'clean',]
+    print(f"cd {prgrn_dir}; make clean")
+    subprocess.check_output(args, cwd=prgrn_dir)
 
     return
 
@@ -122,7 +127,8 @@ def main(args):
     print(res.decode('utf-8'))
 
     # compile
-    for target in ['graph_preprocess', 'slashburn', 'pr_experiments', 'convert_map_to_binary']:
+    for target in ['graph_preprocess', 'slashburn', 'cuthill_mckee',
+                   'pr_experiments', 'convert_map_to_binary', 'compute_ccs', ]:
         args = [
             cmake_executable,
             "--build", cmake_build_dir,
@@ -225,6 +231,27 @@ def main(args):
     print(" ".join(args))
     subprocess.check_output(args, cwd=dbg_apps_dir)
     print(res.decode('utf-8'))
+
+    prgrn_dir = settings['peregrine']['prgrn_dir']
+
+    # build peregrine
+    args = [
+        make_executable,
+        "-j", str(n_threads),
+        'convert_data',
+        'count',
+    ]
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=prgrn_dir)
+    print(res.decode('utf-8'))
+
+    # build webgraph
+    webgraph_dir = settings['webgraph_dir']
+    args = ['ant', 'ivy-setupjars', 'jar']
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=webgraph_dir)
+    print(res.decode('utf-8'))
+
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def init():
     global meta_col_names
     global stat_col_names
@@ -10,6 +11,7 @@ def init():
     global n_m_col_names
     global sql_to_np_dtypes
     global graph_dataframe_col_names
+    global features_col_names
 
     sql_to_np_dtypes = {
         'TEXT': str,
@@ -195,5 +197,74 @@ def init():
         'sb_n_iters': 'BIGINT',
         'par_sb_n_iters': 'BIGINT',
         'pr_struct_size': 'BIGINT',
+    }
 
+    features_col_names = {
+        'graph_name': 'STRING',
+        'n_vertices': 'BIGINT',
+        'n_edges': 'BIGINT',
+        'op_2_norm': 'REAL',
+        'cyclic_eval': 'REAL',
+        'al_conn': 'REAL',
+        'spectral_norm': 'REAL',
+        'spectral_separation': 'REAL',
+        'fill': 'REAL',
+        'out_max': 'INTEGER',
+        'out_median': 'INTEGER',
+        'in_max': 'INTEGER',
+        'in_median': 'INTEGER',
+        'undir_max': 'INTEGER',
+        'undir_median': 'INTEGER',
+        'in_mean': 'REAL',
+        'in_variance': 'REAL',
+        'in_stddev': 'REAL',
+        'in_skewness': 'REAL',
+        'in_kurtosis': 'REAL',
+        'in_alpha': 'REAL',
+        'in_xmin': 'INTEGER',
+        'in_log_likelihood': 'REAL',
+        'in_ks_stat': 'REAL',
+        'in_p_value': 'REAL',
+        'out_mean': 'REAL',
+        'out_variance': 'REAL',
+        'out_stddev': 'REAL',
+        'out_skewness': 'REAL',
+        'out_kurtosis': 'REAL',
+        'out_alpha': 'REAL',
+        'out_xmin': 'INTEGER',
+        'out_log_likelihood': 'REAL',
+        'out_ks_stat': 'REAL',
+        'out_p_value': 'REAL',
+        'undir_mean': 'REAL',
+        'undir_variance': 'REAL',
+        'undir_stddev': 'REAL',
+        'undir_skewness': 'REAL',
+        'undir_kurtosis': 'REAL',
+        'undir_alpha': 'REAL',
+        'undir_xmin': 'INTEGER',
+        'undir_log_likelihood': 'REAL',
+        'undir_ks_stat': 'REAL',
+        'undir_p_value': 'REAL',
+        'diameter': 'INTEGER',
+        'mean_distance': 'REAL',
+        'median_distance': 'INTEGER',
+        'percentile_effective_diameter_50': 'REAL',
+        'percentile_effective_diameter_90': 'REAL',
+        'edge_induced_wedge': 'BIGINT',
+        'vertex_induced_wedge': 'BIGINT',
+        'triangle': 'BIGINT',
+        'path_4': 'BIGINT',
+        'star_4': 'BIGINT',
+        'tailed_triangle': 'BIGINT',
+        'cycle_4': 'BIGINT',
+        'chordal_cycle_4': 'BIGINT',
+        'clique_4': 'BIGINT',
+        'n_sccs': 'BIGINT',
+        'n_ccs': 'BIGINT',
+        'lscc_size': 'BIGINT',
+        'lcc_size': 'BIGINT',
+        'relative_edge_distribution_entropy': 'REAL',
+        'in_out_degree_corr_coef': 'REAL',
+        'in_out_degree_corr_pval': 'REAL',
+        'global_clustering_coefficient': 'REAL',
     }

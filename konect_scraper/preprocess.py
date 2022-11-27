@@ -3,7 +3,8 @@ import os
 from pathlib import Path
 from konect_scraper import config
 from konect_scraper.download_and_extract import compress
-from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_ground_truth_pr, set_n_m, single_val_numeric_set
+from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_connected_component, \
+    save_ground_truth_pr, set_n_m, single_val_numeric_set, save_peregrine, save_webgraph
 
 
 def process(graph_name, io_modes, overwrite):
@@ -41,10 +42,20 @@ def process(graph_name, io_modes, overwrite):
             f"{compressed_graph_path}.{settings['edgelist_file_suffix']}")
     # todo save the compressed edgelist as scipy.sparse.csr_matrix
 
-    # todo save the compressed edgelist's PageRank for verification after
+    # save the compressed edgelist's PageRank for verification of
     # pr_experiments
     logging.info(f"Computing {graph_name}'s PageRank")
     save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
+    # save the edgelists of the graph's Largest Strongly Connected Component
+    # and Largest Connected Component
+    logging.info(f"Computing {graph_name}'s LSCC")
+    save_connected_component(compressed_graph_path_with_extension, graph_name, directed=True)
+    logging.info(f"Computing {graph_name}'s LCC")
+    save_connected_component(compressed_graph_path_with_extension, graph_name, directed=False)
+    logging.info(f"Preprocessing {graph_name} for webgraph..")
+    save_webgraph(compressed_graph_path_with_extension, graph_dir)
+    logging.info(f"Preprocessing {graph_name} for peregrine..")
+    save_peregrine(compressed_graph_path_with_extension, graph_dir)
 
 def main(rows, io_modes, overwrite):
     """

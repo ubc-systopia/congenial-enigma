@@ -87,6 +87,8 @@ def init(input_data_dir=None):
         graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
     convert_map_to_bin_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "convert_map_to_binary")
+    compute_ccs_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "compute_ccs")
 
     parallel_batch_rcm_executable = os.path.join(
         pbrcm_home, 'build', 'CuthillMcKee')
@@ -105,6 +107,13 @@ def init(input_data_dir=None):
     par_slashburn_executable = os.path.join(
         par_slashburn_dir, cmake_build_dir, 'par_slashburn')
     pr_executable = os.path.join(par_slashburn_dir, cmake_build_dir, 'pr')
+
+    webgraph_dir = os.path.join(repo_root, 'webgraph')
+
+    prgrn_dir = os.path.join(repo_root, 'peregrine')
+    prgrn_bin_dir = os.path.join(prgrn_dir, 'bin')
+    prgrn_convert_data_executable = os.path.join(prgrn_bin_dir, 'convert_data')
+    prgrn_count_executable = os.path.join(prgrn_bin_dir, 'count')
 
     # LOGGING
     log_dir = os.path.join(repo_root, "logs")
@@ -193,6 +202,8 @@ def init(input_data_dir=None):
         # parallel slashburn
         "par_slashburn_dir": par_slashburn_dir,
 
+        "webgraph_dir": webgraph_dir,
+
         # Executables
         "graph_preprocess_executable": graph_preprocess_executable,
         "slashburn_executable": slashburn_executable,
@@ -203,6 +214,7 @@ def init(input_data_dir=None):
         "pr_experiments_executable": pr_experiments_executable,
         "pr_executable": pr_executable,
         "convert_map_to_bin_executable": convert_map_to_bin_executable,
+        'compute_ccs_executable': compute_ccs_executable,
 
         "comment_strings": ["%", "#"],
         "n_threads": get_n_threads(),
@@ -224,8 +236,8 @@ def init(input_data_dir=None):
             'rbt': "rabbit",
             'sb': "slashburn",
             'parsb': "par_slashburn",
-            # 'cm': "cuthill-mckee", # todo ignore these (too long with pbrcm)
-            # 'rev_cm': "reverse-cuthill-mckee",
+            'cm': "cuthill-mckee",
+            'rev_cm': "reverse-cuthill-mckee",
             'srt': "sort",
             'hc': "hubcluster",
             'hs': "hubsort",
@@ -313,5 +325,46 @@ def init(input_data_dir=None):
                 'pr_expt',
                 'all'
             ]
+        },
+        'peregrine': {
+            'prgrn_dir': prgrn_dir,
+            'prgrn_bin_dir': prgrn_bin_dir,
+            'prgrn_convert_data_executable': prgrn_convert_data_executable,
+            'prgrn_count_executable': prgrn_count_executable,
+            'motifs': {
+                # a map from 3-motifs peregrine pattern strings to their label
+                '3': {
+                    '[1-3](1~2)[2-3]': 'vertex_induced_wedge',
+                    '[1-2][1-3][2-3]': 'triangle',
+                    '[1-3][2-3]': 'edge_induced_wedge'
+                },
+                # a map from 4-motifs peregrine pattern strings to their label
+                '4': {
+                    '[1-2][1-4](1~3)[2-3](2~4)(3~4)': 'path_4',
+                    '[1-2][1-3][1-4](2~3)(2~4)(3~4)': 'star_4',
+                    '[1-2][1-3][1-4][2-3](2~4)(3~4)': 'tailed_triangle',
+                    '[1-2][1-4](1~3)[2-3](2~4)[3-4]': 'cycle_4',
+                    '[1-2][1-3][1-4][2-3](2~4)[3-4]': 'chordal_cycle_4',
+                    '[1-2][1-3][1-4][2-3][2-4][3-4]': 'clique_4',
+                }
+            }
+        },
+        'plfit': {
+            'stats': {
+                'moments': {
+                    'mean': 'mean',
+                    'variance': 'variance',
+                    'std.dev.': 'stddev',
+                    'skewness': 'skewness',
+                    'kurtosis': 'kurtosis',
+                },
+                'mle': {
+                    'alpha': 'alpha',
+                    'xmin': 'xmin',
+                    'L': 'log_likelihood',
+                    'D': 'ks_stat',
+                    'p': 'p_value'
+                }
+            }
         }
     }

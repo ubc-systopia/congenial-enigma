@@ -63,7 +63,7 @@ def main(args):
         'mem': args.mem,
         'cpus-per-task': args.cpus_per_task,
     }
-
+    config.settings['slurm_params'] = slurm_params
     if args.constraint:
         slurm_params['constraint'] = args.constraint
 

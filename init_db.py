@@ -65,17 +65,19 @@ def main(data_dir=None):
     timeout = config.settings['sqlite3']['timeout']
     conn = sqlite3.connect(db_path, timeout=timeout)
 
-    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'directed',
-              'undirected', 'bipartite']
+    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'features',
+              'directed', 'undirected', 'bipartite']
     columns = [
-        column_names.meta_col_names,
-        column_names.stat_col_names,
-        column_names.preproc_col_names,
-        column_names.konect_col_names,
-        column_names.n_m_col_names,
-    ] + [column_names.graph_dataframe_col_names] * 3
+                  column_names.meta_col_names,
+                  column_names.stat_col_names,
+                  column_names.preproc_col_names,
+                  column_names.konect_col_names,
+                  column_names.n_m_col_names,
+                  column_names.features_col_names,
+              ] + [column_names.graph_dataframe_col_names] * 3
 
     for table, cols in zip(tables, columns):
+        print(f'Creating {table}..')
         create_sql_table(conn, table, cols)
         update_table_schema(table, cols)
     db_path = config.settings['sqlite3']['sqlite3_db_path']
@@ -125,5 +127,5 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--data-dir',
                         help="Path to directory that should store sqlite3.db")
     args = parser.parse_args()
-    
+
     main(args.data_dir)

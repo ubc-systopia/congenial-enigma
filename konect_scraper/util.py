@@ -195,12 +195,12 @@ def remove_all_files_in_directory(folder):
 def create_log_dir_if_not_exists():
     slurm_log_dir = config.settings['logging']['slurm_log_dir']
     data_dirs = [
-        slurm_log_dir,
-        config.settings['logging']['log_dir'],
-    ] + [
-        os.path.join(slurm_log_dir, m) for m in
-        config.settings['compute_canada']['execution_modes']
-    ]
+                    slurm_log_dir,
+                    config.settings['logging']['log_dir'],
+                ] + [
+                    os.path.join(slurm_log_dir, m) for m in
+                    config.settings['compute_canada']['execution_modes']
+                ]
 
     [Path(data_dir).mkdir(parents=True, exist_ok=True)
      for data_dir in data_dirs]
@@ -538,7 +538,7 @@ def valid_pr(rows):
         # print(f"{np.allclose(pr, nx_pr)=}")
 
         valid_pagerank = np.allclose(pr, igraph_pr, rtol=0, atol=1e-4) and \
-            np.allclose(pr, nx_pr, rtol=0, atol=1e-4)
+                         np.allclose(pr, nx_pr, rtol=0, atol=1e-4)
 
         # for i in range(n):
         #     print(f"{pr[i]} {igraph_pr[i]} {nx_pr[i]}")
@@ -671,4 +671,85 @@ def copy_order_file_to_binary(n, input_path, output_path):
         '-o', output_path,
     ]
     subprocess.check_output(args)
+    return
+
+def save_webgraph(el_path, graph_dir):
+    """
+    Preprocess and save an edgelist using webgraph
+    Save the result in the same directory as the original graph
+    Args:
+        el_path:
+        graph_name:
+
+    Returns:
+
+    """
+
+    webgraph_dir = config.settings['webgraph_dir']
+    n_threads = config.settings['n_threads']
+    # graph_name = os.path.dirname(el_path)
+
+    command = f"bash {webgraph_dir}/setcp.sh && java it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
+    logging.info(f"Running: {command}..")
+    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir)
+    res = ret.stdout.decode()
+    if ret.returncode == 1:  # failed
+        print(f"{ret.stderr.decode()=}")
+        raise f"{command} did not complete!"
+    logging.info(res)
+    return
+
+def save_peregrine(el_path, graph_dir):
+    """
+        Preprocess and save an edgelist using peregrine
+        Save the result in the same directory as the original graph
+        Args:
+            el_path:
+            graph_name:
+
+        Returns:
+    """
+    settings = config.settings['peregrine']
+    prgrn_dir = settings['prgrn_dir']
+    prgrn_bin_dir = settings['prgrn_bin_dir']
+    prgrn_convert_data_executable = settings['prgrn_convert_data_executable']
+    args = [
+        prgrn_convert_data_executable,
+        el_path,
+        f'{graph_dir}/peregrine'
+    ]
+    logging.info(f"Executing {' '.join(args)}..")
+    res = subprocess.check_output(args)
+    print(res.decode('utf-8'))
+
+    return
+
+def save_connected_component(edgelist_path, graph_name, directed):
+    settings = config.settings
+    cc_exec = settings['compute_ccs_executable']
+    if directed:
+        cc_path = 'lscc.net'
+    else:
+        cc_path = 'lcc.net'
+    graphs_dir = settings['graphs_dir']
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    pr_path = os.path.join(graph_dir, cc_path)
+
+    args = [
+        cc_exec,
+        '-f', edgelist_path,
+        '-o', pr_path
+    ]
+    if not directed:
+        args += ['-s']
+    logging.info(f"Executing: {' '.join(args)}")
+    res = subprocess.check_output(args)
+
+    return
+
+
+def subprocess_check_output(args, cwd=None, env=None):
+    print(" ".join(args))
+    res = subprocess.check_output(args, cwd=cwd, env=env)
+    print(res.decode('utf-8'))
     return
