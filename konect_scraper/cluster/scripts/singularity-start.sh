@@ -19,6 +19,7 @@ CFG_ID_END=$((NUM_CONFIGS - 1))
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 OUT_FILE=${LOGDIR}/%A-%a.out
+ERR_FILE=${LOGDIR}/%A-%a.err
 JOB_FILE=${SCRIPT_DIR}/singularity-slurm-job.sh
 echo "log directory: " ${LOGDIR}
 echo "slurm output file: ${OUT_FILE}"
@@ -40,12 +41,12 @@ while [[ $NUM_CONFIGS -gt $MAX_ARRAY_JOBS ]]; do
   if [ ! -z ${11} ] 
   then 
       : # --constraint was given
-      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE}-e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}
   else
       : # --constraint was not given
-      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}
   fi
 
 
@@ -64,10 +65,10 @@ ARRAY_END=$((NUM_CONFIGS))
 if [ ! -z ${11} ] 
   then 
       : # --constraint was given
-      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} --constraint=${11} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} --constraint=${11} -o ${OUT_FILE} -e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}
   else
       : # --constraint was not given
-      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}"
-      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE}  ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE}
+      echo "sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}"
+      sbatch --array=0-${ARRAY_END} --time=${TIME} --mem=${MEM} --cpus-per-task=${CPUS_PER_TASK} -o ${OUT_FILE} -e ${ERR_FILE} ${JOB_FILE} ${MOUNTED_CONFIG} ${ARRAY_START} ${IMAGE} ${REPO_HOME} ${DATA_DIR} ${MODE} ${LOCAL_CONFIG}
   fi

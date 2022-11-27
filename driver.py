@@ -2,7 +2,7 @@ import argparse
 import json
 import subprocess
 import yaml
-
+from konect_scraper.utilities import batch_submit
 
 def construct_main_args_from_config(args):
     config_path = args.config_path
@@ -51,10 +51,9 @@ def main(args):
 
     main_args = construct_main_args_from_config(args)
     print(f' '.join(main_args))
-    if args.slurm:
-        res = subprocess.check_output(main_args)
-    else:
-        res = subprocess.check_output(main_args)
+
+    # batch_submit.main(main_args)
+    res = subprocess.check_output(main_args)
     print(res.decode('utf-8'))
 
     return

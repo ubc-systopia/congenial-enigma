@@ -13,8 +13,13 @@
 #include <fmt/ranges.h>
 #include "typedefs.h"
 #include <map>
-#include <boost/serialization/vector.hpp>
 #include "igraph.h"
+#include <fstream>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/utility.hpp>
 
 #ifndef GRAPH_SIMPLIFY_IO_H
 #define GRAPH_SIMPLIFY_IO_H
@@ -83,8 +88,8 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m);
 
 
-void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
-                        std::string graph_name, int val);
+//void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
+//                       std::string graph_name, int val);
 
 void write_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges, io_mode &mode);
 
@@ -95,4 +100,20 @@ void write_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edge
 void read_map(std::string in_path, std::vector<ul> &mp);
 
 void write_row_to_csv(PRExptRow &r, std::string csv_path);
+
+
+template<typename C>
+void read_binary_container(std::string inpath, C &container) {
+	std::ifstream ifs(inpath, std::ios::binary);
+	boost::archive::binary_iarchive ia(ifs);
+	ia >> container;
+}
+
+template<typename C>
+void write_binary_container(std::string outpath, C &container) {
+	std::ofstream ofs(outpath, std::ios::binary);
+	boost::archive::binary_oarchive oa(ofs);
+	oa << container;
+}
+
 #endif //GRAPH_SIMPLIFY_IO_H

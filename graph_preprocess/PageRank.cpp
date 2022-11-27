@@ -21,42 +21,51 @@ void PageRank::calc_out_degrees() {
 
 
 void PageRank::init() {
-	src.resize(num_nodes, 0.0);
-	dst.resize(num_nodes, 0.0);
-	deg.resize(num_nodes, 0.0);
-
+//	src.resize(num_nodes);
+//	src.fill(0.0);
+//	dst.resize(num_nodes, 0.0);
+	deg.resize(num_nodes);
+	deg.fill(0.0);
+	scores.resize(num_nodes);
+	scores.resize(1.0 / num_nodes);
 	calc_out_degrees();
 }
 
 void PageRank::compute() {
 	// measure the total time to complete all PR iterations
+	const double init_score = 1.0 / num_nodes;
+	const double base_score = (1.0 - alpha) / num_nodes;
+
+	pvector<double> outgoing_contrib(num_nodes);
+	pvector<double> incoming_total(num_nodes, 0);
+
+#pragma omp parallel for
+	for (uint32_t n = 0; n < num_nodes; n++) {
+//		dst[n] = init_score / deg[n];
+		outgoing_contrib[n] = init_score / deg[n];
+	}
 	auto start_time = std::chrono::high_resolution_clock::now();
 
 	for (int iter = 0; iter < num_iters; iter++) {
-		for (int n = 0; n < num_nodes; n++) {
-			src[n] = alpha * dst[n] / deg[n];
-			dst[n] = 1.0 - alpha;
-		}
+//		for (int n = 0; n < num_nodes; n++) {
+//			src[n] = alpha * dst[n] / deg[n];
+//			dst[n] = base_score;
+//			incoming_total[n] = 0;
+//		}
 		for (const auto &e: edges) {
-			ul x = e.source;
-			ul y = e.dest;
-
-			dst[y] += src[x];
+			ul src = e.source;
+			ul dst = e.dest;
+//			dst[y] += src[x];
+			incoming_total[dst] += outgoing_contrib[src];
+		}
+		for (int n = 0; n < num_nodes; n++) {
+			scores[n] = base_score + alpha * incoming_total[n];
+			outgoing_contrib[n] = scores[n] / deg[n];
+			incoming_total[n] = 0;
 		}
 	}
 	auto end_time = std::chrono::high_resolution_clock::now();
 	runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-
-	// normalize - todo - normalization step necessary for correctness of outputted value (pr value between [0, 1))
-	// but can skip for experiments (these values can be computed after the fact)
-	// float sum = 0.0;
-	// for (int n = 0; n < num_nodes; n++) {
-	// 	sum += dst[n];
-	// }
-
-	// for (int n = 0; n < num_nodes; n++) {
-	// 	dst[n] = dst[n] / sum;
-	// }
 
 }
 

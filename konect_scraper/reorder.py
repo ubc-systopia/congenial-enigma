@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 from konect_scraper import config
-from konect_scraper.util import get_directed, get_n, get_m
+from konect_scraper.util import copy_order_file_to_binary, get_directed, get_n, get_m
 
 
 def compute_dbg_order(graph_name, order_str):
@@ -26,7 +26,6 @@ def compute_dbg_order(graph_name, order_str):
     graph_dir = os.path.join(graphs_dir, graph_name)
     order_file = os.path.join(graph_dir, f"{dbg_order_idx}.map")
     # order_file = os.path.join(dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
-
     n = get_n(graph_name)
     m = get_m(graph_name)
     args = [
@@ -117,23 +116,12 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
     executable = settings['slashburn_executable']
     args = [executable]
 
-    if directed:
-        args += ['-d']
-
-    # for io_mode in io_modes:
-    #     match io_mode:
-    #         case IOMode.text:
-    #             args += ['-t']
-    #         case IOMode.binary:
-    #             args += ['-i']
-
     args += [
-        '-n', str(n),
-        '-m', str(m),
-        '-p', str(percent),
-        '-g', graph_path,
-        '-b', sqlite3_db_path,
+        '-f', graph_path,
+        '-s',
         '-o', order_path,
+        '-d', sqlite3_db_path,
+        '-p', str(percent)
     ]
 
     logging.info(f"Executing: " + ' '.join(args))
@@ -201,7 +189,8 @@ def compute_ordering(graph_name, order, ovewrite):
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
 
-    extension = ".bin"
+    binary_suffix = settings['binary_suffix']
+    extension = f".{binary_suffix}"
 
     comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
     directed = bool(get_directed(graph_name))
@@ -211,6 +200,7 @@ def compute_ordering(graph_name, order, ovewrite):
     order_str = orderings[order]
 
     order_path = os.path.join(graph_dir, order)
+    binary_order_path = f"{order_path}.{binary_suffix}"
 
     if Path(order_path).is_file() and not ovewrite:  # if already computed, skip
         logging.info(f"{graph_name}-{order_str} already computed; skipping.")
@@ -233,34 +223,39 @@ def compute_ordering(graph_name, order, ovewrite):
             compute_par_slashburn(comp_graph_path, order_path)
 
         case "sb":
-            # comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
             # compute_par_slashburn(comp_graph_path, order_path)
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 
         case "cm":
-            extension = ".net"
+            extension = ".bin"
 
             comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
             cm_order_path = order_path
             rcm_order_path = os.path.join(graph_dir, 'rev_cm')
-            # compute_cuthill_mckee(comp_graph_path, n, m)
-            compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+            compute_cuthill_mckee(comp_graph_path, n, m)
+            # compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
         case "rev_cm":
             return
 
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
         # case ""
+    logging.info(f"Copying {graph_name}-{order_str} to  binary")
+    copy_order_file_to_binary(n, order_path, binary_order_path)
+
+
 
 
 def main(rows, orders, overwrite):
     settings = config.settings
     
     # compute the given orders for each of the datasets
-    for row in rows:    
+    for row in rows:
         graph_name = row['graph_name']
 
         for order in orders:
+            if order == 'orig': continue
             compute_ordering(graph_name, order, overwrite)
     return
 

@@ -1,3 +1,4 @@
+import argparse
 import sqlite3
 
 import pandas as pd
@@ -50,6 +51,14 @@ def main():
 
 
 if __name__ == '__main__':
-    config.init()
+    argparse_desc = """
+    A module to compare and inspect the wing width ratio of slashburn orderings
+    """
+    parser = argparse.ArgumentParser(
+        description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-d', '--data-dir', required=True,
+                        help="Path to directory that should store sqlite3.db")
+    args = parser.parse_args()
+    config.init(args.data_dir)
 
     main()

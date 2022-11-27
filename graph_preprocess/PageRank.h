@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <chrono>
 #include <vector>
+#include "pvector.h"
 
 class PageRank {
 public:
@@ -20,9 +21,11 @@ public:
 	int num_nodes;
 	float alpha;
 	uint64_t runtime;
-	std::vector<double> src;
-	std::vector<double> dst;
-	std::vector<double> deg;
+	pvector<double> src;
+	pvector<double> dst;
+	pvector<double> deg;
+	pvector<double> scores;
+
 
 	std::vector<Edge> &edges;
 

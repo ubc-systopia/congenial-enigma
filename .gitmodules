@@ -17,3 +17,13 @@
 	path = par_slashburn
 	url = https://github.com/atrostan/par_slashburn.git
 	branch = main
+
+[submodule "peregrine"]
+	path = peregrine
+	url = https://github.com/atrostan/peregrine.git
+	branch = master
+
+[submodule "webgraph"]
+	path = webgraph
+	url = https://github.com/atrostan/webgraph.git
+    branch = master

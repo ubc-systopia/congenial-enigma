@@ -62,19 +62,22 @@ def main(data_dir=None):
     create_data_dirs_if_not_exists()
 
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    timeout = config.settings['sqlite3']['timeout']
+    conn = sqlite3.connect(db_path, timeout=timeout)
 
-    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'directed',
-              'undirected', 'bipartite']
+    tables = ['metadata', 'statistics', 'preproc', 'konect', 'n_m', 'features',
+              'directed', 'undirected', 'bipartite']
     columns = [
-        column_names.meta_col_names,
-        column_names.stat_col_names,
-        column_names.preproc_col_names,
-        column_names.konect_col_names,
-        column_names.n_m_col_names,
-    ] + [column_names.graph_dataframe_col_names] * 3
+                  column_names.meta_col_names,
+                  column_names.stat_col_names,
+                  column_names.preproc_col_names,
+                  column_names.konect_col_names,
+                  column_names.n_m_col_names,
+                  column_names.features_col_names,
+              ] + [column_names.graph_dataframe_col_names] * 3
 
     for table, cols in zip(tables, columns):
+        print(f'Creating {table}..')
         create_sql_table(conn, table, cols)
         update_table_schema(table, cols)
     db_path = config.settings['sqlite3']['sqlite3_db_path']
@@ -82,7 +85,7 @@ def main(data_dir=None):
     graph_table_names = ['directed', 'undirected', 'bipartite']
     for table_name in graph_table_names:
         df = pd.read_csv(os.path.join(settings['dataframes_dir'], f"{table_name}.csv"))
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_path, timeout=timeout)
         df.to_sql(table_name, con=conn, if_exists='replace')
 
     create_pr_expt_table()
@@ -93,7 +96,7 @@ def main(data_dir=None):
     #     delete_all_rows(table)
 
     # optionally, write konect to csv
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=timeout)
     # db_df = pd.read_sql_query("select * from konect", conn)
     # db_df.to_csv('./konect.csv', index=False)
 
@@ -124,5 +127,5 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--data-dir',
                         help="Path to directory that should store sqlite3.db")
     args = parser.parse_args()
-    
+
     main(args.data_dir)

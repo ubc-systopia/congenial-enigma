@@ -11,10 +11,24 @@ output: three files
 
 # Cloning
 
-<`repo-name`> makes use of submodules to compute various vertex reordering. To clone <`repo-name`>:  
-`$ git clone --recurse-submodules git@github.com:ubc-systopia/congenial-enigma.git`
+<`repo-name`> makes use of submodules to compute various vertex reordering and graph statistics. To clone <`repo-name`>:  
+```
+git clone https://github.com/ubc-systopia/congenial-enigma.git && cd congenial-enigma
+git submodule update --force --recursive --init --remote
+cd par_slashburn
+git submodule update --force --recursive --init --remote 
+```
 
 # Requirements
+
+## Docker
+All the project's dependencies have been included in [`./install_deps/Dockerfile`](./install_deps/Dockerfile).  
+You can create a singularity image by donwloading the existing container from Docker Hub to run the various executables on Compute Canada:
+```
+$ sudo singularity build congenial_enigma.sif docker://atrostan/install-deps:latest
+```
+
+This project's build relies on:
 
 - [cmake](https://cmake.org/install/)
 - ninja
@@ -49,16 +63,10 @@ apt-get install g++-11
 - libnuma (2.0.9)
 - libtcmalloc_minimal in google-perftools (2.1)
 
-# Build
-
-`$ cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=ninja -G Ninja -S ./graph_preprocess -B ./graph_preprocess/<cmake build directory name>`
-
-# Install
-
-- `graph_preprocess`:  
-  `$ cmake --build ./graph_preprocess/<cmake build directory name> --target graph_preprocess -j <num threads>`
-- `slashburn`:  
-  `$ cmake --build ./graph_preprocess/<cmake build directory name> --target slashshburn -j <num threads>`
+# Build and Install
+`$ <venv> python setup.py`
+## Clean
+`$ <venv> python setup.py --clean`
 
 # Execution
 Supply `driver.py` with a configuration file and an optional cluster mode (`--slurm`).  
@@ -67,115 +75,3 @@ e.g.
 ```
 $ python driver.py --config-path <path-to-config-file> --slurm
 ```
-
-## Local
-1. Download and compress `petster-hamster-household` and `opsahl-powergrid` graphs from konect, compute the `slashburn`
-   order of those graphs, and plot the spy plots of the results.
-
-```
-python main.py \
-	--initialize \
-	--graph-names petster-hamster-household opsahl-powergrid \
-	--download \
-	--reorder sb \
-	--plot
-```
-
-2. Compute the `slashburn` order of `petster-hamster-household` and `opsahl-powergrid` graphs and plot the spy plots of
-   the results.
-
-```
-python main.py \
-	--no-initialize \
-	--graph-names petster-hamster-household opsahl-powergrid \
-	--no-download \
-	--reorder sb \
-	--plot
-```
-## Cluster
-### Compute Canada
-#### `download`
-Download and extract all directed graphs to `--data-dir` whose `graph-number` is [20, 30) (Listed in [directed.csv](./konect_dataframes/directed.csv)).
-
-```
-(venv) $ python -m konect_scraper.cluster.main \
-	--mode download \
-	--directed \
-	--data-dir /home/atrostan/scratch/data \
-	--graph-numbers 20 30 
-```
----
-#### `preprocess`
-
-Preprocess (simplify, "densify") all directed graphs to `--data-dir` whose `graph-number` is [20, 30).
-
-```
-(venv) $ python -m konect_scraper.cluster.main \
-	--mode preprocess \
-	--directed \
-	--data-dir /home/atrostan/scratch/data \
-	--graph-numbers 20 30 
-```
----
-#### `reorder`
-Reorder all directed graphs whose whose `graph-number` is [20, 30) using the given vertex orderings.
-`--overwrite`: if a vertex ordering has already been done, recompute it.  
-`all` = [Random, Rabbit, SlashBurn, Parallel SlashBurn, Descending Degree Sort, HubCluster, HubSort, 
-Degree Based Grouping]
-(See [config.py](./konect_scraper/config.py) - `settings['orderings']` for a list of supported vertex orders.)
-```
-(venv) $ python -m konect_scraper.cluster.main \
-	--mode reorder \
-	--directed \
-	--reorder all \
-	--data-dir /home/atrostan/scratch/data \
-	--graph-numbers 20 30 \
-	--overwrite
-```
----
-#### `pr_expt`
-For each directed graph whose `graph-number` is [20, 30), construct an isomorphism using a vertex ordering
-given by `--reorder`.  
-For each graph isomorphism, iterate over the edges of the graph in: 
-- Row Major
-- Column Major
-- Hilbert  
-
-Record the total time to compute the PageRank using all `<vertex order, edge order>` combinations
-```
-(venv) $ python -m konect_scraper.cluster.main \
-	--mode pr-expt \
-	--directed \
-	--reorder all \
-	--data-dir /home/atrostan/scratch/data \
-	--graph-numbers 20 30 
-```
-# SQL
-
-## All Possible Network Categories
-
-- Affiliation network
-- Animal network
-- Authorship network
-- Citation network
-- Co-authorship network
-- Co-citation network
-- Communication network
-- Computer network
-- Feature network
-- Human contact network
-- Human social network
-- Hyperlink network
-- Infrastructure network
-- Interaction network
-- Lexical network
-- Metabolic network
-- Miscellaneous network
-- Neural network
-- Online contact network
-- Online social network
-- Rating network
-- Software network
-- Text network
-- Trophic network
-

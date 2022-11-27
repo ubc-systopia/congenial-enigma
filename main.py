@@ -9,7 +9,7 @@ from datetime import datetime
 import konect_scraper.column_names as column_names
 import konect_scraper.config as config
 import konect_scraper.plot as plotting
-from konect_scraper import download_and_extract, reorder, pr_experiments
+from konect_scraper import calc_stats, download_and_extract, preprocess, reorder, pr_experiments
 from konect_scraper.config import IOMode
 from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between, get_all_downloadable_graphs, \
     get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names, get_all_unipartite_graphs, \
@@ -21,6 +21,8 @@ from konect_scraper.util import \
 from konect_scraper.cluster import execute as cc_download
 from konect_scraper.cluster.util import rows_to_df
 from konect_scraper.sql import get_graphs_by_graph_numbers
+
+
 def get_io_modes(io_modes):
     # if io mode is unspecified, use both binary and text as default
     if not io_modes:
@@ -34,9 +36,10 @@ def get_io_modes(io_modes):
                 case 'text':
                     modes.append(IOMode.text)
                 case _:
-                    logging.error(f"{mode}: Unsupported IO mode!")
+                    logging.error(f"{io_mode}: Unsupported IO mode!")
         io_modes = modes
     return io_modes
+
 
 def main(args):
     create_log_dir_if_not_exists()
@@ -72,7 +75,6 @@ def main(args):
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
 
-
     # print heading
     print(f"{'Index' : <5} {'Graph Name' : <40}"
           f"{'|V|': <40}"
@@ -94,12 +96,16 @@ def main(args):
         case 'download':
             download_and_extract.main(rows, io_modes)
             return
+            
+        case 'preprocess':
+            preprocess.main(rows, io_modes, overwrite)
+            return 
 
         case 'reorder':
             if orders:
                 if orders == ['all']:
                     orders = config.settings['orderings'].keys()
-                
+
                 # verify that the requested ordering to compute are supported
                 assert valid_orderings(orders)
                 reorder.main(rows, orders, overwrite)
@@ -111,6 +117,7 @@ def main(args):
                     orders = config.settings['orderings'].keys()
                 # verify that the requested ordering to compute are supported
                 assert valid_orderings(orders)
+            orders = [o for o in orders if o != 'orig']
             plotting.main(rows, orders)
             return
 
@@ -120,13 +127,21 @@ def main(args):
                     orders = config.settings['orderings'].keys()
                 # verify that the requested ordering to compute are supported
                 assert valid_orderings(orders)
-            pr_experiments.main(rows, list(orders) + ['orig'])
+            pr_experiments.main(rows, list(orders))
             # DEBUG - plot the edge orderings
             if debug:
                 for vorder_str in orders:
                     plotting.plot_edge_orderings(rows, vorder_str)
                 assert valid_pr(rows)
             return
+
+        case 'stats':
+
+            calc_stats.main(rows)
+            return
+
+        case _:
+            print(f"{args.mode}: Unsupported Execution mode!")
     return
 
 
@@ -149,12 +164,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=RawTextHelpFormatter)
 
-
-    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt'}
+    exec_modes = {'download', 'preprocess',
+                  'reorder', 'plot', 'pr-expt', 'stats'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
                         "\{'download', 'preprocess', 'reorder', 'plot', "
-                        "'pr_expt'\}")
+                        "'pr_expt', 'stats'\}")
 
     parser.add_argument('-d', '--directed',
                         action=argparse.BooleanOptionalAction,
@@ -167,7 +182,7 @@ if __name__ == '__main__':
                         'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
                         'is [0, 100) ')
 
-    parser.add_argument('-a', '--data-dir', required=True, 
+    parser.add_argument('-a', '--data-dir', required=True,
                         help="Absolute path to the data directory containing graphs.db and all graph files.")
 
     parser.add_argument('-i', '--io-modes', nargs='+',

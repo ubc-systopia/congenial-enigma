@@ -13,66 +13,65 @@
 #include <cassert>
 #include <igraph.h>
 #include <boost/filesystem/path.hpp>
+#include <boost/unordered_set.hpp>
+#include <unordered_set>
 #include "order_slashburn.h"
+#include "sql.h"
+#include "command_line.h"
+#include "benchmark.h"
 
 int main(int argc, char *argv[]) {
-	opterr = 0;
-	int opt;
-	ul num_vertices;
-	ull num_edges;
-	float percent;
-	bool directed = false;
-	std::string input_path;
-	std::string output_path;
-	std::string sqlite_db_path;
+	CLApp cli(argc, argv, "sequential slashburn");
+	if (!cli.ParseArgs())
+		return -1;
+	Builder b(cli);
 
-	while ((opt = getopt(argc, argv, "dn:m:p:g:b:o:")) != -1) {
-		switch (opt) {
-			case 'd':
-				directed = !directed;
-				break;
-			case 'n':
-				num_vertices = atol(optarg);
-				break;
-			case 'm':
-				num_edges = atoll(optarg);
-				break;
-			case 'p':
-				percent = atof(optarg);
-				break;
-			case 'g':
-				input_path = optarg;
-				break;
-			case 'b':
-				sqlite_db_path = optarg;
-				break;
-			case 'o':
-				output_path = optarg;
-				break;
-			case '?':
-				if (optopt == 'k')
-					printf("Option -%c requires a long long.\n", optopt);
-				else if (optopt == 'g' || optopt == 'o')
-					printf("Option -%c requires a string.\n", optopt);
-				else
-					printf("Unknown option character '\\x%x'.\n", optopt);
-				return 1;
-			default:
-				abort();
-		}
-	}
+	Graph G = b.MakeGraph();
+	float percent = cli.percent();
+
+	ul num_vertices = G.num_nodes();
+	ull num_edges = G.num_edges();
+	bool directed = G.directed();
+	std::string input_path = cli.filename();
+	std::string output_path = cli.out_filename();
+	std::string sqlite_db_path = cli.db_filename();
+
 	/* turn on attribute handling */
 	igraph_set_attribute_table(&igraph_cattribute_table);
 
-
 	igraph_t g;
+	igraph_empty(&g, 0, IGRAPH_UNDIRECTED);
+	igraph_add_vertices(&g, G.num_nodes(), NULL);
+	igraph_vector_int_t flat_igraph_edges;
+
+	uint64_t w = 0;
+	boost::unordered_set<std::pair<uint32_t, uint32_t>> es;
+	for (uint32_t u = 0; u < G.num_nodes(); ++u) {
+		for (uint32_t v: G.out_neigh(u)) {
+			uint32_t src, dest;
+			if (u > v) { src = v; dest = u; }
+			else { src = u; dest = v; }
+			es.insert({src, dest});
+		}
+	}
+	igraph_vector_int_init(&flat_igraph_edges, es.size() * 2);
+	for (const auto &kv: es) {
+			uint32_t u = kv.first;
+			uint32_t v = kv.second;
+			VECTOR(flat_igraph_edges)[w] = u;
+			VECTOR(flat_igraph_edges)[w + 1] = v;
+			w += 2;
+	}
+	fmt::print("\n");
+	igraph_add_edges(&g, &flat_igraph_edges, NULL);
+	igraph_vector_int_destroy(&flat_igraph_edges);
 //	FILE *f;
 //	f = fopen(input_path.c_str(), "r");
 
 	// TODO slashburn impl ignores graph directedness
 //	igraph_read_graph_edgelist(&g, f, num_vertices, 0);
-	std::vector<std::pair<ul, ul>> flat_edges(num_edges);
-	read_binary_edge_list_into_igraph(input_path, flat_edges, &g, num_vertices, num_edges, 0);
+//	std::vector<std::pair<ul, ul>> flat_edges(num_edges);
+//	read_binary_edge_list_into_igraph(input_path, flat_edges, &g, num_vertices, num_edges, 0);
 	ul n;
 	ull i, m;
 
@@ -83,9 +82,9 @@ int main(int argc, char *argv[]) {
 	if (k == 0) {
 		k = 1;
 	}
+	fmt::print("g.directed: {}\n", g.directed);
 	fmt::print("k: {}\n", k);
 	fmt::print("n, m: {} {} \n", n, m);
-
 	// set a boolean and numeric attribute for each vertex
 	// the original id - this needs to be maintained as we modify the graph
 	// seen - whether we've already assigned this vertex a final rank id
@@ -110,13 +109,23 @@ int main(int argc, char *argv[]) {
 	ul iter = 0;
 	auto start = std::chrono::high_resolution_clock::now();
 	while (prev->n >= k) {
-		fmt::print("gcc.n: {}, hub_idx: {}, k: {}, spokes_end_idx: {}\n", prev->n, hub_idx, k, spokes_end_idx);
-//		fmt::print("rank: {}\n", rank);
+		fmt::print("iter: {}, gcc.n: {}, hub_idx: {}, k: {}, spokes_end_idx: {}\n", iter, prev->n, hub_idx, k,
+		           spokes_end_idx);
 		res = order_igraph_slashburn(*prev, k, rank, hub_idx, spokes_end_idx);
 
 		curr = get<0>(res);
 		hub_idx = get<1>(res);
 		spokes_end_idx = get<2>(res);
+
+//		igraph_vit_t tvit;
+//		igraph_vit_create(curr, igraph_vss_all(), &tvit);
+//		while (!IGRAPH_VIT_END(tvit)) {
+//			long int vid = (long int) IGRAPH_VIT_GET(tvit);
+//			fmt::print("{} ", VAN(curr, "orig_id", vid));
+//			IGRAPH_VIT_NEXT(tvit);
+//		}
+//		fmt::print("\n");
+
 
 		// if the greatest connected component's size is lesser than k, place the vertices in the gcc
 		// after the latest placed hubs
@@ -130,6 +139,17 @@ int main(int argc, char *argv[]) {
 				++hub_idx;
 			}
 		}
+//		if (iter == 4) {
+//			igraph_vit_t tvit;
+//			igraph_vit_create(curr, igraph_vss_all(), &tvit);
+//			while (!IGRAPH_VIT_END(tvit)) {
+//				long int vid = (long int) IGRAPH_VIT_GET(tvit);
+//				fmt::print("{}\n", VAN(curr, "orig_id", vid));
+//				IGRAPH_VIT_NEXT(tvit);
+//			}
+//			fmt::print("\n");
+//			break;
+//		}
 
 		// destroy the previous gcc and reassign the pointers
 		igraph_destroy(prev);

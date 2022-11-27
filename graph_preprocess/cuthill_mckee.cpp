@@ -5,12 +5,10 @@
 #include <getopt.h>
 #include "typedefs.h"
 #include "io.h"
-
 #include <chrono>
 #include <fmt/core.h>
-
 #include <fmt/ranges.h>
-
+#include "sql.h"
 /* Only needed for the sake of this example. */
 #include <iostream>
 #include <thread>
@@ -73,10 +71,8 @@ int main(int argc, char *argv[]) {
 	boost::filesystem::path dir = p.parent_path();
 	std::string graph_name = dir.filename().string();
 
-
 	std::string rev_cm_iso_path = fmt::format("{}/rev_cm", dir.string());
 	std::string cm_iso_path = fmt::format("{}/cm", dir.string());
-
 
 	std::vector<std::pair<ul, ul>> edges(num_edges);
 	read_binary_edge_list(input_path, edges);
