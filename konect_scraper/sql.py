@@ -54,7 +54,8 @@ def print_row(r):
 
 def append_df_to_table(df, table):
     db_path = config.settings['sqlite3']['sqlite3_db_path']
-    conn = sqlite3.connect(db_path)
+    timeout = config.settings['sqlite3']['timeout']
+    conn = sqlite3.connect(db_path, timeout=timeout)
 
     df.to_sql(table, index=False, con=conn, if_exists='append')
 

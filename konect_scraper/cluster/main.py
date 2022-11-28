@@ -49,7 +49,7 @@ def main(args):
     exec_mode = args.mode
 
     io_modes = get_io_modes(io_modes)
-
+    
     config.settings['debug'] = debug
 
     log_dir = config.settings['logging']['log_dir']
@@ -82,6 +82,9 @@ def main(args):
         case 'preprocess':
             batch_submit.main(graph_type, graph_ns, slurm_params, 'preprocess', overwrite=overwrite)
             return
+        case 'stats':
+            batch_submit.main(graph_type, graph_ns, slurm_params, 'stats', overwrite=overwrite)
+            return 
         case 'reorder':
             orders = verify_vertex_orders(orders, config.settings)
             batch_submit.main(graph_type, graph_ns, slurm_params,
@@ -139,10 +142,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=argparse_desc, formatter_class=argparse.RawTextHelpFormatter)
 
-    exec_modes = {'download', 'preprocess', 'reorder', 'plot', 'pr-expt', 'all'}
+    exec_modes = {'download', 'preprocess', 'stats', 'reorder', 'plot', 'pr-expt', 'all'}
     parser.add_argument('-m', '--mode', choices=exec_modes, required=True,
                         help="Specify the execution mode. One of: "
-                        "\{'download', 'preprocess', 'reorder', 'plot', "
+                        "\{'download', 'preprocess', 'reorder', 'stats', 'plot', "
                         "'pr_expt', 'all'\}")
 
     parser.add_argument('-d', '--directed',

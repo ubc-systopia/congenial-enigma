@@ -247,9 +247,11 @@ def main(args):
 
     # build webgraph
     webgraph_dir = settings['webgraph_dir']
+    env = os.environ.copy()
+    env['ANT_OPTS'] = '-Xmx256m'
     args = ['ant', 'ivy-setupjars', 'jar']
     print(" ".join(args))
-    subprocess.check_output(args, cwd=webgraph_dir)
+    subprocess.check_output(args, cwd=webgraph_dir, env=env)
     print(res.decode('utf-8'))
 
 

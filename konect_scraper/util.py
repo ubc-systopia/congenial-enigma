@@ -673,6 +673,18 @@ def copy_order_file_to_binary(n, input_path, output_path):
     subprocess.check_output(args)
     return
 
+def get_webgraph_jars(wgdir):
+    import glob, os
+    os.chdir(wgdir)
+    jars = []
+    jars += [os.path.join(wgdir, file) for file in glob.glob("*.jar")]
+
+    wg_runtime_dir = os.path.join(wgdir, "jars", "runtime")
+    os.chdir(wg_runtime_dir)
+    jars += [os.path.join(wg_runtime_dir, file) for file in glob.glob("*.jar")]
+
+    return jars
+
 def save_webgraph(el_path, graph_dir):
     """
     Preprocess and save an edgelist using webgraph
@@ -684,18 +696,27 @@ def save_webgraph(el_path, graph_dir):
     Returns:
 
     """
+    settings = config.settings
+    webgraph_dir = settings['webgraph_dir']
 
-    webgraph_dir = config.settings['webgraph_dir']
-    n_threads = config.settings['n_threads']
+    webgraph_jars = get_webgraph_jars(webgraph_dir)
+
+    n_threads = settings['n_threads']
     # graph_name = os.path.dirname(el_path)
-
-    command = f"bash {webgraph_dir}/setcp.sh && java it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
+    if 'slurm_params' in settings:
+        heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
+    else:
+        heap_size = '8G'
+    print(f"{heap_size=}")
+    command = f"java -Xss256K -Xms{heap_size}G it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
     logging.info(f"Running: {command}..")
-    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir)
+    env = os.environ.copy()
+    env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
     res = ret.stdout.decode()
     if ret.returncode == 1:  # failed
         print(f"{ret.stderr.decode()=}")
-        raise f"{command} did not complete!"
+        raise Exception(f"{command} did not complete!")
     logging.info(res)
     return
 
