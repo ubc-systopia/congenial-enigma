@@ -136,5 +136,4 @@ void single_val_set_int(const std::string sqlite_db_path, std::string col_name, 
 		}
 	}
 
-
 }

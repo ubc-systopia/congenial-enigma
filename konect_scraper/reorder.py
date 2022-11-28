@@ -243,6 +243,10 @@ def compute_ordering(graph_name, order, ovewrite):
         # case ""
     logging.info(f"Copying {graph_name}-{order_str} to  binary")
     copy_order_file_to_binary(n, order_path, binary_order_path)
+    if order == 'cm':
+        order_path = os.path.join(graph_dir, 'rev_cm')
+        binary_order_path = f"{order_path}.{binary_suffix}"
+        copy_order_file_to_binary(n, order_path, binary_order_path)
 
 
 

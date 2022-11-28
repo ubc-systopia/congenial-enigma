@@ -12,7 +12,7 @@ import pandas as pd
 from scipy import stats
 from konect_scraper import config
 from konect_scraper.sql import is_bipartite, single_val_get
-from konect_scraper.util import get_n_m, get_directed, get_n, get_m
+from konect_scraper.util import get_n_m, get_directed, get_n, get_m, get_webgraph_jars
 from scipy.sparse.linalg import eigs
 from scipy.sparse.csgraph import laplacian, connected_components
 import igraph as ig
@@ -543,17 +543,22 @@ def hyperball(graph_name):
     settings = config.settings
     graph_dir = os.path.join(settings['graphs_dir'], graph_name)
     webgraph_dir = config.settings['webgraph_dir']
+    webgraph_jars = get_webgraph_jars(webgraph_dir)
+
     heap_size = ''
     if 'slurm_params' in settings:
-        heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 6
+        mem = int(settings['slurm_params']['mem'].replace('G', ''))
+        if mem == 187:
+            heap_size = 160
+        else:  
+            heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = '8G'
+        heap_size = 8
     print(f"{heap_size=}")
     command = f"""
-        bash {webgraph_dir}/setcp.sh &&
         java \
         -Xss256K \
-        -Xms{heap_size} \
+        -Xms{heap_size}G \
         -XX:PretenureSizeThreshold=512M \
         -XX:MaxNewSize=4G \
         -XX:+UseConcMarkSweepGC \
@@ -565,10 +570,12 @@ def hyperball(graph_name):
         it.unimi.dsi.webgraph.algo.HyperBall -l 10 {graph_dir}/webgraph -n {graph_dir}/neigh_func 
     """
     logging.info(f"Running: {command}..")
-    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir)
+    env = os.environ.copy()
+    env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
     if ret.returncode == 1:  # failed
         print(f"{ret.stderr.decode()=}")
-        raise f"{command} did not complete!"
+        raise Exception(f"{command} did not complete!")
     res = ret.stdout.decode()
     logging.info(res)
 

@@ -16,11 +16,13 @@ So, if given a 100 graphs to download, assume 100 sbatch jobs will be submitted
 """
 
 
-def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, overwrite=False):
+def write_sbatch_array_csv(rows, name, slurm_params, vertex_orders=None,
+                           edge_orders=None, overwrite=False):
     # each row corresponds to `graph_name, konect_url, data_url`
     csvs_dir = config.settings['compute_canada']['job_array_dir']
     Path(csvs_dir).mkdir(parents=True, exist_ok=True)
     print(f'{overwrite=}')
+
     graph_column_names = ['graph_name', 'konect_url', 'data_url']
     column_names = graph_column_names.copy()
     lines = []
@@ -28,9 +30,16 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
         column_names += ['vertex_order']
     if edge_orders:
         column_names += ['edge_order']
-    column_names += ['overwrite']
+    column_names += ['overwrite', 'mem']
+    mem = slurm_params['mem']
 
     lines.append(",".join(column_names))  # header
+
+    line_suffix = ''
+    if overwrite:
+        line_suffix += f',1,{mem}'
+    else:
+        line_suffix += f',0,{mem}'
 
     for row in rows:
         line = ",".join([str(row[k]) for k in graph_column_names])
@@ -38,30 +47,20 @@ def write_sbatch_array_csv(rows, name, vertex_orders=None, edge_orders=None, ove
             for vertex_order in vertex_orders:
                 if edge_orders:
                     for edge_order in edge_orders:
-                        if overwrite:
-                            lines.append(
-                                line + f',{vertex_order}' + f',{edge_order}' + f',1')
-                        else:
-                            lines.append(
-                                line + f',{vertex_order}' + f',{edge_order}' + f',0')
+                        lines.append(
+                            line + f',{vertex_order}' + f',{edge_order}' + line_suffix)
                 else:
-                    if overwrite:
-                        lines.append(line + f',{vertex_order}' + f',1')
-                    else:
-                        lines.append(line + f',{vertex_order}' + f',0')
-            
+                    lines.append(line + f',{vertex_order}' + line_suffix)
         else:
-            if overwrite:
-                lines.append(line + f',1')
-            else:
-                lines.append(line + f',0')
-    
+            lines.append(line + line_suffix)
+
     with open(os.path.join(csvs_dir, f'{name}.csv'), 'w') as f:
         for l in lines:
             f.write(f'{l}\n')
 
+
 def prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
-         vertex_orders=None, overwrite=False):
+                             vertex_orders=None, overwrite=False):
 
     settings = config.settings
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
@@ -72,22 +71,23 @@ def prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
 
     if mode_str == 'reorder':
         write_sbatch_array_csv(
-            rows, config_filename, vertex_orders=vertex_orders, overwrite=overwrite)
+            rows, config_filename, slurm_params, vertex_orders=vertex_orders, overwrite=overwrite)
     elif mode_str == 'pr_expt':
         write_sbatch_array_csv(
-            rows, config_filename, vertex_orders=vertex_orders, 
+            rows, config_filename, slurm_params, vertex_orders=vertex_orders,
             edge_orders=edge_orders, overwrite=overwrite)
     else:
-        write_sbatch_array_csv(rows, config_filename, overwrite=overwrite)
+        write_sbatch_array_csv(rows, config_filename,
+                               slurm_params, overwrite=overwrite)
 
-    return 
+    return
 
 
 def main(graph_type, graph_ns, slurm_params, mode_str,
          vertex_orders=None, overwrite=False):
-    
+
     prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
-         vertex_orders=None, overwrite=False)
+                             vertex_orders=None, overwrite=False)
     settings = config.settings
     config_filename = f'{mode_str}_{graph_ns[0]}_{graph_ns[-1]}'
     scripts_dir = config.settings['compute_canada']['scripts_dir']

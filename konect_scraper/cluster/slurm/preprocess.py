@@ -13,6 +13,8 @@ from ...util import get_directed, get_size, get_size_in_memory, get_volume, set_
 from konect_scraper import preprocess
 
 def main(config_path, config_idx):
+    global settings
+
     settings = config.settings
     # if is_graph_compressed(settings, config_path, config_idx):
         # return
@@ -20,6 +22,10 @@ def main(config_path, config_idx):
     df = pd.read_csv(config_path)
     row = df.iloc[int(config_idx)]
     graph_name = row['graph_name']
+    mem = row['mem']
+    settings['slurm_params'] = {}
+    settings['slurm_params']['mem'] = mem
+    
     overwrite = bool(row['overwrite'])
     graph_dir = os.path.join(settings['graphs_dir'], graph_name)
 

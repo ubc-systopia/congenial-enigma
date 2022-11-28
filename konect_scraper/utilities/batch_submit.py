@@ -21,12 +21,15 @@ echo "singularity exec --bind ${DATA_DIR}:/data,${REPO_HOME}:/congenial-enigma \
 
 singularity exec --bind ${DATA_DIR}:/data,${REPO_HOME}:/congenial-enigma \
         ${IMAGE} \
-        ${SCRIPTS_DIR}singularity-exec.sh ${CFG_FILE} ${CONFIG_ID} ${MODE}"
+        ${SCRIPTS_DIR}singularity-exec.sh ${CFG_FILE} ${CONFIG_ID} ${MODE}
 """
 
 def main(graph_type, graph_ns, slurm_params, mode_str,
          vertex_orders=None, overwrite=False, depends_on=None):
-   
+    # ignore rev_cm, it is computed when computing cm
+    if vertex_orders:
+        skip_vorders = ['rev_cm', 'orig']
+        vertex_orders = [o for o in vertex_orders if o not in skip_vorders]
     prep_sbatch_array_submit(graph_type, graph_ns, slurm_params, mode_str,
          vertex_orders, overwrite)
     settings = config.settings
@@ -52,6 +55,14 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
     min_graph_n = graph_ns[0]
     max_graph_n = graph_ns[-1]
     n_graphs = max_graph_n - min_graph_n
+    n_array_jobs = n_graphs 
+    edge_orders = list(settings['edge_orderings'].keys())
+    if vertex_orders:
+        n_array_jobs += 1
+        n_array_jobs *= len(vertex_orders)
+        if mode_str == 'pr_expt':
+            n_array_jobs *= len(edge_orders)
+        n_array_jobs -= 1
     slurm_init_params = {
         'account': settings['compute_canada']['account'],
         # 'user': 'atrostan',
@@ -60,7 +71,7 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
         'cpus-per-task': slurm_params['cpus-per-task'],
         'constraint': slurm_params['constraint'],
         'nodes': '1-1',
-        'array': f'0-{n_graphs}',
+        'array': f'0-{n_array_jobs}',
     }
     cmd_kwargs = {
         'CFG_FILE': mounted_config,
