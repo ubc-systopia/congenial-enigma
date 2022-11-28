@@ -704,9 +704,13 @@ def save_webgraph(el_path, graph_dir):
     n_threads = settings['n_threads']
     # graph_name = os.path.dirname(el_path)
     if 'slurm_params' in settings:
-        heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
+        mem = int(settings['slurm_params']['mem'].replace('G', ''))
+        if mem == 187:
+            heap_size = 160
+        else:
+            heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = '8G'
+        heap_size = 8
     print(f"{heap_size=}")
     command = f"java -Xss256K -Xms{heap_size}G it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
     logging.info(f"Running: {command}..")

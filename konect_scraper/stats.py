@@ -547,9 +547,13 @@ def hyperball(graph_name):
 
     heap_size = ''
     if 'slurm_params' in settings:
-        heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
+        mem = int(settings['slurm_params']['mem'].replace('G', ''))
+        if mem == 187:
+            heap_size = 160
+        else:  
+            heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = '8G'
+        heap_size = 8
     print(f"{heap_size=}")
     command = f"""
         java \

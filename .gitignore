@@ -384,3 +384,4 @@ config.yaml
 
 /slurm-scripts
 
+konect_scraper/utilities/verify_exec_mode.py

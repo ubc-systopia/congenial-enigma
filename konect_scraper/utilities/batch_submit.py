@@ -62,6 +62,7 @@ def main(graph_type, graph_ns, slurm_params, mode_str,
         n_array_jobs *= len(vertex_orders)
         if mode_str == 'pr_expt':
             n_array_jobs *= len(edge_orders)
+        n_array_jobs -= 1
     slurm_init_params = {
         'account': settings['compute_canada']['account'],
         # 'user': 'atrostan',
