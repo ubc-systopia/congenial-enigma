@@ -715,7 +715,10 @@ def save_webgraph(el_path, graph_dir):
     command = f"java -Xss256K -Xms{heap_size}G it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
     logging.info(f"Running: {command}..")
     env = os.environ.copy()
-    env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    if 'CLASSPATH' in env.keys():
+        env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    else:
+        env['CLASSPATH'] = ':'.join(webgraph_jars) 
     ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
     res = ret.stdout.decode()
     if ret.returncode == 1:  # failed
