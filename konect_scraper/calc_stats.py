@@ -1,5 +1,6 @@
 import json
 import logging
+import sqlite3
 import subprocess
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -10,6 +11,7 @@ from konect_scraper.sql import connect, append_df_to_table
 from konect_scraper.stats import compute_deg_stats, \
     compute_plfit_stats, compute_scipy_stats, compute_radii, percentile_effective_diameter, compute_distance_stats, \
     hyperball, compute_motif_stats
+from konect_scraper.scrape_konect_stats import write_to_sqlite3
 import numpy as np
 import sys
 from scipy.special import comb
@@ -55,6 +57,11 @@ def main(rows):
         d['graph_name'] = graph_name
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
+        
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    timeout = config.settings['sqlite3']['timeout']
+    conn = sqlite3.connect(db_path, timeout=timeout)
+    write_to_sqlite3(feats_df, 'features', conn)
     append_df_to_table(feats_df, 'features')
     # print(f"{feats_df=}")
     # feats_df.to_csv("tmp_feats.csv")

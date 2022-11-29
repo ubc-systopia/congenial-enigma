@@ -14,6 +14,7 @@ from konect_scraper import config
 from konect_scraper.sql import is_bipartite, single_val_get
 from konect_scraper.util import get_n_m, get_directed, get_n, get_m, get_webgraph_jars
 from scipy.sparse.linalg import eigs
+from scipy.sparse.linalg import eigsh
 from scipy.sparse.csgraph import laplacian, connected_components
 import igraph as ig
 import networkx as nx
@@ -54,7 +55,7 @@ def algebraic_connectivity(lcc_mat):
         lcc_mat (scipy.sparse.csr_matrix): A CSR matrix of the largest 
         connected component of a directed graph
     """
-
+    logging.info("\tLaplacian..")
     lap = get_laplacian(lcc_mat.astype(np.int64))
     egvals, eg_vecs = get_eigenvalues(lap.astype('float'), which='SM')
 
@@ -100,7 +101,12 @@ def spectral_separation(l1, l2):
     return np.abs(l1) / np.abs(l2)
 
 
-def get_eigenvalues(mat, k=10, which='LM'):
+def get_eigenvalues(mat, k=2, which='LM'):
+    if which == 'SM':
+        try:
+            return eigs(mat, k, which='LM', sigma=0)
+        except RuntimeError:
+            return eigs(mat, k, which='SM')
     return eigs(mat, k, which=which)
 
 
@@ -291,8 +297,10 @@ def parse_plfit(arr_path, plfit_stats, deg_type_str):
                         .strip() \
                         .replace('=', '') \
                         .strip()
-                    plfit_stats[f'{deg_type_str}_{v}'] = ast.literal_eval(
-                        stat_str)
+                    if 'nan' in stat_str:
+                        plfit_stats[f'{deg_type_str}_{v}'] = np.nan
+                    else:
+                        plfit_stats[f'{deg_type_str}_{v}'] = ast.literal_eval(stat_str)
     return plfit_stats
 
 
@@ -454,6 +462,13 @@ def get_count_of_most_common_elt(a):
     values, counts = np.unique(a, return_counts=True)
     return np.max(counts)
 
+def symmetrize(csr_mat):
+    lil_mat = csr_mat.tolil()
+    rs, cs = lil_mat.nonzero()
+    symm_lil_mat = lil_mat.copy()
+    symm_lil_mat[cs, rs] = csr_mat[rs, cs]
+    
+    return symm_lil_mat.tocsr()
 
 def compute_scipy_stats(graph_name):
     """Compute graph's summary stats using scipy. Namely:
@@ -489,11 +504,14 @@ def compute_scipy_stats(graph_name):
         save_as_scipy_csr(graph_dir, path, mat_name)
 
     csr_mat = load_csr_matrix(mat_path)
+    logging.info("\tComputing Reciprocity..")
     recip = reciprocity(csr_mat)
     print(f"{recip=}")
+    logging.info("\tComputing SCCs..")
     n_sccs, scc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
                                                        connection='strong', return_labels=True)
 
+    logging.info("\tComputing CCs..")
     n_ccs, cc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
                                                      connection='weak', return_labels=True)
 
@@ -506,10 +524,24 @@ def compute_scipy_stats(graph_name):
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
     # symmetrize directed csr
-    symm_csr_mat = csr_mat.copy()
-    rs, cs = csr_mat.nonzero()
-    symm_csr_mat[cs, rs] = csr_mat[rs, cs]
-    symm_egvals, symm_eg_vecs = get_eigenvalues(symm_csr_mat.astype('float'))
+    logging.info("\tSymmetrizing..")
+    symm_csr_mat = symmetrize(csr_mat)
+
+    # symm_csr_mat = csr_mat.copy()
+    # rs, cs = csr_mat.nonzero()
+    # symm_csr_mat[cs, rs] = csr_mat[rs, cs]
+    # test_eq = (symm_csr_mat != tmp).nnz == 0  
+    # print(f'{test_eq =}')
+
+    logging.info("\tSymmetric Eigenvalues..")
+    # symm_egvals, symm_eg_vecs = get_eigenvalues(symm_csr_mat.astype('float'))
+    symm_egvals, symm_eg_vecs = eigsh(
+        A=symm_csr_mat.astype('float'),
+        k=2,
+        which='LM'
+    )
+
+    logging.info("\tEigenvalues..")
     egvals, eg_vecs = get_eigenvalues(csr_mat.astype('float'))
 
     u, s, vh = ss.linalg.svds(csr_mat.astype('float'))
@@ -571,7 +603,10 @@ def hyperball(graph_name):
     """
     logging.info(f"Running: {command}..")
     env = os.environ.copy()
-    env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    if 'CLASSPATH' in env.keys():
+        env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
+    else:
+        env['CLASSPATH'] = ':'.join(webgraph_jars) 
     ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
     if ret.returncode == 1:  # failed
         print(f"{ret.stderr.decode()=}")
