@@ -19,8 +19,8 @@ fi
 # 2nd arg is the number of iterations per partition (default is 1)
 
 if [ $# -eq 0 ]; then
-		echo "Usage: $0 <num. partitions: length of powers of 2 list> [<number of iterations per partition>: default is 1]"
-		echo "Example: $0 4 3 : will partition all .metis graphs in the current directory in {2^1, 2^2, 2^3, 2^4} partitions, repeating 3 times per number of partition"
+	echo "Usage: $(basename $0) <num. partitions: length of powers of 2 list> [<number of iterations per partition>: default is 1]"
+	echo "Example: $(basename $0) 4 3 : will partition all .metis graphs in the current directory in {2^1, 2^2, 2^3, 2^4} partitions, repeating 3 times per number of partition"
 		exit 1
 fi
 
@@ -47,7 +47,7 @@ else
 fi
 
 # confirm that all .output and .part.* files will be deleted recursivelly in this directory
-to_be_deleted_extensions=(*.part.*)
+to_be_deleted_extensions=(*.metis.part.*)
 
 # show the first 10 files to be deleted if ther is any 
 for ext in "${to_be_deleted_extensions[@]}"
