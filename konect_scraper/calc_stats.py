@@ -21,7 +21,12 @@ from konect_scraper.util import get_n
 
 def compute_stats(graph_name):
     n = get_n(graph_name)
-    stats = {}
+    stats = {} 
+
+    # create an empty row for the graph in the features sqlite3 table
+    
+
+
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
     logging.info(f"Computing {graph_name}'s degree stats..")

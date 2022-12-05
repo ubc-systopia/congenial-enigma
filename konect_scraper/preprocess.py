@@ -5,8 +5,14 @@ from konect_scraper import config
 from konect_scraper.download_and_extract import compress
 from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_connected_component, \
     save_ground_truth_pr, set_n_m, single_val_numeric_set, save_peregrine, save_webgraph
+import networkx as nx
+import igraph as ig
+import numpy as np
+import numpy as np
 
+from scipy.linalg import eig, eigh
 
+from scipy.sparse.linalg import eigs, eigsh
 def process(graph_name, io_modes, overwrite):
 
     settings = config.settings
@@ -56,6 +62,22 @@ def process(graph_name, io_modes, overwrite):
     save_webgraph(compressed_graph_path_with_extension, graph_dir)
     logging.info(f"Preprocessing {graph_name} for peregrine..")
     save_peregrine(compressed_graph_path_with_extension, graph_dir)
+
+    # path = os.path.join(graph_dir, 'lcc.net')
+    # g = ig.Graph.Read_Edgelist(path, directed=False)
+    # G = g.to_networkx()
+     
+    # L = nx.laplacian_matrix(G)
+    # print(f'{G.number_of_nodes()=}')
+    # print(f'{G.number_of_edges()=}')
+    # print(f'{nx.algebraic_connectivity(G)=}')
+    # s = np.array_str(L.todense())
+    # evals_small, evecs_small = eigsh(L.astype('D'), 9, sigma=0, which='LM')
+    # print(f'{evals_small=}')
+
+    # networkx is annoying with their isomorphism maps
+        
+    # print(s)
 
 def main(rows, io_modes, overwrite):
     """

@@ -8,10 +8,12 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <eigen3/Eigen/SparseCore>
 #include "util.h"
 #include "omp.h"
 #include "fmt/core.h"
 #include "fmt/ranges.h"
+#include "pvector.h"
 
 bool sortByDescendingDegree(const vertex &lhs, const vertex &rhs) {
 	if (lhs.degree != rhs.degree)

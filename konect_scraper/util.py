@@ -761,12 +761,12 @@ def save_connected_component(edgelist_path, graph_name, directed):
         cc_path = 'lcc.net'
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
-    pr_path = os.path.join(graph_dir, cc_path)
+    cc_path = os.path.join(graph_dir, cc_path)
 
     args = [
         cc_exec,
         '-f', edgelist_path,
-        '-o', pr_path
+        '-o', cc_path
     ]
     if not directed:
         args += ['-s']

@@ -52,3 +52,4 @@ pyproj==3.4.0
 PyQt5-stubs==5.15.6.0
 Shapely==1.8.4
 tomli==2.0.1
+scikit-learn~=1.1.3

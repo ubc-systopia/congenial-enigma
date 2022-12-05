@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "sql.h"
-
+#include <type_traits>
 void insert_or_ignore_into_pr_expts(PRExptRow r, std::string sqlite_db_path) {
 	std::vector<std::string> col_labels{
 		"graph_name",
@@ -93,47 +93,3 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 	sqlite3_close(db);
 }
 
-
-void single_val_set_int(const std::string sqlite_db_path, std::string col_name, std::string table_name,
-                        const std::string &graph_name, int64_t val) {
-
-	sqlite3 *db;
-	sqlite3_stmt *st;
-	std::stringstream ss;
-
-	ss << "update " << table_name << " set " << col_name << " = ? where graph_name = ?" << std::endl;
-	std::string sql = ss.str();
-//	std::string sql = fmt::format("update {} set {} = ? where graph_name = ?", table_name, col_name);
-	std::cout << "Executing:  " << sql << "\n";
-	std::cout << "graph_name: " << graph_name << "\n";
-	std::cout << "val: " << val << "\n";
-	int sleep_ms = 1'000;
-		if (sqlite3_open(sqlite_db_path.c_str(), &db) == SQLITE_OK) {
-			std::cout << sqlite_db_path.c_str() << ": SQLITE_OK" <<  "\n";
-			while (true) {
-			std::cout << "Preparing statement..\n";
-			int response = sqlite3_prepare(db, sql.c_str(), -1, &st, NULL);
-			if (response == SQLITE_BUSY) {
-				std::cout << "SQLITE_BUSY; Sleeping for " <<  sleep_ms << " ms;\n";
-				sqlite3_sleep(sleep_ms);
-			} else {
-				sqlite3_bind_int64(st, 1, val);
-				sqlite3_bind_text(st, 2, graph_name.c_str(), graph_name.length(), SQLITE_TRANSIENT);
-				int step_ret = sqlite3_step(st);
-				std::cout << "sql step return: " << step_ret << "\n";
-				if (step_ret == SQLITE_DONE) { // successfully updated val
-					std::cout << "Succesfully updated statement!\n";
-					sqlite3_finalize(st);
-					sqlite3_close(db);
-					break;
-				} else {  // retry
-					std::cout << "Busy; Resetting Statement!\n";
-					sqlite3_reset(st);
-					sqlite3_sleep(sleep_ms);
-					continue;
-				}
-			}
-		}
-	}
-
-}

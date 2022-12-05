@@ -17,22 +17,32 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
+FetchContent_Declare(Spectra
+        GIT_REPOSITORY https://github.com/yixuan/spectra.git
+        GIT_TAG master
+        )
+FetchContent_MakeAvailable(Spectra)
+
 # boost <= 1.74 serialization breaks when reading binary archives of edgelists
 # todo boost != 1.58 breaks error: static assertion failed: boost::atomic<T> requires T to be a trivially copyable type for union rabbit_order::aux::atomix<rabbit_order::aux::atom>
 find_package(Boost 1.58.0 EXACT COMPONENTS system filesystem graph serialization REQUIRED)
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 SET(CMAKE_C_COMPILER icx)
-
-add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h Hilbert.cpp Hilbert.h)
-
-add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h sql.h Hilbert.cpp Hilbert.h)
 set(ParSlashburnDir "../par_slashburn")
 
+
+add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h Hilbert.cpp Hilbert.h ${ParSlashburnDir}/pvector.h)
+target_include_directories(graph_preprocess PUBLIC ${ParSlashburnDir})
+
+
+add_executable(slashburn slashburn.cpp typedefs.h order_slashburn.cpp order_slashburn.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h sql.h Hilbert.cpp Hilbert.h)
 target_include_directories(slashburn PUBLIC ${ParSlashburnDir})
 
 add_executable(cuthill_mckee cuthill_mckee.cpp typedefs.h util.cpp util.h io.cpp io.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h)
+target_include_directories(cuthill_mckee PUBLIC ${ParSlashburnDir})
 
 add_executable(pr_experiments pr_experiments.cpp pr_experiments.h typedefs.h util.cpp util.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h Hilbert.cpp Hilbert.h PageRank.cpp PageRank.h ${ParSlashburnDir}/pvector.h)
 
@@ -43,9 +53,10 @@ add_executable(sb_furhilbert sb_furhilbert.cpp sb_furhilbert.h typedefs.h util.c
 add_executable(convert_map_to_binary convert_map_to_binary.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h)
 
 add_executable(compute_ccs compute_ccs.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h ${ParSlashburnDir}/cc.h ${ParSlashburnDir}/cc.cpp)
-
 target_include_directories(compute_ccs PUBLIC ${ParSlashburnDir})
 
+add_executable(stats stats.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h ${ParSlashburnDir}/cc.h ${ParSlashburnDir}/cc.cpp stats.h)
+target_include_directories(stats PUBLIC ${ParSlashburnDir})
 
 if (Boost_FOUND)
 
@@ -67,5 +78,7 @@ if (Boost_FOUND)
 
     target_link_libraries(convert_map_to_binary ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
 
-    target_link_libraries(compute_ccs ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3)
+    target_link_libraries(compute_ccs ${Boost_LIBRARIES} Eigen3::Eigen fmt::fmt igraph::igraph oneDPL sqlite3 Spectra)
+
+    target_link_libraries(stats ${Boost_LIBRARIES} Eigen3::Eigen fmt::fmt igraph::igraph oneDPL sqlite3 Spectra)
 endif ()

@@ -383,5 +383,7 @@ wing_width_ratio_comparison.csv
 config.yaml
 
 /slurm-scripts
+/scratch
 
 konect_scraper/utilities/verify_exec_mode.py
+konect_scraper/utilities/test_numpy.py

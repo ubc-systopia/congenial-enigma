@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 	property_map<Graph, vertex_index_t>::type
 			index_map = get(vertex_index, G);
 //	std::cout << "original bandwidth: " << bandwidth(G) << std::endl;
-	single_val_set_int(sqlite_db_path, "orig_bandwidth", "statistics", graph_name,  bandwidth(G));
+	single_val_set<int64_t>(sqlite_db_path, "orig_bandwidth", "statistics", graph_name,  bandwidth(G));
 
 	std::vector<Vertex> inv_perm(num_vertices(G));
 	std::vector<size_type> perm(num_vertices(G));
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 	fmt::print("end: \n");
 
 	auto cm_runtime = duration_cast<time_unit>(t2 - t1);
-	single_val_set_int(sqlite_db_path, "cuthill_mckee", "preproc", graph_name, int(cm_runtime.count()));
+	single_val_set<int>(sqlite_db_path, "cuthill_mckee", "preproc", graph_name, int(cm_runtime.count()));
 	ul cm_id = 0;
 	ul rev_cm_id = 0;
 	std::map<ul, ul> cm_map;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 //	          << bandwidth(G, make_iterator_property_map(&perm[0], index_map, perm[0]))
 //	          << std::endl;
 
-	single_val_set_int(sqlite_db_path, "cm_bandwidth", "statistics", graph_name,  bandwidth(G, make_iterator_property_map(&perm[0], index_map, perm[0])));
+	single_val_set<int64_t>(sqlite_db_path, "cm_bandwidth", "statistics", graph_name,  bandwidth(G, make_iterator_property_map(&perm[0], index_map, perm[0])));
 
 //	write_perm
 }

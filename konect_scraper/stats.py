@@ -57,6 +57,8 @@ def algebraic_connectivity(lcc_mat):
     """
     logging.info("\tLaplacian..")
     lap = get_laplacian(lcc_mat.astype(np.int64))
+    logging.info("\tComputed Laplacian. Computing Eigenvalues..")
+
     egvals, eg_vecs = get_eigenvalues(lap.astype('float'), which='SM')
 
     return egvals[1].real
@@ -104,7 +106,7 @@ def spectral_separation(l1, l2):
 def get_eigenvalues(mat, k=2, which='LM'):
     if which == 'SM':
         try:
-            return eigs(mat, k, which='LM', sigma=0)
+            return eigs(mat, k, which='LM', sigma=0.0)
         except RuntimeError:
             return eigs(mat, k, which='SM')
     return eigs(mat, k, which=which)
@@ -552,13 +554,13 @@ def compute_scipy_stats(graph_name):
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
     f = m / ((n * (n - 1)) / 2)
-    al_conn = algebraic_connectivity(lcc_mat)
+    # al_conn = algebraic_connectivity(lcc_mat)
     stats = {
         'n_vertices': n,
         'n_edges': m,
         'op_2_norm': op_2_norm,
         'cyclic_eval': cyclic_eval,
-        'al_conn': al_conn,
+        # 'al_conn': al_conn,
         'spectral_norm': spectral_norm,
         'spectral_separation': spectral_sep,
         'fill': f,

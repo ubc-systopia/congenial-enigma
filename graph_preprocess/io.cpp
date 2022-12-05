@@ -19,7 +19,7 @@
 #include <fcntl.h>
 #include <boost/range/algorithm/copy.hpp>
 #include "rabbit_util.h"
-
+#include <eigen3/Eigen/Sparse>
 
 void write_row_to_csv(PRExptRow &r, std::string csv_path) {
 	std::ofstream outfile(csv_path, std::ios_base::app);
@@ -367,4 +367,5 @@ void read_map(std::string in_path, std::vector<ul> &mp) {
 		}
 	}
 }
+ // Eigen
 

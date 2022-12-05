@@ -165,9 +165,9 @@ int main(int argc, char *argv[]) {
 	auto end = std::chrono::high_resolution_clock::now();
 	auto slashburn_time = duration_cast<time_unit>(end - start);
 
-	single_val_set_int(sqlite_db_path, "sb_k", "statistics", graph_name, k);
-	single_val_set_int(sqlite_db_path, "sb_n_iters", "statistics", graph_name, iter);
-	single_val_set_int(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
+	single_val_set<int>(sqlite_db_path, "sb_k", "statistics", graph_name, k);
+	single_val_set<int>(sqlite_db_path, "sb_n_iters", "statistics", graph_name, iter);
+	single_val_set<int>(sqlite_db_path, "slashburn", "preproc", graph_name, int(slashburn_time.count()));
 
 	fmt::print("rank: {}\n", rank);
 	// all vertices have been assigned an index in the slashburn ordering
