@@ -30,7 +30,8 @@ void write_row_to_csv(PRExptRow &r, std::string csv_path) {
 				r.num_iters			    << "," <<
 				r.vertex_order.c_str()	<< "," <<
 				r.edge_order.c_str()	<< "," <<
-				r.runtime << "\n";
+				r.runtime	<< "," <<
+				r.valid << "\n";
 
 	outfile.close();
 }

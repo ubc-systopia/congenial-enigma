@@ -50,19 +50,21 @@ def main(rows):
     conn = connect()
     # df = pd.concat([df, pd.DataFrame([d])], ignore_index=True)
 
-    feats_df = pd.DataFrame(columns=column_names.features_col_names.keys())
     for _, row in enumerate(rows):
+        feats_df = pd.DataFrame(columns=column_names.features_col_names.keys())
+
         graph_name = row['graph_name']
         d = compute_stats(graph_name)
         d['graph_name'] = graph_name
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
-        
-    db_path = config.settings['sqlite3']['sqlite3_db_path']
-    timeout = config.settings['sqlite3']['timeout']
-    conn = sqlite3.connect(db_path, timeout=timeout)
-    write_to_sqlite3(feats_df, 'features', conn)
-    append_df_to_table(feats_df, 'features')
+    
+    
+        db_path = config.settings['sqlite3']['sqlite3_db_path']
+        timeout = config.settings['sqlite3']['timeout']
+        conn = sqlite3.connect(db_path, timeout=timeout)
+        write_to_sqlite3(feats_df, 'features', conn)
+    # append_df_to_table(feats_df, 'features')
     # print(f"{feats_df=}")
     # feats_df.to_csv("tmp_feats.csv")
     return

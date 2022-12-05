@@ -118,7 +118,8 @@ int main(int argc, char *argv[]) {
 	        "num_iters," <<
 	        "vertex_order," <<
 	        "edge_order," <<
-	        "runtime\n";
+	        "runtime," <<
+	        "valid\n";
 	outfile.close();
 
 	// read binary edge list
@@ -193,7 +194,7 @@ int main(int argc, char *argv[]) {
 			                           constexpr double epsilon = 1e-4;
 			                           return std::fabs(value1 - value2) < epsilon;
 		                           });
-		assert(valid_pr);
+		// assert(valid_pr);
 //		fmt::print("vorder_str, eorder_str: {}, {}\n", vorder_str, eorder_str);
 //		fmt::print("valid_pr: {}\n", valid_pr);
 
@@ -212,6 +213,7 @@ int main(int argc, char *argv[]) {
 			vorder_str,
 			eorder_str,
 			pr.runtime,
+			valid_pr
 		};
 		write_row_to_csv(r, results_path);
 		// insert_or_ignore_into_pr_expts(r, sqlite_db_path);
