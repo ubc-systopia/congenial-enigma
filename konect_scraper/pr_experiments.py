@@ -54,10 +54,10 @@ def run_pr_expt(graph_name, order_str, edge_order_str):
     res = subprocess.check_output(args)
 
     # after execution, read the results csv and append to sqlite3 table
-    # append_df_to_table(
-    #     pd.read_csv(results_path),
-    #     'pr_expts'
-    # )
+    append_df_to_table(
+        pd.read_csv(results_path),
+        'pr_expts'
+    )
     # appending results of each experiment may fail due to locking of sqlite3
     # table instead, after completion of _all_ pr-expts submitted using sbatch
     # arr call:

@@ -31,6 +31,7 @@ struct PRExptRow {
 	std::string vertex_order;
 	std::string edge_order;
 	uint64_t runtime;
+	bool valid;
 };
 
 enum Corner {

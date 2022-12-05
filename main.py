@@ -74,7 +74,9 @@ def main(args):
     rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
-
+    
+    rows = sorted(rows, key=lambda r: get_pr_struct_size(r['graph_name']), reverse=False)
+    
     # print heading
     print(f"{'Index' : <5} {'Graph Name' : <40}"
           f"{'|V|': <40}"
@@ -89,8 +91,10 @@ def main(args):
         print(f"{i : <5} {row['graph_name'] : <40}"
               f"{get_n_vertices(row['graph_name']): <40}"
               f"{get_n_edges(row['graph_name']): <40}"
+              f"{get_pr_struct_size(row['graph_name']): <40}"
               f"{get_category(row['graph_name']): <40}"
               f"{get_directed(row['graph_name']): <40}")
+    # return 
     # return
     match args.mode:
         case 'download':
@@ -105,7 +109,7 @@ def main(args):
             if orders:
                 if orders == ['all']:
                     orders = config.settings['orderings'].keys()
-
+                logging.info(orders)
                 # verify that the requested ordering to compute are supported
                 assert valid_orderings(orders)
                 reorder.main(rows, orders, overwrite)

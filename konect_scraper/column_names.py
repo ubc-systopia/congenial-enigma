@@ -37,7 +37,8 @@ def init():
         "num_iters": 'INTEGER',
         "vertex_order": 'TEXT',
         "edge_order": 'TEXT',
-        "runtime": 'BIGINT'
+        "runtime": 'BIGINT',
+        "valid": 'INTEGER',
     }
 
     konect_col_names = {
@@ -259,6 +260,7 @@ def init():
         'cycle_4': 'BIGINT',
         'chordal_cycle_4': 'BIGINT',
         'clique_4': 'BIGINT',
+        'clique_5': 'BIGINT',
         'n_sccs': 'BIGINT',
         'n_ccs': 'BIGINT',
         'lscc_size': 'BIGINT',

@@ -587,7 +587,7 @@ def hyperball(graph_name):
         else:  
             heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = 8
+        heap_size = 100
     print(f"{heap_size=}")
     command = f"""
         java \
@@ -731,7 +731,9 @@ def compute_motif_stats(graph_name):
     n_threads = settings['n_threads']
     n = get_n(graph_name)
     stats = {}
-    for k in [3, 4]:
+    # k_motifs = [3, 4]
+    k_motifs = [3]
+    for k in k_motifs:
         args = [prgrn_count_executable, p_data, f'{k}-motifs', str(n_threads)]
 
         print(f"Executing: " + ' '.join(args))
@@ -751,7 +753,43 @@ def compute_motif_stats(graph_name):
     print(res.decode('utf-8'))
     os.remove(tmp_pattern)
     stats['global_clustering_coefficient'] = (3 * stats['triangle']) / stats['edge_induced_wedge']
+
+    clique_4_lines = [
+        "1 2",
+        "1 3",
+        "1 4",
+        "2 3",
+        "2 4",
+        "3 4",
+    ]
+    clique_5_lines = [
+        "1 2",
+        "1 3",
+        "1 4",
+        "1 5",
+        "2 3",
+        "2 4",
+        "2 5",
+        "3 4",
+        "3 5",
+        "4 5",
+    ]
+    def count_k_cliques(k, lines,):
+        logging.info(f"Counting {k}-cliques.. in {graph_name}")
+        tmp_pattern = './pattern'
+        with open(tmp_pattern, 'w') as f:
+            for l in lines:
+                f.write(f'{l}\n');
+        args = [prgrn_count_executable, p_data, tmp_pattern, str(n_threads)]
+        res = subprocess.check_output(args)
+        stats.update(parse_motifs(k, res.decode('utf-8'), n))
+        print(res.decode('utf-8'))
+        os.remove(tmp_pattern)
+        return 
+    count_k_cliques(4, clique_4_lines)
+    # count_k_cliques(5, clique_5_lines)
     return stats
+
 
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
