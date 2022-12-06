@@ -217,6 +217,15 @@ def parse_meta_table(table, df, graph_name):
 def aggregate_feature_labels():
     return
 
+def update_to_sqlite3(stats, table_name, conn):
+    sql = f'UPDATE {table_name} SET '
+
+    sql += ', '.join([f'{k} = ?' for k in stats.keys() if k != 'graph_name'])
+    sql += ' WHERE graph_name = ?'
+    vals = stats.values()
+    cur = conn.cursor()
+    cur.execute(sql, list(stats.values()))
+    conn.commit()
 
 def write_to_sqlite3(df, table_name, conn):
     columns_str = ','.join(df.columns)
