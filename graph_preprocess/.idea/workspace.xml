@@ -79,7 +79,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="CMake Application.compute_ccs">
+  <component name="RunManager" selected="CMake Application.stats">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
@@ -190,7 +190,7 @@
       <workItem from="1669746428752" duration="8968000" />
       <workItem from="1669755604246" duration="31394000" />
       <workItem from="1670263604105" duration="20417000" />
-      <workItem from="1670354382223" duration="4785000" />
+      <workItem from="1670354382223" duration="6667000" />
     </task>
     <servers />
   </component>
