@@ -24,11 +24,10 @@ def compute_stats(graph_name):
     stats = {} 
 
     # create an empty row for the graph in the features sqlite3 table
-    
-
 
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
+    return 
     logging.info(f"Computing {graph_name}'s degree stats..")
     stats.update(compute_deg_stats(graph_name))
     logging.info(f"Computing {graph_name}'s Powerlaw stats..")
@@ -63,8 +62,6 @@ def main(rows):
         d['graph_name'] = graph_name
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
-    
-    
         db_path = config.settings['sqlite3']['sqlite3_db_path']
         timeout = config.settings['sqlite3']['timeout']
         conn = sqlite3.connect(db_path, timeout=timeout)

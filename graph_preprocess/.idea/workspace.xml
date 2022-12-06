@@ -29,28 +29,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/stats.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/stats.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dbg" beforeDir="false" afterPath="$PROJECT_DIR$/../dbg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compute_ccs.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/compute_ccs.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cuthill_mckee.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/cuthill_mckee.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/slashburn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/slashburn.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/sql.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql.h" beforeDir="false" afterPath="$PROJECT_DIR$/sql.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/util.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../install_deps/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../install_deps/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/preprocess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/stats.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stats.h" beforeDir="false" afterPath="$PROJECT_DIR$/stats.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../rabbit_order" beforeDir="false" afterPath="$PROJECT_DIR$/../rabbit_order" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +125,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 241 -g /media/atrostan/patterson_backup/data/graphs/moreno_innovation" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
+    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 190048 -g /media/atrostan/patterson_backup/data/graphs/wikipedia_link_lv" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -207,7 +189,7 @@
       <workItem from="1669057941711" duration="8653000" />
       <workItem from="1669746428752" duration="8968000" />
       <workItem from="1669755604246" duration="31394000" />
-      <workItem from="1670263604105" duration="13753000" />
+      <workItem from="1670263604105" duration="18096000" />
     </task>
     <servers />
   </component>

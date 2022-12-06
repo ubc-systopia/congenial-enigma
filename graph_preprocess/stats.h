@@ -66,8 +66,9 @@ void solve_shift_invert(Eigen::SparseMatrix<T> &mat, Spectra::SortRule eig_sort_
 
 template<typename T>
 double solve_directed(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
+	Eigen::initParallel();
 	Spectra::SparseGenMatProd<T> op(A);
-	Spectra::GenEigsSolver<Spectra::SparseGenMatProd<T>> eigs(op, n_eig_vals, n_eig_vals * 3);
+	Spectra::GenEigsSolver<Spectra::SparseGenMatProd<T>> eigs(op, n_eig_vals, n_eig_vals * 10);
 	eigs.init();
 	eigs.compute(Spectra::SortRule::LargestMagn);
 	if (eigs.info() == Spectra::CompInfo::Successful) {
@@ -80,8 +81,10 @@ double solve_directed(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
 
 template<typename T>
 std::pair<double, double> solve_symmetric(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
+	Eigen::initParallel();
+
 	Spectra::SparseSymMatProd<T> op(A);
-	Spectra::SymEigsSolver<Spectra::SparseSymMatProd<T>> eigs(op, n_eig_vals, n_eig_vals * 3);
+	Spectra::SymEigsSolver<Spectra::SparseSymMatProd<T>> eigs(op, n_eig_vals, n_eig_vals * 10);
 	eigs.init();
 	eigs.compute(Spectra::SortRule::LargestMagn);
 	if (eigs.info() == Spectra::CompInfo::Successful) {
@@ -94,10 +97,44 @@ std::pair<double, double> solve_symmetric(Eigen::SparseMatrix<T> &A, int n_eig_v
 
 template<typename T>
 double compute_svd(Eigen::SparseMatrix<T> &A, int n_vals) {
+	Eigen::initParallel();
+
 	Spectra::PartialSVDSolver<Eigen::SparseMatrix<T>> svds(A, n_vals, n_vals * 3);
 	int nconv = svds.compute();
 	auto svals = svds.singular_values();
 	return svals[0];
+}
+template<typename T, template<class> class C>
+void populate_mat_from_edgelist(Eigen::SparseMatrix<T> &A, std::string in_path, uint32_t n, bool laplacian, T mat_val) {
+	fmt::print("in_path: {}\n", in_path);
+	C<std::pair<uint32_t, uint32_t>> edges;
+	read_binary_container(in_path, edges);
+	fmt::print("read_binary_container.\n");
+	typedef Eigen::Triplet<T> Triplet;
+	pvector<uint32_t> deg(n, 0);
+	uint64_t m = edges.size();
+	uint64_t n_entries_in_mat = laplacian ? n + m : m;
+	pvector<Triplet> triples(n_entries_in_mat);
+
+#pragma omp parallel for schedule(static)
+	for (uint64_t i = 0; i < m; ++i) {
+		uint32_t src = edges[i].first;
+		uint32_t dest = edges[i].second;
+		triples[i] = Triplet(src, dest, mat_val);
+	}
+	fmt::print("populated triples with edges.\n");
+
+	if (laplacian) {
+		// add 1 to the diagonal (to store the degree of the vertex later)
+#pragma omp parallel for schedule(static)
+		for (uint32_t i = 0; i < n; ++i) {
+			triples[i + m] = Triplet(i, i, 1);
+		}
+	}
+
+	fmt::print("Creating Sparse Mat from triples..\n");
+	A.setFromTriplets(triples.begin(), triples.end());
+
 }
 
 /**
@@ -113,36 +150,18 @@ double compute_svd(Eigen::SparseMatrix<T> &A, int n_vals) {
 template<class T, template<class> class C>
 void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint32_t n, T mat_val,
 											 std::string sqlite3_db_path) {
-	fmt::print("in_path: {}\n", in_path);
-	C<std::pair<uint32_t, uint32_t>> edges;
-	read_binary_container(in_path, edges);
-	typedef Eigen::Triplet<T> Triplet;
-	pvector<uint32_t> deg(n, 0);
-	uint64_t m = edges.size();
-	uint64_t n_entries_in_mat = laplacian ? n + m : m;
-
-	pvector<Triplet> triples(n_entries_in_mat);
-
-#pragma omp parallel for schedule(static)
-	for (uint64_t i = 0; i < m; ++i) {
-		uint32_t src = edges[i].first;
-		uint32_t dest = edges[i].second;
-		triples[i] = Triplet(src, dest, mat_val);
-	}
-
-	if (laplacian) {
-		// add 1 to the diagonal (to store the degree of the vertex later)
-#pragma omp parallel for schedule(static)
-		for (uint32_t i = 0; i < n; ++i) {
-			triples[i + m] = Triplet(i, i, 1);
-		}
-	}
 
 
 	Eigen::SparseMatrix<T> A(n, n);
-	A.setFromTriplets(triples.begin(), triples.end());
+	populate_mat_from_edgelist<T, C>(A, in_path, n, laplacian, mat_val);
+	fmt::print("Created.\n");
+
+	fmt::print("Solving directed..\n");
 	double cyclic_eval = solve_directed(A, 1);
+	fmt::print("Solving SVD..\n");
 	double op_2_norm = compute_svd(A, 1);
+
+	fmt::print("Symmetrizing..\n");
 	// symmetrize the adjacencies
 	A += Eigen::SparseMatrix<T>(A.transpose());
 #pragma omp parallel for schedule(dynamic)
@@ -150,7 +169,10 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
 			if (it.valueRef() == 2) {
 				it.valueRef() = 1;
-			};
+			}
+
+	fmt::print("Symmetrized. Solving Symmetric..\n");
+
 	std::pair<double, double> p = solve_symmetric(A, 2);
 	double spec_norm = p.first;
 	double spec_sep = p.second;
