@@ -125,10 +125,18 @@ def main(args):
     print(" ".join(args))
     res = subprocess.check_output(args)
     print(res.decode('utf-8'))
+    graph_preprocess_targets = [
+        'graph_preprocess', 
+        'slashburn', 
+        'cuthill_mckee',
+        'pr_experiments', 
+        'convert_map_to_binary', 
+        'compute_ccs', 
+        'stats'
+    ]
 
     # compile
-    for target in ['graph_preprocess', 'slashburn', 'cuthill_mckee',
-                   'pr_experiments', 'convert_map_to_binary', 'compute_ccs', ]:
+    for target in graph_preprocess_targets:
         args = [
             cmake_executable,
             "--build", cmake_build_dir,

@@ -7,7 +7,7 @@ import networkx as nx
 import pandas as pd
 from konect_scraper import config, column_names
 from konect_scraper.io import find
-from konect_scraper.sql import connect, append_df_to_table
+from konect_scraper.sql import connect, append_df_to_table, insert_row_if_not_exists
 from konect_scraper.stats import compute_deg_stats, \
     compute_plfit_stats, compute_scipy_stats, compute_radii, percentile_effective_diameter, compute_distance_stats, \
     hyperball, compute_motif_stats
@@ -15,7 +15,7 @@ from konect_scraper.scrape_konect_stats import write_to_sqlite3
 import numpy as np
 import sys
 from scipy.special import comb
-
+import os
 from konect_scraper.util import get_n
 
 
@@ -24,11 +24,51 @@ def compute_stats(graph_name):
     stats = {} 
 
     # create an empty row for the graph in the features sqlite3 table
-    
+    insert_row_if_not_exists(graph_name, 'features')
 
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    graphs_dir = config.settings['graphs_dir']
 
+    # cpp: compute connected components stats and write degree arrays if not 
+    # exist
+    logging.info(f"Computing {graph_name}'s cc stats and writing deg arrays..")
+
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    cc_exec = config.settings['compute_ccs_executable']
+    args = [
+        cc_exec, 
+        '-f', os.path.join(graph_dir, "comp.net"),
+        '-o', os.path.join(graph_dir, "lcc.net"),
+        '-s', 
+        '-d', db_path
+    ]
+    logging.info(" ".join(args))
+    res = subprocess.check_output(args)
+    logging.info(res.decode('utf-8'))
+
+    args = [
+        cc_exec, 
+        '-f', os.path.join(graph_dir, "comp.net"),
+        '-o', os.path.join(graph_dir, "lscc.net"),
+        '-d', db_path
+    ]
+    logging.info(" ".join(args))
+    res = subprocess.check_output(args)
+    logging.info(res.decode('utf-8'))
+    # cpp: eigen stats
+
+    logging.info(f"Computing {graph_name}'s eigen stats..")
+    stats_executable = config.settings['stats_executable']
+    args = [
+        stats_executable, '-n', str(n), '-g', graph_dir,
+    ]
+    logging.info(" ".join(args))
+    res = subprocess.check_output(args)
+    logging.info(res.decode('utf-8'))
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
+    return 
+
     logging.info(f"Computing {graph_name}'s degree stats..")
     stats.update(compute_deg_stats(graph_name))
     logging.info(f"Computing {graph_name}'s Powerlaw stats..")
@@ -60,10 +100,10 @@ def main(rows):
 
         graph_name = row['graph_name']
         d = compute_stats(graph_name)
+        return 
         d['graph_name'] = graph_name
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
-    
     
         db_path = config.settings['sqlite3']['sqlite3_db_path']
         timeout = config.settings['sqlite3']['timeout']

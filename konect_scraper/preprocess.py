@@ -54,10 +54,10 @@ def process(graph_name, io_modes, overwrite):
     save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
     # save the edgelists of the graph's Largest Strongly Connected Component
     # and Largest Connected Component
-    logging.info(f"Computing {graph_name}'s LSCC")
-    save_connected_component(compressed_graph_path_with_extension, graph_name, directed=True)
-    logging.info(f"Computing {graph_name}'s LCC")
-    save_connected_component(compressed_graph_path_with_extension, graph_name, directed=False)
+    # logging.info(f"Computing {graph_name}'s LSCC")
+    # save_connected_component(compressed_graph_path_with_extension, graph_name, directed=True)
+    # logging.info(f"Computing {graph_name}'s LCC")
+    # save_connected_component(compressed_graph_path_with_extension, graph_name, directed=False)
     logging.info(f"Preprocessing {graph_name} for webgraph..")
     save_webgraph(compressed_graph_path_with_extension, graph_dir)
     logging.info(f"Preprocessing {graph_name} for peregrine..")

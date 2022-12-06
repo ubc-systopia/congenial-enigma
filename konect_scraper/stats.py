@@ -569,9 +569,12 @@ def compute_scipy_stats(graph_name):
         'lscc_size': lscc_size,
         'lcc_size': lcc_size,
     }
+    print(f'{stats=}')
 
     return stats
 
+def compute_eigen_stats():
+    return 
 
 def hyperball(graph_name):
     settings = config.settings
