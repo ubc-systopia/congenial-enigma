@@ -138,7 +138,9 @@ namespace Eigen{
 
 			typename SparseMatrix::Index sizeIndexS = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::StorageIndex));
 			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar      ));
-			out.write(reinterpret_cast<const char*>(matrix.valuePtr()),       sizeScalar * nnzs);
+
+			// value is redundant - don't care about weights of edges
+//			out.write(reinterpret_cast<const char*>(matrix.valuePtr()),       sizeScalar * nnzs);
 			out.write(reinterpret_cast<const char*>(matrix.outerIndexPtr()),  sizeIndexS  * outS);
 			out.write(reinterpret_cast<const char*>(matrix.innerIndexPtr()),  sizeIndexS  * nnzs);
 

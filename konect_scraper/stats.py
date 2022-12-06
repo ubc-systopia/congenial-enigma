@@ -11,6 +11,7 @@ import scipy.sparse as ss
 import pandas as pd
 from scipy import stats
 from konect_scraper import config
+from konect_scraper.io import load_mat
 from konect_scraper.sql import is_bipartite, single_val_get
 from konect_scraper.util import get_n_m, get_directed, get_n, get_m, get_webgraph_jars
 from scipy.sparse.linalg import eigs
@@ -511,15 +512,18 @@ def compute_scipy_stats(graph_name):
         # lcc_path, 
         # lscc_path
         ]
-    for mat_name, path in zip(mat_names, edge_list_paths):
-        if not os.path.isfile(mat_path):
-            logging.info(f"Saving {mat_path} as scipy csr..")
-            save_as_scipy_csr(graph_dir, path, mat_name)
-        else:
-            logging.info(f"{mat_path} already exists.")
+    # for mat_name, path in zip(mat_names, edge_list_paths):
+    #     if not os.path.isfile(mat_path):
+    #         logging.info(f"Saving {mat_path} as scipy csr..")
+    #         save_as_scipy_csr(graph_dir, path, mat_name)
+    #     else:
+    #         logging.info(f"{mat_path} already exists.")
+    
+    mat_path = os.path.join(graph_dir, f'mat.bin')
 
-
-    csr_mat = load_csr_matrix(mat_path)
+    # csr_mat = load_csr_matrix(mat_path)
+    logging.info(f"Reading CSR from {mat_path}..")
+    csr_mat = load_mat(mat_path)
     # logging.info("\tComputing Reciprocity..")
     # recip = reciprocity(csr_mat)
     # print(f"{recip=}")

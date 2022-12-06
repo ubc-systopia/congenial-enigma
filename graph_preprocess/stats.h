@@ -29,6 +29,7 @@
 
 #include <Spectra/contrib/PartialSVDSolver.h>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 
 #ifndef GRAPH_PREPROCESS_STATS_H
 #define GRAPH_PREPROCESS_STATS_H
@@ -168,21 +169,30 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 			}
 		}
 
+	// save adj list as binary for future numpy read
+	boost::filesystem::path pth(in_path);
+	boost::filesystem::path dir = pth.parent_path();
+	std::string graph_name = dir.filename().string();
+	std::string mat_path = fmt::format("{}/{}", dir.string(), "mat.bin");
+
+	if (!boost::filesystem::exists(mat_path)){ // write csr only if not exists already
+		Eigen::write_binary_sparse<Eigen::SparseMatrix<T>>(mat_path, A);
+		// return;
+	}
+
 
 	fmt::print("recip_edges: {}\n", recip_edges);
 	fmt::print("recip_edges / m: {}\n", A.nonZeros());
 
 	double reciprocity = double(recip_edges) / A.nonZeros();
-	boost::filesystem::path pth(in_path);
-	boost::filesystem::path dir = pth.parent_path();
 
-	std::string graph_name = dir.filename().string();
 	fmt::print("graph_name: {}\n", graph_name);
 	fmt::print("sqlite3_db_path: {}\n", sqlite3_db_path);
 	fmt::print("reciprocity: {}\n", reciprocity);
 	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
 	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, A.nonZeros());
 	single_val_set<double>(sqlite3_db_path, "reciprocity", "features", graph_name, reciprocity);
+
 	return;
 
 	fmt::print("Solving directed..\n");

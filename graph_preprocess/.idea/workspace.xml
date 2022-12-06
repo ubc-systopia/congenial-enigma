@@ -30,7 +30,8 @@
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compute_ccs.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/compute_ccs.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stats.h" beforeDir="false" afterPath="$PROJECT_DIR$/stats.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -78,7 +79,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="CMake Application.stats">
+  <component name="RunManager" selected="CMake Application.compute_ccs">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
@@ -124,7 +125,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 190048 -g /media/atrostan/patterson_backup/data/graphs/wikipedia_link_lv" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
+    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 22 -g /media/atrostan/patterson_backup/data/graphs/moreno_taro -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -189,7 +190,7 @@
       <workItem from="1669746428752" duration="8968000" />
       <workItem from="1669755604246" duration="31394000" />
       <workItem from="1670263604105" duration="20417000" />
-      <workItem from="1670354382223" duration="485000" />
+      <workItem from="1670354382223" duration="4785000" />
     </task>
     <servers />
   </component>

@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from konect_scraper import config
 from konect_scraper.download_and_extract import get_n_comments_at_top_of_file
+import struct
+import scipy.sparse as ss
 
 
 def __init__(self):
@@ -93,3 +95,23 @@ def find(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)
+
+
+def load_mat(filename):
+    with open(filename, 'rb') as f:
+        rows = struct.unpack('q', f.read(8))[0]
+        cols = struct.unpack('q', f.read(8))[0]
+        nnzs = struct.unpack('q', f.read(8))[0]
+        outS = struct.unpack('q', f.read(8))[0]
+        innS = struct.unpack('q', f.read(8))[0]
+        outerIndexPtr = np.fromfile(
+            f, dtype=np.uint32, count=outS).reshape(outS)
+        innerIndexPtr = np.fromfile(f, dtype=np.uint32).reshape(nnzs)
+
+        return ss.csr_matrix((
+            np.ones(nnzs).astype(np.float64), # 1s as data seems redundant
+            innerIndexPtr,
+            outerIndexPtr,
+        ))
+        # data = np.fromfile(f, dtype=np.float64).reshape((rows, cols))
+    # return data

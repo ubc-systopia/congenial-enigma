@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
 from konect_scraper import config, column_names
-from konect_scraper.io import find
+from konect_scraper.io import find, load_mat
 from konect_scraper.sql import connect, append_df_to_table, insert_row_if_not_exists
 from konect_scraper.stats import compute_deg_stats, \
     compute_plfit_stats, compute_scipy_stats, compute_radii, percentile_effective_diameter, compute_distance_stats, \
@@ -28,10 +28,10 @@ def compute_stats(graph_name):
 
     db_path = config.settings['sqlite3']['sqlite3_db_path']
     graphs_dir = config.settings['graphs_dir']
-
+    # load_mat('/media/atrostan/patterson_backup/data/graphs/moreno_taro/mat.bin')
     # cpp: compute connected components stats and write degree arrays if not 
     # exist
-    logging.info(f"Computing {graph_name}'s cc stats and writing deg arrays..")
+    logging.info(f"Computing {graph_name}'s cc stats, deg arrays, and csr..")
 
     graph_dir = os.path.join(graphs_dir, graph_name)
     cc_exec = config.settings['compute_ccs_executable']
@@ -65,7 +65,7 @@ def compute_stats(graph_name):
 
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
-
+    return 
     logging.info(f"Computing {graph_name}'s degree stats..")
     stats.update(compute_deg_stats(graph_name))
 
@@ -95,6 +95,7 @@ def main(rows):
 
         graph_name = row['graph_name']
         d = compute_stats(graph_name)
+        return 
         # return 
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
