@@ -134,7 +134,7 @@ def main(args):
         'compute_ccs', 
         'stats'
     ]
-
+    
     # compile
     for target in graph_preprocess_targets:
         args = [

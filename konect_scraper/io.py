@@ -105,13 +105,18 @@ def load_mat(filename):
         outS = struct.unpack('q', f.read(8))[0]
         innS = struct.unpack('q', f.read(8))[0]
         outerIndexPtr = np.fromfile(
-            f, dtype=np.uint32, count=outS).reshape(outS)
-        innerIndexPtr = np.fromfile(f, dtype=np.uint32).reshape(nnzs)
-
+            f, dtype=np.int32, count=outS).reshape(outS)
+        innerIndexPtr = np.fromfile(f, dtype=np.int32, count=nnzs).reshape(nnzs)
+        logging.info(f"{rows} {cols} {nnzs} {outS} {innS}")
+        print(f'{outerIndexPtr=}')
+        print(f'{innerIndexPtr=}')
+        assert(rows == cols)
         return ss.csr_matrix((
             np.ones(nnzs).astype(np.float64), # 1s as data seems redundant
             innerIndexPtr,
             outerIndexPtr,
-        ))
+        ), 
+        # shape=(rows, cols)
+        )
         # data = np.fromfile(f, dtype=np.float64).reshape((rows, cols))
     # return data
