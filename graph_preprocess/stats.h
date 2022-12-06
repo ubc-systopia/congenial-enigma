@@ -180,9 +180,9 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	fmt::print("graph_name: {}\n", graph_name);
 	fmt::print("sqlite3_db_path: {}\n", sqlite3_db_path);
 	fmt::print("reciprocity: {}\n", reciprocity);
-//	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
-//	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, A.nonZeros());
-//	single_val_set<double>(sqlite3_db_path, "reciprocity", "features", graph_name, reciprocity);
+	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
+	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, A.nonZeros());
+	single_val_set<double>(sqlite3_db_path, "reciprocity", "features", graph_name, reciprocity);
 	return;
 
 	fmt::print("Solving directed..\n");

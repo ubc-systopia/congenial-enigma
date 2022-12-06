@@ -244,8 +244,8 @@ void scc_igraph(std::string graph_path, std::string out_path, uint32_t n, uint64
 	igraph_vector_int_destroy(&component_sizes);
 	igraph_destroy(&g);
 	// write size of lscc and number of scc to db
-//	single_val_set<uint32_t>(db_filename, "n_sccs", "features", graph_name, num_comps);
-//	single_val_set<uint32_t>(db_filename, "lscc_size", "features", graph_name, max_size);
+	single_val_set<uint32_t>(db_filename, "n_sccs", "features", graph_name, num_comps);
+	single_val_set<uint32_t>(db_filename, "lscc_size", "features", graph_name, max_size);
 }
 
 std::pair<uint32_t, uint64_t> write_directed_degs(CLApp &cli) {
@@ -297,7 +297,7 @@ int main(int argc, char *argv[]) {
 	// write number of ccs, and size of gcc to db
 
 //	write_cc(comp, gcc_id, g, cli.out_filename(), false);
-//	single_val_set<uint32_t>(cli.db_filename(), "n_ccs", "features", graph_name, unique_cids.size());
-//	single_val_set<uint32_t>(cli.db_filename(), "lcc_size", "features", graph_name, gcc_size);
+	single_val_set<uint32_t>(cli.db_filename(), "n_ccs", "features", graph_name, unique_cids.size());
+	single_val_set<uint32_t>(cli.db_filename(), "lcc_size", "features", graph_name, gcc_size);
 
 }
