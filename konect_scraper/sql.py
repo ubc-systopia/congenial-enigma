@@ -240,7 +240,6 @@ def insert_row_if_not_exists(graph_name, table):
     cursor = conn.cursor()
 
     sql = f"insert or ignore into {table}(graph_name) VALUES(?)"
-    print(f'{sql=} {graph_name}')
     res = cursor.execute(sql, [graph_name])
     r = conn.commit()
     

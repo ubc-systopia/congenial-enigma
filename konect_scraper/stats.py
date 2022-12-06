@@ -494,8 +494,8 @@ def compute_scipy_stats(graph_name):
     lcc_path = os.path.join(graph_dir, f'lcc.{edgelist_file_suffix}')
     lscc_path = os.path.join(graph_dir, f'lscc.{edgelist_file_suffix}')
 
-    logging.info("Reading edgelist..")
-    nx_graph = nx.read_edgelist(graph_path, create_using=nx.DiGraph)
+    # logging.info("Reading edgelist..")
+    # nx_graph = nx.read_edgelist(graph_path, create_using=nx.DiGraph)
     mat_path = os.path.join(
         graph_dir, f'{compressed_fname}.{scipy_csr_suffix}')
     lcc_mat_path = os.path.join(graph_dir, f'lcc.{scipy_csr_suffix}')
@@ -513,7 +513,7 @@ def compute_scipy_stats(graph_name):
         ]
     for mat_name, path in zip(mat_names, edge_list_paths):
         if not os.path.isfile(mat_path):
-            logging.info(f"Saving {mat_path}.")
+            logging.info(f"Saving {mat_path} as scipy csr..")
             save_as_scipy_csr(graph_dir, path, mat_name)
         else:
             logging.info(f"{mat_path} already exists.")
@@ -583,7 +583,6 @@ def compute_scipy_stats(graph_name):
         # 'lscc_size': lscc_size,
         # 'lcc_size': lcc_size,
     }
-    print(f'{stats=}')
 
     return stats
 
