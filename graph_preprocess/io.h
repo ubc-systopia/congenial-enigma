@@ -139,6 +139,16 @@ namespace Eigen{
 			typename SparseMatrix::Index sizeIndexS = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::StorageIndex));
 			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar      ));
 
+//			auto p1 = matrix.outerIndexPtr();
+//			for (uint32_t i = 0; i < outS; ++i) {
+//				fmt::print("outerIndexPtr.: {}\n", *p1++);
+//			}
+////			fmt::print("matrix: {}\n", );
+//			auto p2 = matrix.innerIndexPtr();
+//			for (uint32_t i = 0; i < nnzs; ++i) {
+//				fmt::print("innerIndexPtr.: {}\n", *p2++);
+//			}
+
 			// value is redundant - don't care about weights of edges
 //			out.write(reinterpret_cast<const char*>(matrix.valuePtr()),       sizeScalar * nnzs);
 			out.write(reinterpret_cast<const char*>(matrix.outerIndexPtr()),  sizeIndexS  * outS);

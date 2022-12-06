@@ -46,7 +46,7 @@ template<
 	class T,
 	template<class> class SolveOP,
 	template<class> class Solver>
-void solve_shift_invert(Eigen::SparseMatrix<T> &mat, Spectra::SortRule eig_sort_rule, double sigma) {
+void solve_shift_invert(Eigen::SparseMatrix<T, Eigen::RowMajor>&mat, Spectra::SortRule eig_sort_rule, double sigma) {
 	SolveOP<T> op(mat);
 	Solver<SolveOP<T>> eigs(op, 6, 10, sigma);
 	eigs.init();
@@ -66,7 +66,7 @@ void solve_shift_invert(Eigen::SparseMatrix<T> &mat, Spectra::SortRule eig_sort_
 }
 
 template<typename T>
-double solve_directed(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
+double solve_directed(Eigen::SparseMatrix<T, Eigen::RowMajor>&A, int n_eig_vals) {
 	Eigen::initParallel();
 	Spectra::SparseGenMatProd<T> op(A);
 
@@ -82,7 +82,7 @@ double solve_directed(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
 }
 
 template<typename T>
-std::pair<double, double> solve_symmetric(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
+std::pair<double, double> solve_symmetric(Eigen::SparseMatrix<T, Eigen::RowMajor>&A, int n_eig_vals) {
 	Eigen::initParallel();
 
 	Spectra::SparseSymMatProd<T> op(A);
@@ -98,16 +98,16 @@ std::pair<double, double> solve_symmetric(Eigen::SparseMatrix<T> &A, int n_eig_v
 }
 
 template<typename T>
-double compute_svd(Eigen::SparseMatrix<T> &A, int n_vals) {
+double compute_svd(Eigen::SparseMatrix<T, Eigen::RowMajor> &A, int n_vals) {
 	Eigen::initParallel();
 
-	Spectra::PartialSVDSolver<Eigen::SparseMatrix<T>> svds(A, n_vals, n_vals * 3);
+	Spectra::PartialSVDSolver<Eigen::SparseMatrix<T, Eigen::RowMajor>> svds(A, n_vals, n_vals * 3);
 	int nconv = svds.compute();
 	auto svals = svds.singular_values();
 	return svals[0];
 }
 template<typename T, template<class> class C>
-void populate_mat_from_edgelist(Eigen::SparseMatrix<T> &A, std::string in_path, uint32_t n, bool laplacian, T mat_val) {
+void populate_mat_from_edgelist(Eigen::SparseMatrix<T, Eigen::RowMajor> &A, std::string in_path, uint32_t n, bool laplacian, T mat_val) {
 	fmt::print("in_path: {}\n", in_path);
 	C<std::pair<uint32_t, uint32_t>> edges;
 	read_binary_container(in_path, edges);
@@ -154,14 +154,14 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 											 std::string sqlite3_db_path) {
 
 
-	Eigen::SparseMatrix<T> A(n, n);
+	Eigen::SparseMatrix<T, Eigen::RowMajor> A(n, n);
 	populate_mat_from_edgelist<T, C>(A, in_path, n, laplacian, mat_val);
 	fmt::print("Created.\n");
 	fmt::print("computing reciprocity..\n");
 	uint64_t recip_edges = 0;
 #pragma omp parallel for schedule(dynamic) reduction(+:recip_edges)
 	for (int k = 0; k < A.outerSize(); ++k)
-		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
+		for (typename Eigen::SparseMatrix<T, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
 		{
 			// if the opposite edge exists
 			if (A.coeff(k, it.index()) == 1) {
@@ -176,9 +176,12 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	std::string mat_path = fmt::format("{}/{}", dir.string(), "mat.bin");
 
 	if (!boost::filesystem::exists(mat_path)){ // write csr only if not exists already
-		Eigen::write_binary_sparse<Eigen::SparseMatrix<T>>(mat_path, A);
+		Eigen::write_binary_sparse<Eigen::SparseMatrix<T, Eigen::RowMajor>>(mat_path, A);
 		// return;
 	}
+
+	Eigen::write_binary_sparse<Eigen::SparseMatrix<T, Eigen::RowMajor>>(mat_path, A);
+
 
 
 	fmt::print("recip_edges: {}\n", recip_edges);
@@ -195,31 +198,32 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 
 	return;
 
-	fmt::print("Solving directed..\n");
-	double cyclic_eval = solve_directed(A, 1);
-	fmt::print("Solving SVD..\n");
-	double op_2_norm = compute_svd(A, 1);
-
-	fmt::print("Symmetrizing..\n");
-	// symmetrize the adjacencies
-	A += Eigen::SparseMatrix<T>(A.transpose());
-#pragma omp parallel for schedule(dynamic)
-	for (int k = 0; k < A.outerSize(); ++k)
-		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
-			if (it.valueRef() == 2) {
-				it.valueRef() = 1;
-			}
-
-	fmt::print("Symmetrized. Solving Symmetric..\n");
-
-	std::pair<double, double> p = solve_symmetric(A, 2);
-	double spec_norm = p.first;
-	double spec_sep = p.second;
-
-	fmt::print("cyclic_eval: {}\n", cyclic_eval);
-	fmt::print("op_2_norm: {}\n", op_2_norm);
-	fmt::print("spec_norm: {}\n", spec_norm);
-	fmt::print("spec_sep: {}\n", spec_sep);
+}
+//fmt::print("Solving directed..\n");
+//double cyclic_eval = solve_directed(A, 1);
+//fmt::print("Solving SVD..\n");
+//double op_2_norm = compute_svd(A, 1);
+//
+//fmt::print("Symmetrizing..\n");
+//// symmetrize the adjacencies
+//A += Eigen::SparseMatrix<T, Eigen::RowMajor>(A.transpose());
+//#pragma omp parallel for schedule(dynamic)
+//for (int k = 0; k < A.outerSize(); ++k)
+//for (typename Eigen::SparseMatrix<T, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
+//if (it.valueRef() == 2) {
+//it.valueRef() = 1;
+//}
+//
+//fmt::print("Symmetrized. Solving Symmetric..\n");
+//
+//std::pair<double, double> p = solve_symmetric(A, 2);
+//double spec_norm = p.first;
+//double spec_sep = p.second;
+//
+//fmt::print("cyclic_eval: {}\n", cyclic_eval);
+//fmt::print("op_2_norm: {}\n", op_2_norm);
+//fmt::print("spec_norm: {}\n", spec_norm);
+//fmt::print("spec_sep: {}\n", spec_sep);
 
 
 
@@ -229,8 +233,5 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 //	single_val_set<double>(sqlite3_db_path, "spectral_separation", "features", graph_name, spec_sep);
 
 
-	return;
-
-}
 
 #endif //GRAPH_PREPROCESS_STATS_H
