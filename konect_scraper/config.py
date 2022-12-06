@@ -89,6 +89,8 @@ def init(input_data_dir=None):
         graph_preprocess_dir, cmake_build_dir, "convert_map_to_binary")
     compute_ccs_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "compute_ccs")
+    stats_executable = os.path.join(
+        graph_preprocess_dir, cmake_build_dir, "stats")
 
     parallel_batch_rcm_executable = os.path.join(
         pbrcm_home, 'build', 'CuthillMcKee')
@@ -215,6 +217,7 @@ def init(input_data_dir=None):
         "pr_executable": pr_executable,
         "convert_map_to_bin_executable": convert_map_to_bin_executable,
         'compute_ccs_executable': compute_ccs_executable,
+        'stats_executable': stats_executable,
 
         "comment_strings": ["%", "#"],
         "n_threads": get_n_threads(),
