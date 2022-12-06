@@ -269,4 +269,5 @@ def init():
         'in_out_degree_corr_coef': 'REAL',
         'in_out_degree_corr_pval': 'REAL',
         'global_clustering_coefficient': 'REAL',
+        'reciprocity': 'REAL',
     }

@@ -68,6 +68,7 @@ template<typename T>
 double solve_directed(Eigen::SparseMatrix<T> &A, int n_eig_vals) {
 	Eigen::initParallel();
 	Spectra::SparseGenMatProd<T> op(A);
+
 	Spectra::GenEigsSolver<Spectra::SparseGenMatProd<T>> eigs(op, n_eig_vals, n_eig_vals * 10);
 	eigs.init();
 	eigs.compute(Spectra::SortRule::LargestMagn);
@@ -155,6 +156,34 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	Eigen::SparseMatrix<T> A(n, n);
 	populate_mat_from_edgelist<T, C>(A, in_path, n, laplacian, mat_val);
 	fmt::print("Created.\n");
+	fmt::print("computing reciprocity..\n");
+	uint64_t recip_edges = 0;
+#pragma omp parallel for schedule(dynamic) reduction(+:recip_edges)
+	for (int k = 0; k < A.outerSize(); ++k)
+		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
+		{
+			// if the opposite edge exists
+			if (A.coeff(k, it.index()) == 1) {
+				++recip_edges;
+			}
+		}
+
+
+	fmt::print("recip_edges: {}\n", recip_edges);
+	fmt::print("recip_edges / m: {}\n", A.nonZeros());
+
+	double reciprocity = double(recip_edges) / A.nonZeros();
+	boost::filesystem::path pth(in_path);
+	boost::filesystem::path dir = pth.parent_path();
+
+	std::string graph_name = dir.filename().string();
+	fmt::print("graph_name: {}\n", graph_name);
+	fmt::print("sqlite3_db_path: {}\n", sqlite3_db_path);
+	fmt::print("reciprocity: {}\n", reciprocity);
+//	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
+//	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, A.nonZeros());
+//	single_val_set<double>(sqlite3_db_path, "reciprocity", "features", graph_name, reciprocity);
+	return;
 
 	fmt::print("Solving directed..\n");
 	double cyclic_eval = solve_directed(A, 1);
@@ -182,19 +211,13 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	fmt::print("spec_norm: {}\n", spec_norm);
 	fmt::print("spec_sep: {}\n", spec_sep);
 
-	boost::filesystem::path pth(in_path);
-	boost::filesystem::path dir = pth.parent_path();
 
-	std::string graph_name = dir.filename().string();
-	fmt::print("graph_name: {}\n", graph_name);
-	fmt::print("sqlite3_db_path: {}\n", sqlite3_db_path);
 
 //	single_val_set<double>(sqlite3_db_path, "op_2_norm", "features", graph_name, op_2_norm);
 //	single_val_set<double>(sqlite3_db_path, "cyclic_eval", "features", graph_name, cyclic_eval);
 //	single_val_set<double>(sqlite3_db_path, "spectral_norm", "features", graph_name, spec_norm);
 //	single_val_set<double>(sqlite3_db_path, "spectral_separation", "features", graph_name, spec_sep);
-//	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
-//	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, m);
+
 
 	return;
 

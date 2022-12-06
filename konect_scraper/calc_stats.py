@@ -60,7 +60,7 @@ def compute_stats(graph_name):
     logging.info(f"Computing {graph_name}'s eigen stats..")
     stats_executable = config.settings['stats_executable']
     args = [
-        stats_executable, '-n', str(n), '-g', graph_dir,
+        stats_executable, '-n', str(n), '-g', graph_dir, '-d', db_path
     ]
     logging.info(" ".join(args))
     res = subprocess.check_output(args)

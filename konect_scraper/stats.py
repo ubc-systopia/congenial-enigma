@@ -103,7 +103,7 @@ def spectral_separation(l1, l2):
     return np.abs(l1) / np.abs(l2)
 
 
-def get_eigenvalues(mat, k=2, which='LM'):
+def get_eigenvalues(mat, k=1, which='LM'):
     if which == 'SM':
         try:
             return eigs(mat, k, which='LM', sigma=0.0)
@@ -338,6 +338,7 @@ def edge_dist_entropy(deg_arr, m):
     return H_er
 
 
+# @njit(parallel=True)
 def reciprocity(csr_mat):
     cx = csr_mat.tocoo()
     total = 0
@@ -493,35 +494,48 @@ def compute_scipy_stats(graph_name):
     lcc_path = os.path.join(graph_dir, f'lcc.{edgelist_file_suffix}')
     lscc_path = os.path.join(graph_dir, f'lscc.{edgelist_file_suffix}')
 
+    logging.info("Reading edgelist..")
     nx_graph = nx.read_edgelist(graph_path, create_using=nx.DiGraph)
     mat_path = os.path.join(
         graph_dir, f'{compressed_fname}.{scipy_csr_suffix}')
     lcc_mat_path = os.path.join(graph_dir, f'lcc.{scipy_csr_suffix}')
     lscc_mat_path = os.path.join(graph_dir, f'lscc.{scipy_csr_suffix}')
 
-    mat_names = ['comp', 'lcc', 'lscc']
-    edge_list_paths = [graph_path, lcc_path, lscc_path]
+    mat_names = [
+        'comp', 
+        # 'lcc', 
+        # 'lscc'
+        ]
+    edge_list_paths = [
+        graph_path, 
+        # lcc_path, 
+        # lscc_path
+        ]
     for mat_name, path in zip(mat_names, edge_list_paths):
-        # if not os.path.isfile(mat_path):
-        save_as_scipy_csr(graph_dir, path, mat_name)
+        if not os.path.isfile(mat_path):
+            logging.info(f"Saving {mat_path}.")
+            save_as_scipy_csr(graph_dir, path, mat_name)
+        else:
+            logging.info(f"{mat_path} already exists.")
+
 
     csr_mat = load_csr_matrix(mat_path)
-    logging.info("\tComputing Reciprocity..")
-    recip = reciprocity(csr_mat)
-    print(f"{recip=}")
-    logging.info("\tComputing SCCs..")
-    n_sccs, scc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
-                                                       connection='strong', return_labels=True)
+    # logging.info("\tComputing Reciprocity..")
+    # recip = reciprocity(csr_mat)
+    # print(f"{recip=}")
+    # logging.info("\tComputing SCCs..")
+    # n_sccs, scc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
+    #                                                    connection='strong', return_labels=True)
 
-    logging.info("\tComputing CCs..")
-    n_ccs, cc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
-                                                     connection='weak', return_labels=True)
+    # logging.info("\tComputing CCs..")
+    # n_ccs, cc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
+    #                                                  connection='weak', return_labels=True)
 
-    lscc_size = get_count_of_most_common_elt(scc_comp)
-    lcc_size = get_count_of_most_common_elt(cc_comp)
+    # lscc_size = get_count_of_most_common_elt(scc_comp)
+    # lcc_size = get_count_of_most_common_elt(cc_comp)
 
-    lcc_mat = load_csr_matrix(lcc_mat_path)
-    lscc_mat = load_csr_matrix(lscc_mat_path)
+    # lcc_mat = load_csr_matrix(lcc_mat_path)
+    # lscc_mat = load_csr_matrix(lscc_mat_path)
     # compute_distances(csr_mat)
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
@@ -564,10 +578,10 @@ def compute_scipy_stats(graph_name):
         'spectral_norm': spectral_norm,
         'spectral_separation': spectral_sep,
         'fill': f,
-        'n_sccs': n_sccs,
-        'n_ccs': n_ccs,
-        'lscc_size': lscc_size,
-        'lcc_size': lcc_size,
+        # 'n_sccs': n_sccs,
+        # 'n_ccs': n_ccs,
+        # 'lscc_size': lscc_size,
+        # 'lcc_size': lcc_size,
     }
     print(f'{stats=}')
 

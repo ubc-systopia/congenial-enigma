@@ -32,6 +32,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stats.h" beforeDir="false" afterPath="$PROJECT_DIR$/stats.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -189,7 +190,7 @@
       <workItem from="1669057941711" duration="8653000" />
       <workItem from="1669746428752" duration="8968000" />
       <workItem from="1669755604246" duration="31394000" />
-      <workItem from="1670263604105" duration="18096000" />
+      <workItem from="1670263604105" duration="19803000" />
     </task>
     <servers />
   </component>
