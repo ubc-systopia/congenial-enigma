@@ -104,19 +104,24 @@ def load_mat(filename):
         nnzs = struct.unpack('q', f.read(8))[0]
         outS = struct.unpack('q', f.read(8))[0]
         innS = struct.unpack('q', f.read(8))[0]
-        outerIndexPtr = np.fromfile(
-            f, dtype=np.int32, count=outS).reshape(outS)
-        innerIndexPtr = np.fromfile(f, dtype=np.int32, count=nnzs).reshape(nnzs)
+        indptr = np.fromfile(
+            f, dtype=np.dtype('u4'), count=outS).reshape(outS)
+        indices = np.fromfile(f, dtype=np.dtype('u4'), count=nnzs).reshape(nnzs)
         logging.info(f"{rows} {cols} {nnzs} {outS} {innS}")
-        print(f'{outerIndexPtr=}')
-        print(f'{innerIndexPtr=}')
+        # print(f'{indices=}')
+        # print(f'{indptr=}')
         assert(rows == cols)
-        return ss.csr_matrix((
-            np.ones(nnzs).astype(np.float64), # 1s as data seems redundant
-            innerIndexPtr,
-            outerIndexPtr,
+
+        M = ss.csr_matrix((
+            np.ones(nnzs), # 1s as data seems redundant
+            indices,
+            # need to append the end of the indptr array to denote the last
+            # possible elt to point to
+            np.concatenate((indptr, [nnzs])), 
         ), 
-        # shape=(rows, cols)
+        shape=(rows, cols)
         )
+        assert M.shape[0] == M.shape[1]
+        return M
         # data = np.fromfile(f, dtype=np.float64).reshape((rows, cols))
     # return data

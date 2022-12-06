@@ -65,8 +65,7 @@ def compute_stats(graph_name):
 
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
-    print(f'{stats=}')
-    return 
+    
     logging.info(f"Computing {graph_name}'s degree stats..")
     stats.update(compute_deg_stats(graph_name))
 

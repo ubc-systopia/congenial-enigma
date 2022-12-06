@@ -468,15 +468,7 @@ def get_count_of_most_common_elt(a):
 
 def symmetrize(csr_mat):
     M = csr_mat.tolil(copy=True).astype(bool)
-    logging.info(f'{M.shape=}')
     return (M + M.T).tocsr()
-    # cs, rs = lil_mat.nonzero()
-    # print(f'{rs=}')
-    # print(f'{cs=}')
-    # symm_lil_mat = lil_mat.copy()
-    # symm_lil_mat[cs, rs] = csr_mat[rs, cs]
-    
-    # return symm_lil_mat.tocsr()
 
 def compute_scipy_stats(graph_name):
     """Compute graph's summary stats using scipy. Namely:
@@ -528,7 +520,7 @@ def compute_scipy_stats(graph_name):
     # csr_mat = load_csr_matrix(mat_path)
     logging.info(f"Reading CSR from {mat_path}..")
     csr_mat = load_mat(mat_path)
-    logging.info(f"Read adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
+    logging.info(f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
     # logging.info("\tComputing Reciprocity..")
     # recip = reciprocity(csr_mat)
     # print(f"{recip=}")
