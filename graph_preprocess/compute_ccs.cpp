@@ -183,12 +183,13 @@ void write_degs(std::string input_path, Graph &g) {
 	std::string graph_name = dir.filename().string();
 	std::string out_degs_path = fmt::format("{}/out_degs", dir.string());
 	std::string in_degs_path = fmt::format("{}/in_degs", dir.string());
-	std::ofstream out_degs_file(out_degs_path);
-	std::ofstream in_degs_file(in_degs_path);
 
 	if (boost::filesystem::exists(out_degs_path) && boost::filesystem::exists(in_degs_path)){
 		return;
 	}
+
+	std::ofstream out_degs_file(out_degs_path);
+	std::ofstream in_degs_file(in_degs_path);
 
 	for (uint32_t u = 0; u < g.num_nodes(); ++u) {
 		out_degs_file << g.out_degree(u) << "\n";
