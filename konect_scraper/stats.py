@@ -388,8 +388,9 @@ def compute_deg_stats(graph_name):
     for deg_arr, deg_str in zip(
             [out_degs, in_degs, degs],
             ['out', 'in', 'undir']):
-        deg_stats[f'{deg_str}_max'] = np.max(deg_arr)
-        deg_stats[f'{deg_str}_median'] = np.median(deg_arr)
+        deg_stats[f'{deg_str}_max'] = int(np.max(deg_arr).astype(np.uint32))
+        deg_stats[f'{deg_str}_median'] = int(np.median(deg_arr).astype(np.uint32))
+        logging.info(f"{deg_str}: {deg_stats[f'{deg_str}_max']}. deg_stats[f'{deg_str}_median']")
         # gini_coef(deg_arr, deg_str)
         if deg_str == 'undir':
             deg_stats['relative_edge_distribution_entropy'] = edge_dist_entropy(deg_arr, m)
@@ -556,14 +557,16 @@ def compute_scipy_stats(graph_name):
         A=symm_csr_mat.astype('float'),
         k=2,
         which='LM'
-    )
+    )  
 
-    logging.info("\tEigenvalues..")
-    egvals, eg_vecs = get_eigenvalues(csr_mat.astype('float'))
-
-    u, s, vh = ss.linalg.svds(csr_mat.astype('float'))
+    # :-( long for large matrices?
+    # logging.info("\tEigenvalues..")
+    # egvals, eg_vecs = get_eigenvalues(csr_mat.astype('float'))
+    
+    logging.info("\tSVDs..")
+    u, s, vh = ss.linalg.svds(csr_mat.astype('float'), k=1)
     op_2_norm = s[-1]
-    cyclic_eval = np.abs(egvals[0])
+    # cyclic_eval = np.abs(egvals[0])
     spectral_norm = symm_egvals[0].real
     spectral_sep = symm_egvals[0].real / symm_egvals[1].real
     n = csr_mat.shape[0]
@@ -574,7 +577,7 @@ def compute_scipy_stats(graph_name):
         'n_vertices': n,
         'n_edges': m,
         'op_2_norm': op_2_norm,
-        'cyclic_eval': cyclic_eval,
+        # 'cyclic_eval': cyclic_eval,
         # 'al_conn': al_conn,
         'spectral_norm': spectral_norm,
         'spectral_separation': spectral_sep,
@@ -584,7 +587,7 @@ def compute_scipy_stats(graph_name):
         # 'lscc_size': lscc_size,
         # 'lcc_size': lcc_size,
     }
-
+    print(f'{stats=}')
     return stats
 
 def compute_eigen_stats():
@@ -649,7 +652,7 @@ def compute_distance_stats(graph_name):
     n_dists = neighbourhood_fn[0]
     total = 0
     med_idx = int((neighbourhood_fn[-1] + 1) / 2)
-    med_dist = np.searchsorted(neighbourhood_fn, med_idx)
+    med_dist = int(np.searchsorted(neighbourhood_fn, med_idx))
     for i, v in enumerate(diff):
         total += (i + 1) * v
         n_dists += v

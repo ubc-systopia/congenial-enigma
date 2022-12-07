@@ -18,20 +18,9 @@ from scipy.special import comb
 import os
 from konect_scraper.util import get_n
 
-
-def compute_stats(graph_name):
-    n = get_n(graph_name)
-    stats = {} 
-
-    # create an empty row for the graph in the features sqlite3 table
-    insert_row_if_not_exists(graph_name, 'features')
-
-    db_path = config.settings['sqlite3']['sqlite3_db_path']
+def compute_cpp_stats(graph_name, db_path, n):
     graphs_dir = config.settings['graphs_dir']
-    # load_mat('/media/atrostan/patterson_backup/data/graphs/moreno_taro/mat.bin')
-    # cpp: compute connected components stats and write degree arrays if not 
-    # exist
-    logging.info(f"Computing {graph_name}'s cc stats, deg arrays, and csr..")
+
 
     graph_dir = os.path.join(graphs_dir, graph_name)
     cc_exec = config.settings['compute_ccs_executable']
@@ -62,10 +51,23 @@ def compute_stats(graph_name):
     ]
     logging.info(" ".join(args))
     res = subprocess.check_output(args)
-    
+
+def compute_stats(graph_name):
+    n = get_n(graph_name)
+    stats = {} 
+
+    # create an empty row for the graph in the features sqlite3 table
+    insert_row_if_not_exists(graph_name, 'features')
+
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    graphs_dir = config.settings['graphs_dir']
+
+    logging.info(f"Computing {graph_name}'s cc stats, deg arrays, and csr..")
+    compute_cpp_stats(graph_name, db_path, n)
+
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
-    
+
     logging.info(f"Computing {graph_name}'s degree stats..")
     stats.update(compute_deg_stats(graph_name))
 
@@ -77,7 +79,6 @@ def compute_stats(graph_name):
     
     logging.info(f"Computing {graph_name}'s motif stats..")
     stats.update(compute_motif_stats(graph_name))
-
     return stats
 
 def main(rows):
@@ -95,7 +96,6 @@ def main(rows):
 
         graph_name = row['graph_name']
         d = compute_stats(graph_name)
-        
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
         d['graph_name'] = graph_name

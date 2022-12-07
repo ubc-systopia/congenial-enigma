@@ -164,7 +164,7 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	for (int k = 0; k < A.outerSize(); ++k)
 		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it) {
 			// if the opposite edge exists
-			if (A.coeff(it.index(), k) == 1) {
+			if (A.coeff(k, it.index()) == 1) {
 				++recip_edges;
 			}
 		}
@@ -194,31 +194,31 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 	single_val_set<double>(sqlite3_db_path, "n_vertices", "features", graph_name, n);
 	single_val_set<double>(sqlite3_db_path, "n_edges", "features", graph_name, A.nonZeros());
 	single_val_set<double>(sqlite3_db_path, "reciprocity", "features", graph_name, reciprocity);
-	fmt::print("Solving directed..\n");
-	double cyclic_eval = solve_directed(A, 1);
-	fmt::print("Solving SVD..\n");
-	double op_2_norm = compute_svd(A, 1);
+// 	fmt::print("Solving directed..\n");
+// 	double cyclic_eval = solve_directed(A, 1);
+// 	fmt::print("Solving SVD..\n");
+// 	double op_2_norm = compute_svd(A, 1);
 
-	fmt::print("Symmetrizing..\n");
-	// symmetrize the adjacencies
-	A += Eigen::SparseMatrix<T>(A.transpose());
-#pragma omp parallel for schedule(dynamic)
-	for (int k = 0; k < A.outerSize(); ++k)
-		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
-			if (it.valueRef() == 2) {
-				it.valueRef() = 1;
-			}
+// 	fmt::print("Symmetrizing..\n");
+// 	// symmetrize the adjacencies
+// 	A += Eigen::SparseMatrix<T>(A.transpose());
+// #pragma omp parallel for schedule(dynamic)
+// 	for (int k = 0; k < A.outerSize(); ++k)
+// 		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it)
+// 			if (it.valueRef() == 2) {
+// 				it.valueRef() = 1;
+// 			}
 
-	fmt::print("Symmetrized. Solving Symmetric..\n");
+// 	fmt::print("Symmetrized. Solving Symmetric..\n");
 
-	std::pair<double, double> p = solve_symmetric(A, 2);
-	double spec_norm = p.first;
-	double spec_sep = p.second;
+// 	std::pair<double, double> p = solve_symmetric(A, 2);
+// 	double spec_norm = p.first;
+// 	double spec_sep = p.second;
 
-	fmt::print("cyclic_eval: {}\n", cyclic_eval);
-	fmt::print("op_2_norm: {}\n", op_2_norm);
-	fmt::print("spec_norm: {}\n", spec_norm);
-	fmt::print("spec_sep: {}\n", spec_sep);
+// 	fmt::print("cyclic_eval: {}\n", cyclic_eval);
+// 	fmt::print("op_2_norm: {}\n", op_2_norm);
+// 	fmt::print("spec_norm: {}\n", spec_norm);
+// 	fmt::print("spec_sep: {}\n", spec_sep);
 	return;
 
 }
