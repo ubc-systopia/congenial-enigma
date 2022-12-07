@@ -62,7 +62,7 @@ def compute_stats(graph_name):
     ]
     logging.info(" ".join(args))
     res = subprocess.check_output(args)
-
+    
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))
     
@@ -95,8 +95,7 @@ def main(rows):
 
         graph_name = row['graph_name']
         d = compute_stats(graph_name)
-        return 
-        # return 
+        
         feats_df = pd.concat([feats_df, pd.DataFrame([d])], ignore_index=True)
 
         d['graph_name'] = graph_name
