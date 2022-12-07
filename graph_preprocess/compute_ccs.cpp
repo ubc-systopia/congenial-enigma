@@ -17,6 +17,7 @@
 #include <boost/config.hpp>
 #include "io.h"
 #include <boost/filesystem.hpp>
+#include <Eigen/SparseCore>
 #include "sql.h"
 
 bool in_gcc(NodeID vid, NodeID gcc_id, pvector<NodeID> &comp) {
@@ -49,39 +50,45 @@ void write_cc(pvector<NodeID> &comp, NodeID gcc_id, Graph &g, std::string out_pa
 			}
 		}
 	}
-	std::vector<std::pair<uint32_t, uint32_t>> mapped_edges(n_edges_in_gcc);
+	typedef Eigen::Triplet<uint32_t> Triplet;
+
+	// remap the edges to construct a csr matrix of the graph's gcc
+	pvector<Triplet> mapped_edges(n_edges_in_gcc);
 	n_edges_in_gcc = 0;
 	for (uint64_t u = 0; u < g.num_nodes(); u++) {
-
 		if (!in_gcc(u, gcc_id, comp)) continue;
 		for (uint64_t v: g.out_neigh(u)) {
 			if (!in_gcc(v, gcc_id, comp)) continue;
 			if (!directed) { // only write one direction for undirected graphs (no need to write dup edges)
 				if (p[v] > p[u]) {
-					mapped_edges[n_edges_in_gcc] = {p[u], p[v]};
+					mapped_edges[n_edges_in_gcc] = Triplet(p[u], p[v], 1);
 					++n_edges_in_gcc;
 				} else {
 					continue;
 				}
-			} else { // write all directed edges
-				mapped_edges[n_edges_in_gcc] = {p[u], p[v]};
-				++n_edges_in_gcc;
+//			} else { // write all directed edges
+//				mapped_edges[n_edges_in_gcc] = {p[u], p[v]};
+//				++n_edges_in_gcc;
+//			}
 			}
 		}
 	}
-	std::sort(dpl::execution::par_unseq, mapped_edges.begin(), mapped_edges.end());
-	// write sorted, mapped edges to outfile
-	std::ofstream outfile(out_path);
-	for (const auto &kv: mapped_edges) {
-		outfile << fmt::format("{} {}\n", kv.first, kv.second);
-	}
-	outfile.close();
-	boost::filesystem::path pth(out_path);
-	boost::filesystem::path dir = pth.parent_path();
-	std::string component_name = pth.stem().string(); // either lscc or lcc
-	std::string binary_outpath = fmt::format("{}/{}.bin", dir.string(), component_name);
-	write_binary_container(binary_outpath, mapped_edges);
-
+	Eigen::SparseMatrix<uint32_t> A;
+	A.setFromTriplets(mapped_edges.begin(), mapped_edges.end());
+	write_binary_sparse(out_path, A);
+	return;
+//	std::sort(dpl::execution::par_unseq, mapped_edges.begin(), mapped_edges.end());
+//	// write sorted, mapped edges to outfile
+//	std::ofstream outfile(out_path);
+//	for (const auto &kv: mapped_edges) {
+//		outfile << fmt::format("{} {}\n", kv.first, kv.second);
+//	}
+//	outfile.close();
+//	boost::filesystem::path pth(out_path);
+//	boost::filesystem::path dir = pth.parent_path();
+//	std::string component_name = pth.stem().string(); // either lscc or lcc
+//	std::string binary_outpath = fmt::format("{}/{}.bin", dir.string(), component_name);
+//	write_binary_container(binary_outpath, mapped_edges);
 }
 
 std::pair<NodeID, uint32_t> compute_gcc_size(pvector<NodeID> &comp, std::vector<NodeID> &unique_cids) {
@@ -165,7 +172,7 @@ void write_symm_degs(std::string input_path, Graph &g) {
 	boost::filesystem::path dir = p.parent_path();
 	std::string graph_name = dir.filename().string();
 	std::string degs_path = fmt::format("{}/degs", dir.string());
-	if (boost::filesystem::exists(degs_path)){
+	if (boost::filesystem::exists(degs_path)) {
 		return;
 	}
 
@@ -184,7 +191,7 @@ void write_degs(std::string input_path, Graph &g) {
 	std::string out_degs_path = fmt::format("{}/out_degs", dir.string());
 	std::string in_degs_path = fmt::format("{}/in_degs", dir.string());
 
-	if (boost::filesystem::exists(out_degs_path) && boost::filesystem::exists(in_degs_path)){
+	if (boost::filesystem::exists(out_degs_path) && boost::filesystem::exists(in_degs_path)) {
 		return;
 	}
 
@@ -296,8 +303,8 @@ int main(int argc, char *argv[]) {
 	std::string file_name = pth.stem().string();
 	std::string graph_name = dir.filename().string();
 	// write number of ccs, and size of gcc to db
-
-//	write_cc(comp, gcc_id, g, cli.out_filename(), false);
+	std::string gcc_mat_path = fmt::format("{}/{}", dir.string(), "gcc_mat.bin");
+	write_cc(comp, gcc_id, g, gcc_mat_path, false);
 	single_val_set<uint32_t>(cli.db_filename(), "n_ccs", "features", graph_name, unique_cids.size());
 	single_val_set<uint32_t>(cli.db_filename(), "lcc_size", "features", graph_name, gcc_size);
 

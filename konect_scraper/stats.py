@@ -508,50 +508,21 @@ def compute_scipy_stats(graph_name):
         # lcc_path, 
         # lscc_path
         ]
-    # for mat_name, path in zip(mat_names, edge_list_paths):
-    #     if not os.path.isfile(mat_path):
-    #         logging.info(f"Saving {mat_path} as scipy csr..")
-    #         save_as_scipy_csr(graph_dir, path, mat_name)
-    #     else:
-    #         logging.info(f"{mat_path} already exists.")
-    
     mat_path = os.path.join(graph_dir, f'mat.bin')
+    gcc_mat_path = os.path.join(graph_dir, f'gcc_mat.bin')
 
-    # csr_mat = load_csr_matrix(mat_path)
     logging.info(f"Reading CSR from {mat_path}..")
     csr_mat = load_mat(mat_path)
+    gcc_mat = load_mat(gcc_mat_path)
     logging.info(f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
-    # logging.info("\tComputing Reciprocity..")
-    # recip = reciprocity(csr_mat)
-    # print(f"{recip=}")
-    # logging.info("\tComputing SCCs..")
-    # n_sccs, scc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
-    #                                                    connection='strong', return_labels=True)
-
-    # logging.info("\tComputing CCs..")
-    # n_ccs, cc_comp = ss.csgraph.connected_components(csr_mat, directed=True,
-    #                                                  connection='weak', return_labels=True)
-
-    # lscc_size = get_count_of_most_common_elt(scc_comp)
-    # lcc_size = get_count_of_most_common_elt(cc_comp)
-
-    # lcc_mat = load_csr_matrix(lcc_mat_path)
-    # lscc_mat = load_csr_matrix(lscc_mat_path)
-    # compute_distances(csr_mat)
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
     # symmetrize directed csr
-    logging.info("\tSymmetrizing..")
+    logging.info("\tSymmetrizing Graph..")
     symm_csr_mat = symmetrize(csr_mat)
-
-    # symm_csr_mat = csr_mat.copy()
-    # rs, cs = csr_mat.nonzero()
-    # symm_csr_mat[cs, rs] = csr_mat[rs, cs]
-    # test_eq = (symm_csr_mat != tmp).nnz == 0  
-    # print(f'{test_eq =}')
-
+    logging.info("\tSymmetrizing GCC..")
+    symm_gcc_mat = symmetrize(gcc_mat)
     logging.info("\tSymmetric Eigenvalues..")
-    # symm_egvals, symm_eg_vecs = get_eigenvalues(symm_csr_mat.astype('float'))
     symm_egvals, symm_eg_vecs = eigsh(
         A=symm_csr_mat.astype('float'),
         k=2,

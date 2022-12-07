@@ -25,6 +25,8 @@ public:
 	pvector<double> dst;
 	pvector<double> deg;
 	pvector<double> scores;
+	pvector<double> outgoing_contrib;
+	pvector<double> incoming_total;
 
 
 	std::vector<Edge> &edges;

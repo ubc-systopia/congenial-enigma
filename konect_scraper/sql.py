@@ -3,7 +3,7 @@ import sqlite3
 
 import pandas as pd
 
-from konect_scraper import config
+from konect_scraper import column_names, config
 
 
 def connect():
@@ -64,6 +64,7 @@ def append_df_to_table(df, table):
     # query=f"insert or replace into {table} ({col_names_str}) values ({vals_str})"
     # conn.executemany(query, df.to_records(index=False))
     conn.commit()
+
 
 def get_graphs_by_graph_numbers(ns, graph_type):
     """given a min, max graph numbers and a graph type, return all relevant rows
@@ -235,15 +236,22 @@ def distinct(column, table):
     rows = cursor.fetchall()
     return rows
 
+
 def insert_row_if_not_exists(graph_name, table):
     conn = connect()
     cursor = conn.cursor()
 
+    cols = column_names.features_col_names.keys()
+    n_cols = len(cols)
+
+    val_str = ','.join(['?'] * n_cols)
+    col_str = ','.join(cols)
     sql = f"insert or ignore into {table}(graph_name) VALUES(?)"
-    res = cursor.execute(sql, [graph_name])
+    res = cursor.execute(sql, [graph_name] + [-1] * (n_cols - 1))
     r = conn.commit()
-    
-    return 
+
+    return
+
 
 def single_val_get(col_name, table_name, graph_name):
     conn = connect()

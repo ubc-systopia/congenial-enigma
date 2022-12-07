@@ -185,8 +185,9 @@ int main(int argc, char *argv[]) {
 		pvector<double> mapped_results(num_vertices);
 #pragma omp parallel for
 		for (uint32_t i = 0; i < num_vertices; ++i) {
-			mapped_results[i] = pr.scores[iso_map[i]];
+				mapped_results[i] = pr.scores[iso_map[i]];
 		}
+		
 		bool valid_pr = std::equal(dpl::execution::par_unseq,
 		                           mapped_results.begin(), mapped_results.end(),
 		                           correct_vals.begin(),
@@ -196,7 +197,7 @@ int main(int argc, char *argv[]) {
 		                           });
 		// assert(valid_pr);
 //		fmt::print("vorder_str, eorder_str: {}, {}\n", vorder_str, eorder_str);
-//		fmt::print("valid_pr: {}\n", valid_pr);
+		// fmt::print("valid_pr: {}\n", valid_pr);
 
 		auto t = std::time(nullptr);
 		auto tm = *std::localtime(&t);

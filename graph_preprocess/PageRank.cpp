@@ -27,17 +27,17 @@ void PageRank::init() {
 	deg.resize(num_nodes);
 	deg.fill(0.0);
 	scores.resize(num_nodes);
-	scores.resize(1.0 / num_nodes);
+	outgoing_contrib.resize(num_nodes);
+	incoming_total.resize(num_nodes);
+	incoming_total.fill(0);
+	// scores.fill(1.0 / num_nodes);
 	calc_out_degrees();
 }
 
 void PageRank::compute() {
 	// measure the total time to complete all PR iterations
-	const double init_score = 1.0 / num_nodes;
-	const double base_score = (1.0 - alpha) / num_nodes;
-
-	pvector<double> outgoing_contrib(num_nodes);
-	pvector<double> incoming_total(num_nodes, 0);
+	const double init_score = 1.0f / num_nodes;
+	const double base_score = (1.0f - alpha) / num_nodes;
 
 #pragma omp parallel for
 	for (uint32_t n = 0; n < num_nodes; n++) {
@@ -47,15 +47,9 @@ void PageRank::compute() {
 	auto start_time = std::chrono::high_resolution_clock::now();
 
 	for (int iter = 0; iter < num_iters; iter++) {
-//		for (int n = 0; n < num_nodes; n++) {
-//			src[n] = alpha * dst[n] / deg[n];
-//			dst[n] = base_score;
-//			incoming_total[n] = 0;
-//		}
 		for (const auto &e: edges) {
 			ul src = e.source;
 			ul dst = e.dest;
-//			dst[y] += src[x];
 			incoming_total[dst] += outgoing_contrib[src];
 		}
 		for (int n = 0; n < num_nodes; n++) {

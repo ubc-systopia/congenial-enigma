@@ -182,7 +182,6 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 
 	Eigen::write_binary_sparse<Eigen::SparseMatrix<T>>(mat_path, A);
 
-
 	fmt::print("recip_edges: {}\n", recip_edges);
 	fmt::print("recip_edges / m: {}\n", A.nonZeros());
 
