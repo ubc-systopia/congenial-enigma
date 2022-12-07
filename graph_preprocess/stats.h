@@ -164,7 +164,7 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 		for (typename Eigen::SparseMatrix<T, Eigen::RowMajor>::InnerIterator it(A, k); it; ++it)
 		{
 			// if the opposite edge exists
-			if (A.coeff(k, it.index()) == 1) {
+			if (A.coeff(it.index(), k) == 1) {
 				++recip_edges;
 			}
 		}
@@ -180,9 +180,7 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 		// return;
 	}
 
-	Eigen::write_binary_sparse<Eigen::SparseMatrix<T, Eigen::RowMajor>>(mat_path, A);
-
-
+	// Eigen::write_binary_sparse<Eigen::SparseMatrix<T, Eigen::RowMajor>>(mat_path, A);
 
 	fmt::print("recip_edges: {}\n", recip_edges);
 	fmt::print("recip_edges / m: {}\n", A.nonZeros());
