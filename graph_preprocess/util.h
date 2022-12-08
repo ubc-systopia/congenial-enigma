@@ -10,6 +10,7 @@
 #include <map>
 //#include "furhilbert.h"
 #include "Hilbert.h"
+#include "pvector.h"
 
 struct vertex {
 	ul id;

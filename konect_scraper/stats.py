@@ -305,7 +305,8 @@ def parse_plfit(arr_path, plfit_stats, deg_type_str):
                     if 'nan' in stat_str:
                         plfit_stats[f'{deg_type_str}_{v}'] = np.nan
                     else:
-                        plfit_stats[f'{deg_type_str}_{v}'] = ast.literal_eval(stat_str)
+                        plfit_stats[f'{deg_type_str}_{v}'] = ast.literal_eval(
+                            stat_str)
     return plfit_stats
 
 
@@ -391,11 +392,14 @@ def compute_deg_stats(graph_name):
             [out_degs, in_degs, degs],
             ['out', 'in', 'undir']):
         deg_stats[f'{deg_str}_max'] = int(np.max(deg_arr).astype(np.uint32))
-        deg_stats[f'{deg_str}_median'] = int(np.median(deg_arr).astype(np.uint32))
-        logging.info(f"{deg_str}: {deg_stats[f'{deg_str}_max']}. deg_stats[f'{deg_str}_median']")
+        deg_stats[f'{deg_str}_median'] = int(
+            np.median(deg_arr).astype(np.uint32))
+        logging.info(
+            f"{deg_str}: {deg_stats[f'{deg_str}_max']}. deg_stats[f'{deg_str}_median']")
         # gini_coef(deg_arr, deg_str)
         if deg_str == 'undir':
-            deg_stats['relative_edge_distribution_entropy'] = edge_dist_entropy(deg_arr, m)
+            deg_stats['relative_edge_distribution_entropy'] = edge_dist_entropy(
+                deg_arr, m)
 
     coef, pval = in_out_deg_corr(out_degs, in_degs)
     deg_stats['in_out_degree_corr_coef'] = coef
@@ -469,9 +473,11 @@ def get_count_of_most_common_elt(a):
     values, counts = np.unique(a, return_counts=True)
     return np.max(counts)
 
+
 def symmetrize(csr_mat):
     M = csr_mat.tolil(copy=True).astype(bool)
     return (M + M.T).tocsr()
+
 
 def compute_scipy_stats(graph_name):
     """Compute graph's summary stats using scipy. Namely:
@@ -497,7 +503,8 @@ def compute_scipy_stats(graph_name):
     logging.info(f"Reading CSR from {mat_path}..")
     csr_mat = load_mat(mat_path)
     gcc_mat = load_mat(gcc_mat_path)
-    logging.info(f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
+    logging.info(
+        f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
 
@@ -513,23 +520,36 @@ def compute_scipy_stats(graph_name):
         A=symm_csr_mat.astype('float'),
         k=2,
         which='LM'
-    )  
+    )
 
-    logging.info("\tComputing the laplacian of the symmetric gcc..")
-    lap = laplacian(symm_gcc_mat.astype(np.int64))
+    # logging.info("\tComputing the laplacian of the symmetric gcc..")
+    # lap = laplacian(symm_gcc_mat.astype(np.int64))
+    # L = lap.astype('float')
+    # logging.info("\tSymmetric GCC Laplacian Eigenvalues..")
+    # al_conn = 0.0
+    # try:
+    #     symm_g_egvals, _ = eigsh(
+    #         A=L,
+    #         k=2,
+    #         which='LM',
+    #         sigma=0
+    #     )
+    #     al_conn = symm_g_egvals[1]
+    # except RuntimeError:
+    #     al_conn = np.nan
+    # also try this: https://stackoverflow.com/a/60042695
 
-    logging.info("\tSymmetric GCC Laplacian Eigenvalues..")
-    symm_g_egvals, _ = eigsh(
-        A=lap.astype('float'),
-        k=2,
-        which='LM',
-        sigma=0
-    )  
-    al_conn = symm_g_egvals[1]
+    # n_gcc = L.shape[0]
+    # maxeval = eigsh(L, k=1)[0][0]  # biggest, fast
+    # Aflip = maxeval * ss.eye(n_gcc) - L
+    # bigevals, evecs = eigsh(Aflip, which="LM", sigma=None, k=2)
+    # levals = maxeval - bigevals  # flip back, near 463 -> near 0
+    # al_conn = levals[0]
+
     # :-( long for large matrices?
     # logging.info("\tEigenvalues..")
     # egvals, eg_vecs = get_eigenvalues(csr_mat.astype('float'))
-    
+
     logging.info("\tSVDs..")
     u, s, vh = ss.linalg.svds(csr_mat.astype('float'), k=1)
     op_2_norm = s[-1]
@@ -542,22 +562,23 @@ def compute_scipy_stats(graph_name):
 
     out_deg_assort, out_deg_assort_p = degree_assortativity(graph_dir, True)
     in_deg_assort, in_deg_assort_p = degree_assortativity(graph_dir, False)
-    
+
     stats = {
         'n_vertices': n,
         'n_edges': m,
         'op_2_norm': op_2_norm,
         # 'cyclic_eval': cyclic_eval,
-        'al_conn': al_conn,
+        # 'al_conn': al_conn,
         'spectral_norm': spectral_norm,
         'spectral_separation': spectral_sep,
         'fill': f,
-        'in_degree_assortativity': in_deg_assort, 
+        'in_degree_assortativity': in_deg_assort,
         'in_degree_assortativity_p_value': in_deg_assort_p,
         'out_degree_assortativity': out_deg_assort,
         'out_degree_assortativity_p_value': out_deg_assort_p,
     }
     return stats
+
 
 def degree_assortativity(graph_dir, out):
     """The degree assortativity (ρ) in a network is defined as the Pearson 
@@ -580,7 +601,7 @@ def degree_assortativity(graph_dir, out):
     # read binary arrays
     src_path = os.path.join(graph_dir, f"src_{deg_str}degs.bin")
     dest_path = os.path.join(graph_dir, f"dest_{deg_str}degs.bin")
-    
+
     with open(src_path, 'rb') as f:
         m = struct.unpack('L', f.read(8))[0]
         src_degs = np.fromfile(f, dtype=np.dtype('u4'), count=m).reshape(m)
@@ -591,8 +612,10 @@ def degree_assortativity(graph_dir, out):
 
     return stats.pearsonr(src_degs, dest_degs)
 
+
 def compute_eigen_stats():
-    return 
+    return
+
 
 def hyperball(graph_name):
     settings = config.settings
@@ -605,42 +628,59 @@ def hyperball(graph_name):
         mem = int(settings['slurm_params']['mem'].replace('G', ''))
         if mem == 187:
             heap_size = 160
-        else:  
-            heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
+        else:
+            heap_size = int(settings['slurm_params']
+                            ['mem'].replace('G', '')) - 4
     else:
         vm = psutil.virtual_memory()
         avail_gbs = convert_size(vm.available)[0]
         heap_size = int(avail_gbs) - 4
 
     log2m = settings['webgraph']['hyperball']['log2m']
+    gc = settings['webgraph']['hyperball']['gc']
     print(f"{heap_size=}")
+    print(f"{gc=}")
+    print(f"{log2m=}")
+
+    gc_params = ''
+    if gc == 'G1':
+        gc_params = f"""-XX:+UseG1GC \
+        -XX:+G1UseAdaptiveIHOP \
+        -XX:InitiatingHeapOccupancyPercent=99 \
+        """
+    elif gc == 'CMS':
+        gc_params = f"""-XX:+UseConcMarkSweepGC \
+        -XX:CMSInitiatingOccupancyFraction=99 \
+        -XX:+UseCMSInitiatingOccupancyOnly \
+        """
+
     command = f"""
         java \
         -Xss256K \
         -Xms{heap_size}G \
         -XX:PretenureSizeThreshold=512M \
         -XX:MaxNewSize=4G \
-        -XX:+UseConcMarkSweepGC \
-        -XX:CMSInitiatingOccupancyFraction=99 \
-        -XX:+UseCMSInitiatingOccupancyOnly \
         -XX:+UseNUMA \
         -XX:+UseTLAB \
         -XX:+ResizeTLAB \
         -verbose:gc \
-        -Xloggc:gc.log \
-        it.unimi.dsi.webgraph.algo.HyperBall \
+        -Xlog:gc:gc.log \
+        """
+    command += gc_params
+    command += f"""it.unimi.dsi.webgraph.algo.HyperBall \
             -l {log2m} \
             -n {graph_dir}/neigh_func \
             {graph_dir}/webgraph \
-            {graph_dir}/webgraphT 
+            {graph_dir}/webgraphT \
     """
     logging.info(f"Running: {command}..")
     env = os.environ.copy()
     if 'CLASSPATH' in env.keys():
         env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
     else:
-        env['CLASSPATH'] = ':'.join(webgraph_jars) 
-    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
+        env['CLASSPATH'] = ':'.join(webgraph_jars)
+    ret = subprocess.run(command, capture_output=True,
+                         shell=True, cwd=webgraph_dir, env=env)
     if ret.returncode == 1:  # failed
         print(f"{ret.stderr.decode()=}")
         raise Exception(f"{command} did not complete!")
@@ -783,7 +823,8 @@ def compute_motif_stats(graph_name):
     stats.update(parse_motifs(3, res.decode('utf-8'), n))
     print(res.decode('utf-8'))
     os.remove(tmp_pattern)
-    stats['global_clustering_coefficient'] = (3 * stats['triangle']) / stats['edge_induced_wedge']
+    stats['global_clustering_coefficient'] = (
+        3 * stats['triangle']) / stats['edge_induced_wedge']
 
     clique_4_lines = [
         "1 2",
@@ -805,22 +846,22 @@ def compute_motif_stats(graph_name):
         "3 5",
         "4 5",
     ]
+
     def count_k_cliques(k, lines,):
         logging.info(f"Counting {k}-cliques.. in {graph_name}")
         tmp_pattern = './pattern'
         with open(tmp_pattern, 'w') as f:
             for l in lines:
-                f.write(f'{l}\n');
+                f.write(f'{l}\n')
         args = [prgrn_count_executable, p_data, tmp_pattern, str(n_threads)]
         res = subprocess.check_output(args)
         stats.update(parse_motifs(k, res.decode('utf-8'), n))
         print(res.decode('utf-8'))
         os.remove(tmp_pattern)
-        return 
+        return
     count_k_cliques(4, clique_4_lines)
     # count_k_cliques(5, clique_5_lines)
     return stats
-
 
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):

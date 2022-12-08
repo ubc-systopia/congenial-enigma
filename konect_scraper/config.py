@@ -332,7 +332,8 @@ def init(input_data_dir=None):
         'webgraph': {
             'hyperball': {
                 # the logarithm of the number of registers per counter.
-                'log2m': 16, 
+                'log2m': 10, 
+                'gc': 'CMS', # G1 (newer) or CMS (as in docs)
             }
         },
         'peregrine': {
