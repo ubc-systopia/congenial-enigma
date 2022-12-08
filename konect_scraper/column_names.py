@@ -270,4 +270,10 @@ def init():
         'in_out_degree_corr_pval': 'REAL',
         'global_clustering_coefficient': 'REAL',
         'reciprocity': 'REAL',
+        'out_gini_coefficient': 'REAL',
+        'in_gini_coefficient': 'REAL',
+        'in_degree_assortativity': 'REAL',
+        'in_degree_assortativity_p_value': 'REAL',
+        'out_degree_assortativity': 'REAL',
+        'out_degree_assortativity_p_value': 'REAL',
     }

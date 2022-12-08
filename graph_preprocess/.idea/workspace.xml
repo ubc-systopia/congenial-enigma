@@ -30,11 +30,11 @@
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PageRank.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/PageRank.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PageRank.h" beforeDir="false" afterPath="$PROJECT_DIR$/PageRank.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compute_ccs.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/compute_ccs.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pr_experiments.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/pr_experiments.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stats.h" beforeDir="false" afterPath="$PROJECT_DIR$/stats.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/util.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/calc_stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../konect_scraper/stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
@@ -80,17 +80,17 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.notifications&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;inlay.hints&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="CMake Application.compute_ccs">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+  <component name="RunManager" selected="CMake Application.stats">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -s" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
+    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db -s" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -196,6 +196,7 @@
       <workItem from="1669755604246" duration="31394000" />
       <workItem from="1670263604105" duration="20417000" />
       <workItem from="1670354382223" duration="6667000" />
+      <workItem from="1670455015487" duration="7876000" />
     </task>
     <servers />
   </component>

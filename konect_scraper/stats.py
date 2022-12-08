@@ -2,6 +2,7 @@ import ast
 import itertools
 import logging
 import os
+import struct
 import subprocess
 
 import numpy as np
@@ -489,26 +490,6 @@ def compute_scipy_stats(graph_name):
     graph_path = os.path.join(
         graph_dir, f'{compressed_fname}.{edgelist_file_suffix}')
 
-    lcc_path = os.path.join(graph_dir, f'lcc.{edgelist_file_suffix}')
-    lscc_path = os.path.join(graph_dir, f'lscc.{edgelist_file_suffix}')
-
-    # logging.info("Reading edgelist..")
-    # nx_graph = nx.read_edgelist(graph_path, create_using=nx.DiGraph)
-    mat_path = os.path.join(
-        graph_dir, f'{compressed_fname}.{scipy_csr_suffix}')
-    lcc_mat_path = os.path.join(graph_dir, f'lcc.{scipy_csr_suffix}')
-    lscc_mat_path = os.path.join(graph_dir, f'lscc.{scipy_csr_suffix}')
-
-    mat_names = [
-        'comp', 
-        # 'lcc', 
-        # 'lscc'
-        ]
-    edge_list_paths = [
-        graph_path, 
-        # lcc_path, 
-        # lscc_path
-        ]
     mat_path = os.path.join(graph_dir, f'mat.bin')
     gcc_mat_path = os.path.join(graph_dir, f'gcc_mat.bin')
 
@@ -518,18 +499,32 @@ def compute_scipy_stats(graph_name):
     logging.info(f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
+
     # symmetrize directed csr
     logging.info("\tSymmetrizing Graph..")
     symm_csr_mat = symmetrize(csr_mat)
+
     logging.info("\tSymmetrizing GCC..")
     symm_gcc_mat = symmetrize(gcc_mat)
+
     logging.info("\tSymmetric Eigenvalues..")
-    symm_egvals, symm_eg_vecs = eigsh(
+    symm_egvals, _ = eigsh(
         A=symm_csr_mat.astype('float'),
         k=2,
         which='LM'
     )  
 
+    logging.info("\tComputing the laplacian of the symmetric gcc..")
+    lap = laplacian(symm_gcc_mat.astype(np.int64))
+
+    logging.info("\tSymmetric GCC Laplacian Eigenvalues..")
+    symm_g_egvals, _ = eigsh(
+        A=lap.astype('float'),
+        k=2,
+        which='LM',
+        sigma=0
+    )  
+    al_conn = symm_g_egvals[1]
     # :-( long for large matrices?
     # logging.info("\tEigenvalues..")
     # egvals, eg_vecs = get_eigenvalues(csr_mat.astype('float'))
@@ -543,23 +538,57 @@ def compute_scipy_stats(graph_name):
     n = csr_mat.shape[0]
     m = csr_mat.count_nonzero()
     f = m / ((n * (n - 1)) / 2)
-    # al_conn = algebraic_connectivity(lcc_mat)
+
+    out_deg_assort, out_deg_assort_p = degree_assortativity(graph_dir, True)
+    in_deg_assort, in_deg_assort_p = degree_assortativity(graph_dir, False)
+    
     stats = {
         'n_vertices': n,
         'n_edges': m,
         'op_2_norm': op_2_norm,
         # 'cyclic_eval': cyclic_eval,
-        # 'al_conn': al_conn,
+        'al_conn': al_conn,
         'spectral_norm': spectral_norm,
         'spectral_separation': spectral_sep,
         'fill': f,
-        # 'n_sccs': n_sccs,
-        # 'n_ccs': n_ccs,
-        # 'lscc_size': lscc_size,
-        # 'lcc_size': lcc_size,
+        'in_degree_assortativity': in_deg_assort, 
+        'in_degree_assortativity_p_value': in_deg_assort_p,
+        'out_degree_assortativity': out_deg_assort,
+        'out_degree_assortativity_p_value': out_deg_assort_p,
     }
-    print(f'{stats=}')
     return stats
+
+def degree_assortativity(graph_dir, out):
+    """The degree assortativity (ρ) in a network is defined as the Pearson 
+    correlation coefficient of the degree of connected nodes, measured over the
+     set of all edges. We additionally give the p-value (ρ) associated with it
+
+    Args:
+        graph_dir (string): directory containing the graph. dir contains two 
+        binary files: src_degs.bin and dest_degs.bin - each contains m elements
+        m = number of edges, the degree of the source and destination vertices
+        of each edge in the graph are stored in the binary array
+        out (bool): whether to ingest the outdegree or indegree arrays
+
+    Returns:
+        float, float: pearson correlation of src_degs and dest_degs + p value
+    """
+
+    deg_str = "out" if out else "in"
+
+    # read binary arrays
+    src_path = os.path.join(graph_dir, f"src_{deg_str}degs.bin")
+    dest_path = os.path.join(graph_dir, f"dest_{deg_str}degs.bin")
+    
+    with open(src_path, 'rb') as f:
+        m = struct.unpack('L', f.read(8))[0]
+        src_degs = np.fromfile(f, dtype=np.dtype('u4'), count=m).reshape(m)
+
+    with open(dest_path, 'rb') as f:
+        m = struct.unpack('L', f.read(8))[0]
+        dest_degs = np.fromfile(f, dtype=np.dtype('u4'), count=m).reshape(m)
+
+    return stats.pearsonr(src_degs, dest_degs)
 
 def compute_eigen_stats():
     return 

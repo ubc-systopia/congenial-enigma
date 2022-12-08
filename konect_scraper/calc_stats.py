@@ -24,15 +24,6 @@ def compute_cpp_stats(graph_name, db_path, n):
 
     graph_dir = os.path.join(graphs_dir, graph_name)
     cc_exec = config.settings['compute_ccs_executable']
-    args = [
-        cc_exec, 
-        '-f', os.path.join(graph_dir, "comp.net"),
-        '-o', os.path.join(graph_dir, "lcc.net"),
-        '-s', 
-        '-d', db_path
-    ]
-    logging.info(" ".join(args))
-    res = subprocess.check_output(args)
 
     args = [
         cc_exec, 
@@ -43,6 +34,16 @@ def compute_cpp_stats(graph_name, db_path, n):
     logging.info(" ".join(args))
     res = subprocess.check_output(args)
     # cpp: eigen stats
+
+    args = [
+        cc_exec, 
+        '-f', os.path.join(graph_dir, "comp.net"),
+        '-o', os.path.join(graph_dir, "lcc.net"),
+        '-s', 
+        '-d', db_path
+    ]
+    logging.info(" ".join(args))
+    res = subprocess.check_output(args)
 
     logging.info(f"Computing {graph_name}'s eigen stats..")
     stats_executable = config.settings['stats_executable']
@@ -74,8 +75,8 @@ def compute_stats(graph_name):
     logging.info(f"Computing {graph_name}'s Powerlaw stats..")
     stats.update(compute_plfit_stats(graph_name))
 
-    logging.info(f"Computing {graph_name}'s distance stats..")
-    stats.update(compute_distance_stats(graph_name))
+    # logging.info(f"Computing {graph_name}'s distance stats..")
+    # stats.update(compute_distance_stats(graph_name))
     
     logging.info(f"Computing {graph_name}'s motif stats..")
     stats.update(compute_motif_stats(graph_name))

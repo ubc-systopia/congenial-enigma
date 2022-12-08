@@ -163,7 +163,7 @@ void compute_eig_stats(bool symmetric, bool laplacian, std::string in_path, uint
 #pragma omp parallel for schedule(dynamic) reduction(+:recip_edges)
 	for (int k = 0; k < A.outerSize(); ++k)
 		for (typename Eigen::SparseMatrix<T>::InnerIterator it(A, k); it; ++it) {
-			// if the opposite edge exists
+			// if the opposite edge exists (k, it.index())
 			if (A.coeff(k, it.index()) == 1) {
 				++recip_edges;
 			}

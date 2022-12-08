@@ -8,6 +8,7 @@
 #include "cc.h"
 #include "fmt/core.h"
 #include "fmt/ranges.h"
+#include "util.h"
 #include <boost/config.hpp>
 #include <iostream>
 #include <vector>
@@ -73,7 +74,7 @@ void write_cc(pvector<NodeID> &comp, NodeID gcc_id, Graph &g, std::string out_pa
 			}
 		}
 	}
-	Eigen::SparseMatrix<uint32_t> A;
+	Eigen::SparseMatrix<uint32_t> A(gcc_count, gcc_count);
 	A.setFromTriplets(mapped_edges.begin(), mapped_edges.end());
 	write_binary_sparse(out_path, A);
 	return;
@@ -263,12 +264,65 @@ std::pair<uint32_t, uint64_t> write_directed_degs(CLApp &cli) {
 	return {g.num_nodes(), g.num_edges_directed()};
 }
 
+double gini_coef(Graph &g, bool out) {
+	uint32_t n = g.num_nodes();
+	pvector<uint64_t> deg(n);
+
+#pragma omp parallel for schedule(static)
+	for (uint32_t i = 0; i < n; ++i)
+		deg[i] = out ? g.out_degree(i) : g.in_degree(i);
+
+	std::sort(dpl::execution::par_unseq, deg.begin(), deg.end());
+	pvector<uint64_t> numers(n);
+#pragma omp parallel for schedule(static)
+	for (uint32_t i = 0; i < n; ++i)
+		numers[i] = deg[i] * (i + 1);
+	uint64_t numer = omp_accumulate<uint64_t, uint64_t>(numers, 0);
+	uint64_t denom = omp_accumulate<uint64_t, uint64_t>(deg, 0);
+	double G = ((2.0 * numer) / (n * denom)) - \
+              ((n + 1) / n);
+	return G;
+}
+
+void write_edge_degs(Graph &g, std::string dir_path, bool out) {
+
+	std::string dir_str = out ? "out" : "in";
+	std::string src_deg_fname = fmt::format("src_{}degs.bin", dir_str);
+	std::string dest_deg_fname = fmt::format("dest_{}degs.bin", dir_str);
+	std::string src_deg_path = fmt::format("{}/{}", dir_path, src_deg_fname);
+	std::string dest_deg_path = fmt::format("{}/{}", dir_path, dest_deg_fname);
+	uint32_t n = g.num_nodes();
+	uint64_t m = g.num_edges();
+	std::ofstream out_src(src_deg_path, std::ios::binary | std::ios::out | std::ios::trunc);
+	std::ofstream out_dest(dest_deg_path, std::ios::binary | std::ios::out | std::ios::trunc);
+
+	// write the number of entries (edges) as a header
+	out_src.write(reinterpret_cast<char *>(&m), sizeof(uint64_t));
+	out_dest.write(reinterpret_cast<char *>(&m), sizeof(uint64_t));
+	for (uint32_t u = 0; u < n; ++u) {
+		uint32_t src_deg = out ? g.out_degree(u) : g.in_degree(u);
+		for (uint64_t v: g.out_neigh(u)) {
+			uint32_t dest_deg = out ? g.out_degree(v) : g.in_degree(v);
+			out_src.write(reinterpret_cast<char *>(&src_deg), sizeof(uint32_t));
+			out_dest.write(reinterpret_cast<char *>(&dest_deg), sizeof(uint32_t));
+		}
+	}
+	out_src.close();
+	out_dest.close();
+}
+
 int main(int argc, char *argv[]) {
 	CLApp cli(argc, argv, "computes the largest strongly or weakly connected component of an input graph");
 	if (!cli.ParseArgs())
 		return -1;
 
 	Builder b(cli);
+
+	boost::filesystem::path pth(cli.filename());
+	boost::filesystem::path dir = pth.parent_path();
+	std::string file_name = pth.stem().string();
+	std::string graph_name = dir.filename().string();
+
 	bool directed = !cli.symmetrize();
 	if (directed) {
 		auto pr = write_directed_degs(cli);
@@ -278,6 +332,18 @@ int main(int argc, char *argv[]) {
 //		scc(cli.filename(), g, cli.out_filename());
 		// use igraph
 		scc_igraph(cli.filename(), cli.out_filename(), n, m, cli.db_filename());
+		Graph g = b.MakeGraph();
+
+		// compute the graphs Gini coefficient (using the out and in degrees)
+		double out_gini = gini_coef(g, true);
+		double in_gini = gini_coef(g, false);
+		// write ginis to db
+		single_val_set<double>(cli.db_filename(), "out_gini_coefficient", "features", graph_name, out_gini);
+		single_val_set<double>(cli.db_filename(), "in_gini_coefficient", "features", graph_name, in_gini);
+
+		// write the in and outdegree of the source and dest of each edge in the graph to separate bin files
+		write_edge_degs(g, dir.string(), true);
+		write_edge_degs(g, dir.string(), false);
 
 		return 0;
 	}
@@ -298,14 +364,9 @@ int main(int argc, char *argv[]) {
 	uint32_t gcc_size = res.second;
 	fmt::print("{} {}\n", unique_cids.size(), gcc_size);
 
-	boost::filesystem::path pth(cli.filename());
-	boost::filesystem::path dir = pth.parent_path();
-	std::string file_name = pth.stem().string();
-	std::string graph_name = dir.filename().string();
 	// write number of ccs, and size of gcc to db
 	std::string gcc_mat_path = fmt::format("{}/{}", dir.string(), "gcc_mat.bin");
 	write_cc(comp, gcc_id, g, gcc_mat_path, false);
 	single_val_set<uint32_t>(cli.db_filename(), "n_ccs", "features", graph_name, unique_cids.size());
 	single_val_set<uint32_t>(cli.db_filename(), "lcc_size", "features", graph_name, gcc_size);
-
 }

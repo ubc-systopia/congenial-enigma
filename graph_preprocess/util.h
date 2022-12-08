@@ -44,4 +44,16 @@ std::pair<uint32_t, uint32_t> rotate_point(uint32_t cx, uint32_t cy, int angle, 
 
 uint32_t int_log(int base, uint32_t x);
 
+template<typename T, typename U>
+auto omp_accumulate(const pvector<T> &v, U init) {
+	U sum = init;
+
+#pragma omp parallel for reduction(+:sum)
+	for (uint32_t i = 0; i < v.size(); i++)
+		sum += v[i];
+
+	return sum;
+}
+
+
 #endif //GRAPH_PREPROCESS_UTIL_H
