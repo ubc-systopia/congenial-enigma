@@ -5,6 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 import logging
+import psutil
 
 import igraph
 import networkx as nx
@@ -710,15 +711,36 @@ def save_webgraph(el_path, graph_dir):
         else:
             heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = 8
-    print(f"{heap_size=}")
-    command = f"java -Xss256K -Xms{heap_size}G it.unimi.dsi.webgraph.BVGraph -1 -t {n_threads} -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
-    logging.info(f"Running: {command}..")
+        vm = psutil.virtual_memory()
+        avail_gbs = convert_size(vm.available)[0]
+        heap_size = int(avail_gbs) - 4
+    print(f'{heap_size=}')
     env = os.environ.copy()
     if 'CLASSPATH' in env.keys():
         env['CLASSPATH'] = ':'.join(webgraph_jars) + ':' + env['CLASSPATH']
     else:
         env['CLASSPATH'] = ':'.join(webgraph_jars) 
+
+    command = f"java -Xss256K -Xms{heap_size}G it.unimi.dsi.webgraph.BVGraph \
+        -1 \
+        -t {n_threads} \
+        -g ArcListASCIIGraph dummy {graph_dir}/webgraph <{el_path}"
+    logging.info(f"Running: {command}..")
+    ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
+    res = ret.stdout.decode()
+    if ret.returncode == 1:  # failed
+        print(f"{ret.stderr.decode()=}")
+        raise Exception(f"{command} did not complete!")
+    logging.info(res)
+
+    # stored the transposed webgraph graph to allow for (faster) systolic 
+    # hyperball computation
+    command = f"java -Xss256K -Xms{heap_size}G \
+        it.unimi.dsi.webgraph.Transform \
+        transposeOffline \
+        {graph_dir}/webgraph \
+        {graph_dir}/webgraphT"
+    logging.info(f"Running: {command}..")
     ret = subprocess.run(command, capture_output=True, shell=True, cwd=webgraph_dir, env=env)
     res = ret.stdout.decode()
     if ret.returncode == 1:  # failed

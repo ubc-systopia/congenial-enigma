@@ -329,6 +329,12 @@ def init(input_data_dir=None):
                 'all'
             ]
         },
+        'webgraph': {
+            'hyperball': {
+                # the logarithm of the number of registers per counter.
+                'log2m': 16, 
+            }
+        },
         'peregrine': {
             'prgrn_dir': prgrn_dir,
             'prgrn_bin_dir': prgrn_bin_dir,

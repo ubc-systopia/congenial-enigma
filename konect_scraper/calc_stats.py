@@ -75,8 +75,8 @@ def compute_stats(graph_name):
     logging.info(f"Computing {graph_name}'s Powerlaw stats..")
     stats.update(compute_plfit_stats(graph_name))
 
-    # logging.info(f"Computing {graph_name}'s distance stats..")
-    # stats.update(compute_distance_stats(graph_name))
+    logging.info(f"Computing {graph_name}'s distance stats..")
+    stats.update(compute_distance_stats(graph_name))
     
     logging.info(f"Computing {graph_name}'s motif stats..")
     stats.update(compute_motif_stats(graph_name))
@@ -88,6 +88,13 @@ def main(rows):
     compressed_fname = settings['compressed_el_file_name']
     edgelist_file_suffix = settings['edgelist_file_suffix']
     settings['scipy_csr_suffix']
+    # suppress numba debug logs
+    numba_logger = logging.getLogger('numba')
+    numba_logger.setLevel(logging.WARNING)
+    numba_logger = logging.getLogger('ssa')
+    numba_logger.setLevel(logging.WARNING)
+
+
     # compute the given orders for each of the datasets
     conn = connect()
     # df = pd.concat([df, pd.DataFrame([d])], ignore_index=True)

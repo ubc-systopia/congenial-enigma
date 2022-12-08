@@ -6,6 +6,7 @@ import struct
 import subprocess
 
 import numpy as np
+import psutil
 import scipy
 from scipy.special import comb
 import scipy.sparse as ss
@@ -14,7 +15,7 @@ from scipy import stats
 from konect_scraper import config
 from konect_scraper.io import load_mat
 from konect_scraper.sql import is_bipartite, single_val_get
-from konect_scraper.util import get_n_m, get_directed, get_n, get_m, get_webgraph_jars
+from konect_scraper.util import convert_size, get_n_m, get_directed, get_n, get_m, get_webgraph_jars
 from scipy.sparse.linalg import eigs
 from scipy.sparse.linalg import eigsh
 from scipy.sparse.csgraph import laplacian, connected_components
@@ -607,7 +608,11 @@ def hyperball(graph_name):
         else:  
             heap_size = int(settings['slurm_params']['mem'].replace('G', '')) - 4
     else:
-        heap_size = 100
+        vm = psutil.virtual_memory()
+        avail_gbs = convert_size(vm.available)[0]
+        heap_size = int(avail_gbs) - 4
+
+    log2m = settings['webgraph']['hyperball']['log2m']
     print(f"{heap_size=}")
     command = f"""
         java \
@@ -621,7 +626,13 @@ def hyperball(graph_name):
         -XX:+UseNUMA \
         -XX:+UseTLAB \
         -XX:+ResizeTLAB \
-        it.unimi.dsi.webgraph.algo.HyperBall -l 10 {graph_dir}/webgraph -n {graph_dir}/neigh_func 
+        -verbose:gc \
+        -Xloggc:gc.log \
+        it.unimi.dsi.webgraph.algo.HyperBall \
+            -l {log2m} \
+            -n {graph_dir}/neigh_func \
+            {graph_dir}/webgraph \
+            {graph_dir}/webgraphT 
     """
     logging.info(f"Running: {command}..")
     env = os.environ.copy()
