@@ -389,3 +389,4 @@ konect_scraper/utilities/verify_exec_mode.py
 konect_scraper/utilities/test_numpy.py
 
 gc.log*
+*.log.swp

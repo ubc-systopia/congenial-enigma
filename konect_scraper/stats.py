@@ -502,7 +502,7 @@ def compute_scipy_stats(graph_name):
 
     logging.info(f"Reading CSR from {mat_path}..")
     csr_mat = load_mat(mat_path)
-    gcc_mat = load_mat(gcc_mat_path)
+    # gcc_mat = load_mat(gcc_mat_path)
     logging.info(
         f"Read sparse adj mat of shape: ({csr_mat.shape[0]}, {csr_mat.shape[1]})")
     n = csr_mat.shape[0]
@@ -512,8 +512,8 @@ def compute_scipy_stats(graph_name):
     logging.info("\tSymmetrizing Graph..")
     symm_csr_mat = symmetrize(csr_mat)
 
-    logging.info("\tSymmetrizing GCC..")
-    symm_gcc_mat = symmetrize(gcc_mat)
+    # logging.info("\tSymmetrizing GCC..")
+    # symm_gcc_mat = symmetrize(gcc_mat)
 
     logging.info("\tSymmetric Eigenvalues..")
     symm_egvals, _ = eigsh(

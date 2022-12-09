@@ -107,7 +107,7 @@ def load_mat(filename):
         indptr = np.fromfile(
             f, dtype=np.dtype('u4'), count=outS).reshape(outS)
         indices = np.fromfile(f, dtype=np.dtype('u4'), count=nnzs).reshape(nnzs)
-        logging.info(f"{rows} {cols} {nnzs} {outS} {innS}")
+        logging.info(f"{filename=}: {rows=} {cols=} {nnzs=} {outS=} {innS=}")
         # print(f'{indices=}')
         # print(f'{indptr=}')
         assert(rows == cols)
