@@ -392,3 +392,5 @@ gc.log*
 *.log.swp
 
 perf.csv
+
+tsne_hparams.csv

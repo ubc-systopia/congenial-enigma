@@ -21,6 +21,7 @@ from konect_scraper.util import get_n
 def compute_cpp_stats(graph_name, db_path, n):
     graphs_dir = config.settings['graphs_dir']
 
+
     graph_dir = os.path.join(graphs_dir, graph_name)
     cc_exec = config.settings['compute_ccs_executable']
 
@@ -32,6 +33,7 @@ def compute_cpp_stats(graph_name, db_path, n):
     ]
     logging.info(" ".join(args))
     res = subprocess.check_output(args)
+    # cpp: eigen stats
 
     args = [
         cc_exec, 
@@ -44,12 +46,10 @@ def compute_cpp_stats(graph_name, db_path, n):
     res = subprocess.check_output(args)
 
     logging.info(f"Computing {graph_name}'s eigen stats..")
-    
     stats_executable = config.settings['stats_executable']
     args = [
         stats_executable, '-n', str(n), '-g', graph_dir, '-d', db_path
     ]
-
     logging.info(" ".join(args))
     res = subprocess.check_output(args)
 
