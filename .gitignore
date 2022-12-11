@@ -390,3 +390,5 @@ konect_scraper/utilities/test_numpy.py
 
 gc.log*
 *.log.swp
+
+tsne_hparams.csv

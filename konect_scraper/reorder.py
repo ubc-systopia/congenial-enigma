@@ -108,6 +108,8 @@ def compute_par_slashburn(graph_path, order_path):
     logging.info(f"Executing: " + ' '.join(args))
 
     res = subprocess.check_output(args)
+    return 
+    
 def compute_slashburn(graph_path, order_path, directed, n, m):
     settings = config.settings
     percent = settings['hyperparameters']['slashburn']['percent']
@@ -125,7 +127,6 @@ def compute_slashburn(graph_path, order_path, directed, n, m):
     ]
 
     logging.info(f"Executing: " + ' '.join(args))
-
     res = subprocess.check_output(args)
 
     return
