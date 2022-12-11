@@ -138,14 +138,18 @@ def compute_parallel_batch_cm(graph_path, n, m, directed, cm_path, rcm_path):
 
     executable = settings['parallel_batch_rcm_executable']
     args = [executable]
-
+    n_threads = int(config.settings['n_threads'])
+    if n_threads > 24:
+        n_threads = 24
     args += [
         graph_path,
         '-i', 'CPU_BATCH',
-        '-t', str(config.settings['n_threads']),
+        '-t', str(n_threads),
+        # '-i', 'GPU',
         '-o', cm_path,
         '-n', str(n),
         '-m', str(m),
+        '-w',
         '--rcm', rcm_path,
         '--sqlite3_db', sqlite3_db_path,
     ]
@@ -228,13 +232,13 @@ def compute_ordering(graph_name, order, ovewrite):
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 
         case "cm":
-            extension = ".bin"
+            extension = ".net"
 
             comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
             cm_order_path = order_path
             rcm_order_path = os.path.join(graph_dir, 'rev_cm')
-            compute_cuthill_mckee(comp_graph_path, n, m)
-            # compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+            # compute_cuthill_mckee(comp_graph_path, n, m)
+            compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
         case "rev_cm":
             return
 
