@@ -119,6 +119,24 @@ void read_text_edge_list(std::string path, std::vector<ul> &edges) {
 }
 
 
+void read_text_degree_file(std::string path, std::vector<uint32_t> &deg) {
+	std::string line;
+	ull i = 0;
+	// flat edges' size has been preallocated and initialized
+	std::ifstream input_file(path);
+	if (input_file.is_open()) {
+		while (getline(input_file, line)) {
+			std::stringstream linestream(line);
+			uint32_t d;
+			linestream >> d;
+			deg[i] = d;
+			++i;
+		}
+		input_file.close();
+	} else std::cout << "Unable to open file";
+}
+
+
 void read_text_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges) {
 	std::string line;
 	ull i = 0;

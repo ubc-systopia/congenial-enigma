@@ -136,7 +136,7 @@ def main(args):
             if debug:
                 for vorder_str in orders:
                     plotting.plot_edge_orderings(rows, vorder_str)
-                assert valid_pr(rows)
+                # assert valid_pr(rows)
             return
 
         case 'stats':

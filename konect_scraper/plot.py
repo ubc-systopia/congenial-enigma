@@ -65,13 +65,15 @@ def plot_edge_list_as_adj_mat(canvas, graph_name, directed, label_str, el_file_n
 
 
 def plot_compressed(canvas, graph_name, directed):
-    plot_edge_list_as_adj_mat(canvas, graph_name, directed, "comp", "compressed_el_file_name")
+    plot_edge_list_as_adj_mat(
+        canvas, graph_name, directed, "comp", "compressed_el_file_name")
 
     return
 
 
 def plot_orig(canvas, graph_name, directed):
-    plot_edge_list_as_adj_mat(canvas, graph_name, directed, "orig", "orig_el_file_name")
+    plot_edge_list_as_adj_mat(
+        canvas, graph_name, directed, "orig", "orig_el_file_name")
     return
 
 
@@ -231,6 +233,7 @@ def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, ):
 
     return
 
+
 def plot_rbt_comms(ax, comms):
     n_comms = len(np.unique(comms))
     color = iter(cm.rainbow(np.linspace(0, 1, n_comms)))
@@ -249,6 +252,7 @@ def plot_rbt_comms(ax, comms):
         rect = patches.Rectangle((start, end), comm_size, -comm_size,
                                  linewidth=1, edgecolor=c, alpha=0.3, zorder=2, facecolor=c)
         ax.add_patch(rect)
+
 
 def ax_plot_adj_mat(ax, graph_name, directed, plot_type, markersize, label_str, el_file_name):
     settings = config.settings
@@ -270,7 +274,8 @@ def ax_plot_adj_mat(ax, graph_name, directed, plot_type, markersize, label_str, 
 def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, markersize, figsize, plots_dir, dpi,
                       ax_plot_fn, plot_type):
     settings = config.settings
-    ax_path = os.path.join(plots_dir, graph_name, plot_type, f"{label_str}.{fmt}")
+    ax_path = os.path.join(plots_dir, graph_name,
+                           plot_type, f"{label_str}.{fmt}")
 
     if Path(ax_path).is_file():  # if already computed, skip
         logging.info(f"{graph_name}-{label_str} already plotted; skipping.")
@@ -283,12 +288,15 @@ def ax_plot_and_clear(graph_name, directed, label_str, el_file_name, fmt, marker
 
     match ax_plot_fn.__name__:
         case 'ax_plot_order':
-            ax_plot_fn(ax, graph_name, directed, plot_type, markersize, label_str, )
+            ax_plot_fn(ax, graph_name, directed,
+                       plot_type, markersize, label_str, )
         case 'ax_plot_adj_mat':
-            ax_plot_fn(ax, graph_name, directed, plot_type, markersize, label_str, el_file_name, )
+            ax_plot_fn(ax, graph_name, directed, plot_type,
+                       markersize, label_str, el_file_name, )
     ax.axis('off')
     plt.tight_layout()
-    fig.savefig(ax_path, bbox_inches=bbox_inches, pad_inches=pad_inches, dpi=dpi)
+    fig.savefig(ax_path, bbox_inches=bbox_inches,
+                pad_inches=pad_inches, dpi=dpi)
     fig.clear()
     plt.close(fig)
 
@@ -303,12 +311,68 @@ def get_figsize(ax_size, n):
 
 def plot_edge_orderings(rows, vorder_str):
     edge_orderings = config.settings['hyperparameters']['pr-experiments']['edge_orderings']
+    print(f'{edge_orderings=}')
+    edge_orderings = ['hilbert']
     for row in rows:
         graph_name = row['graph_name']
         for eorder_str in edge_orderings:
             plot_edge_ordering(graph_name, vorder_str, eorder_str)
 
     return
+
+
+def tesselate_dense_core(side_len, l2):
+    def recur(start_x, end_x, start_y, end_y, coords):
+        len_x = end_x - start_x
+        len_y = end_y - start_y
+        mid_x = (start_x + end_x) // 2
+        mid_y = (start_y + end_y) // 2
+        if len_x <= l2 / 2 or len_y <= l2 / 2:
+            coords.append([start_x, end_x, start_y, end_y])
+            return
+        else:
+            recur(start_x, mid_x, start_y, mid_y, coords)
+            recur(mid_x, end_x, start_y, mid_y, coords)
+            recur(start_x, mid_x, mid_y, end_y, coords)
+            recur(mid_x, end_x, mid_y, end_y, coords)
+
+    coords = []
+    recur(0, side_len, 0, side_len, coords)
+    for start_x, end_x, start_y, end_y in coords:
+        rectangle = plt.Rectangle((start_x, start_y),
+                                  end_x - start_x,
+                                  end_y - start_y,
+                                  fill=False,
+                                  linewidth=0.2)
+        plt.gca().add_patch(rectangle)
+
+
+def plot_wing_width_bounds(ww, n):
+    # offset = 0.05
+    # ymax = 1 - offset
+    # ymin = (n - ww) // n
+    # xmin = 0 + offset
+    # xmax = ww / n - offset
+    # print(f'{ymin=}')
+    plt.axvline(x=ww, linewidth=0.4)
+    plt.axhline(y=ww, linewidth=0.4)
+    l2_cache_size = 2 ** 8
+    l3_cache_size = 1600
+    n_threads = 6
+    l3_annot_x = -600
+    l2_annot_x = -550
+    plt.vlines(x=l3_annot_x, ymin=0, ymax=l3_cache_size,
+       label=f'l3 cache size={l3_cache_size}')
+    plt.vlines(x=l2_annot_x, ymin=0, ymax=l2_cache_size,
+       label=f'l2 cache size={l2_cache_size}')
+    plt.text(l3_annot_x - 300, 0, f'l3={l3_cache_size}\nl2={l2_cache_size}\nn_threads={n_threads}', rotation=0, size=6)
+    # get the smallest power of two that fits in l3 cache
+    l3_hypolog = 2 ** int(np.log2(l3_cache_size))
+    q_side_len = int(l3_hypolog / 2)
+    print(f'{l3_hypolog=}')
+    print(f'{q_side_len=}')
+    dense_core_sidelen = 2 ** int(np.log2(ww))
+    tesselate_dense_core(dense_core_sidelen, l2_cache_size)
 
 
 def plot_edge_ordering(graph_name, vorder_str, eorder_str):
@@ -325,16 +389,26 @@ def plot_edge_ordering(graph_name, vorder_str, eorder_str):
     dpi = config.settings['plot']['dpi']
     adj_mat_format = config.settings['plot']['adj_mat_format']
     edgelist_path = os.path.join(graph_dir, f"{vorder_str}.{eorder_str}")
-    plot_path = os.path.join(plot_dir, f"{vorder_str}_{eorder_str}.{plot_format}")
+    plot_path = os.path.join(
+        plot_dir, f"{vorder_str}_{eorder_str}.{plot_format}")
     print(plot_path)
 
+    sb_k = single_val_get('par_sb_k', 'statistics', graph_name)
+    sb_n_iters = single_val_get('par_sb_n_iters', 'statistics', graph_name)
+    wing_width = sb_k * sb_n_iters
+
+    print(f'{wing_width=}')
+
     sorted_edges = np.loadtxt(edgelist_path).astype(np.uint32)
+
+    print(sorted_edges[:15])
+    # return
     adj_mat = np.zeros((n, n))
     c = np.zeros(sorted_edges.shape[0])
     eid = 1
     for e in sorted_edges:
         adj_mat[e[0], e[1]] = eid
-        c[eid - 1] = eid;
+        c[eid - 1] = eid
 
         eid += 1
 
@@ -346,16 +420,20 @@ def plot_edge_ordering(graph_name, vorder_str, eorder_str):
     # plt.spy(adj_mat, cmap=cmap, interpolation='none')
     # divider = make_axes_locatable(ax)
     # cax = divider.append_axes('right', size='5%', pad=0.05)
-    plt.scatter(sorted_edges[:, 1], sorted_edges[:, 0], c=c, cmap=cmap, marker='.')
+    plt.scatter(sorted_edges[:, 1], sorted_edges[:, 0],
+                c=c, cmap=cmap, marker='.', s=1)
     # ax.set_extent([0, n - 1, n - 1, 0])
     plt.gca().invert_yaxis()
+    plot_wing_width_bounds(wing_width, n)
+
     # plt.gca().invert_xaxis()
     plt.colorbar()
     # fig.colorbar(im, cax=cax)
-    plt.savefig(plot_path, figsize=(5, 5), dpi=dpi, )
+    plt.savefig(plot_path, figsize=(15, 15), dpi=500, )
     plt.close()
 
     return
+
 
 def plot_graph(graph_name, orders, settings):
     logging.info(f"Plotting {graph_name}..")
@@ -382,11 +460,11 @@ def plot_graph(graph_name, orders, settings):
 
     # plot the original adjacency matrix
     ax_plot_and_clear(graph_name, directed, "orig", "orig_el_file_name", fmt, markersize, figsize, plots_dir, dpi,
-                        ax_plot_adj_mat, plot_type)
+                      ax_plot_adj_mat, plot_type)
     # plot the compressed adjacency matrix
     ax_plot_and_clear(graph_name, directed, "comp", "compressed_el_file_name", fmt, markersize, figsize, plots_dir,
-                        dpi,
-                        ax_plot_adj_mat, plot_type)
+                      dpi,
+                      ax_plot_adj_mat, plot_type)
 
     # adj_mat_fig, adj_mat_axs = plt.subplots(nrows, ncols, figsize=figsize)
     # spy_fig, spy_axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
@@ -398,11 +476,12 @@ def plot_graph(graph_name, orders, settings):
         # plot_ordering(plt, graph_name, directed, order)
         for plot_type in plot_types:
             ax_plot_and_clear(graph_name, directed, order, None, fmt, markersize, figsize,
-                                plots_dir,
-                                dpi,
-                                ax_plot_order, plot_type)
+                              plots_dir,
+                              dpi,
+                              ax_plot_order, plot_type)
 
     gc.collect()
+
 
 def main(rows, orders):
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
@@ -418,7 +497,8 @@ def main(rows, orders):
     fmt = settings['plot']['format']
 
     nrows = len(rows)
-    ncols = len(orders) + 2  # plot all orders + original and compressed isomorphisms
+    # plot all orders + original and compressed isomorphisms
+    ncols = len(orders) + 2
     ax_size = settings['plot']['ax_size']
     max_n = settings['plot']['max_n']
     figsize = (ncols * ax_size, nrows * ax_size,)
@@ -438,7 +518,8 @@ def main(rows, orders):
 
     graph_names = [row['graph_name'] for row in rows]
 
-    logging.info(f"Plotting an aggregate plots of {len(graph_names)} graphs and {len(orders)} orders..")
+    logging.info(
+        f"Plotting an aggregate plots of {len(graph_names)} graphs and {len(orders)} orders..")
     split_aggregate_plots(graph_names, orders, fmt)
     return
 

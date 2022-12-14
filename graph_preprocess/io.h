@@ -99,7 +99,7 @@ void read_map(std::string in_path, std::vector<ul> &mp);
 
 void write_row_to_csv(PRExptRow &r, std::string csv_path);
 
-
+void read_text_degree_file(std::string path, std::vector<uint32_t> &deg);
 template<typename C>
 void read_binary_container(std::string inpath, C &container) {
 	std::ifstream ifs(inpath, std::ios::binary);
