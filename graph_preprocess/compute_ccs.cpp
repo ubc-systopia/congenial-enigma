@@ -191,9 +191,12 @@ void write_degs(std::string input_path, Graph &g) {
 	std::string graph_name = dir.filename().string();
 	std::string out_degs_path = fmt::format("{}/out_degs", dir.string());
 	std::string in_degs_path = fmt::format("{}/in_degs", dir.string());
-
 	if (boost::filesystem::exists(out_degs_path) && boost::filesystem::exists(in_degs_path)) {
-		return;
+		// if both files are not empty, return
+		if ((boost::filesystem::file_size(out_degs_path) != 0) &&
+		(boost::filesystem::file_size(in_degs_path) != 0)){
+			return;
+		}
 	}
 
 	std::ofstream out_degs_file(out_degs_path);

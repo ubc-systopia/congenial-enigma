@@ -30,15 +30,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/par_hilbert_bench.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/../driver.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pr_experiments.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/pr_experiments.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compute_ccs.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/compute_ccs.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/par_hilbert_bench.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/par_hilbert_bench.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,12 +81,7 @@
   }
 }</component>
   <component name="RunManager" selected="CMake Application.par_hilbert_bench">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db -s" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
+    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -117,7 +106,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d /media/atrostan/patterson_backup/data -g email-EuAll" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
+    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d /media/atrostan/patterson_backup/data -g email-EuAll -l 65535" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -207,6 +196,7 @@
       <workItem from="1670455015487" duration="9683000" />
       <workItem from="1670955306776" duration="26439000" />
       <workItem from="1671038827256" duration="6156000" />
+      <workItem from="1671061579691" duration="2836000" />
     </task>
     <servers />
   </component>

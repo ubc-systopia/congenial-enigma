@@ -121,8 +121,8 @@ void horder_edges_in_qs(std::vector<Quad> &qs, uint32_t side_len) {
 
 void horder_qs(std::vector<Quad> &qs, uint32_t side_len) {
 	uint64_t n = hyperceiling(side_len);
-	fmt::print("side_len: {}\n", side_len);
-	fmt::print("n: {}\n", n);
+//	fmt::print("side_len: {}\n", side_len);
+//	fmt::print("n: {}\n", n);
 #pragma omp parallel for schedule(static)
 	for (uint32_t i = 0; i < qs.size(); ++i) {
 		uint16_t qx = qs[i].qx;
@@ -207,8 +207,9 @@ int main(int argc, char *argv[]) {
 	std::string graph_name = "";
 	std::string data_dir = "";
 	bool hilbert = false;
+	uint16_t q_side_len = 0;
 
-	while ((opt = getopt(argc, argv, "hg:d:")) != -1) {
+	while ((opt = getopt(argc, argv, "hg:d:l:")) != -1) {
 		switch (opt) {
 			case 'h':
 				hilbert = !hilbert;
@@ -219,18 +220,23 @@ int main(int argc, char *argv[]) {
 			case 'd':
 				data_dir = optarg;
 				break;
+			case 'l':
+				q_side_len = atoi(optarg);
 		}
 	}
 	topology_init();
 	auto topo = get_cpuTopology();
+	if (q_side_len > 0xFFFF || q_side_len == 0) {fmt::print("Invalid SideLength input: {}\n", q_side_len); return 0;}
+
+
 
 	uint64_t L1_CACHE_SIZE = topo->cacheLevels[0].size;
 	uint64_t L2_CACHE_SIZE = topo->cacheLevels[1].size;
 	uint64_t L3_CACHE_SIZE = topo->cacheLevels[2].size;
 
-	fmt::print("L1_CACHE_SIZE: {}\n", L1_CACHE_SIZE);
-	fmt::print("L2_CACHE_SIZE: {}\n", L2_CACHE_SIZE);
-	fmt::print("L3_CACHE_SIZE: {}\n", L3_CACHE_SIZE);
+//	fmt::print("L1_CACHE_SIZE: {}\n", L1_CACHE_SIZE);
+//	fmt::print("L2_CACHE_SIZE: {}\n", L2_CACHE_SIZE);
+//	fmt::print("L3_CACHE_SIZE: {}\n", L3_CACHE_SIZE);
 
 	std::vector<uint32_t> iso_map;
 	std::vector<std::pair<uint32_t, uint32_t>> edge_list;
@@ -244,8 +250,8 @@ int main(int argc, char *argv[]) {
 
 	n = iso_map.size();
 	m = edge_list.size();
-	fmt::print("n: {}\n", n);
-	fmt::print("m: {}\n", m);
+//	fmt::print("n: {}\n", n);
+//	fmt::print("m: {}\n", m);
 	// remap the edges of the graph and sort by src, dest
 #pragma omp parallel for schedule(static)
 	for (uint32_t i = 0; i < m; ++i) {
@@ -257,7 +263,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
-	uint16_t q_side_len = 256;
 	uint16_t n_quads_per_side = (n / q_side_len) + 1;
 	uint64_t hyp_n = highest_power_of_2_greater_than(n);
 	uint32_t hyp_n_quads = highest_power_of_2_greater_than(n_quads_per_side - 1);
@@ -265,10 +270,10 @@ int main(int argc, char *argv[]) {
 	uint32_t n_vid_bits = log2(hyp_n);
 	uint32_t n_q_bits = log2(hyp_n_quads);
 
-	fmt::print("q_side_len: {}\n", q_side_len);
-	fmt::print("n_quads_per_side: {}\n", n_quads_per_side);
-	fmt::print("n_vid_bits: {}\n", n_vid_bits);
-	fmt::print("n_q_bits: {}\n", n_q_bits);
+//	fmt::print("q_side_len: {}\n", q_side_len);
+//	fmt::print("n_quads_per_side: {}\n", n_quads_per_side);
+//	fmt::print("n_vid_bits: {}\n", n_vid_bits);
+//	fmt::print("n_q_bits: {}\n", n_q_bits);
 	uint64_t total_n_quads = n_quads_per_side * n_quads_per_side;
 	std::vector<Quad> qs(total_n_quads);
 	std::vector<uint32_t> n_edges_seen_per_q(total_n_quads);
@@ -345,11 +350,11 @@ int main(int argc, char *argv[]) {
 //	}
 	write_binary_qs(quad_path, qs, q_side_len, n_quads_per_side);
 
-#pragma omp parallel for schedule(static, 1)
-	for (uint32_t i = 0; i < 12; ++i) {
-		int cpu_num = sched_getcpu();
-		fmt::print("i: {} {} {}\n", i, omp_get_thread_num(), cpu_num);
-	}
+//#pragma omp parallel for schedule(static, 1)
+//	for (uint32_t i = 0; i < 12; ++i) {
+//		int cpu_num = sched_getcpu();
+//		fmt::print("i: {} {} {}\n", i, omp_get_thread_num(), cpu_num);
+//	}
 
 	// prepare for pagerank
 	// read the outdegree file
@@ -380,7 +385,7 @@ int main(int argc, char *argv[]) {
 	for (int t = 0; t < n_threads; ++t) {
 		incoming_total[t].resize(n);
 	}
-	fmt::print("n_threads: {}\n", n_threads);
+//	fmt::print("n_threads: {}\n", n_threads);
 
 	// init likwid markers
 	LIKWID_MARKER_INIT;
@@ -392,9 +397,11 @@ int main(int argc, char *argv[]) {
 		LIKWID_MARKER_REGISTER(lgroup);
 	}
 
-fmt::print("Iterating..\n");
+//fmt::print("Iterating..\n");
+	auto start_time = std::chrono::high_resolution_clock::now();
+
 	for (int iter = 0; iter < num_iters; iter++) {
-		fmt::print("Iteration: {}\n", iter);
+//		fmt::print("Iteration: {}\n", iter);
 #pragma omp parallel
 		{
 			int tid = omp_get_thread_num();
@@ -431,6 +438,8 @@ LIKWID_MARKER_STOP(lgroup);
 		}
 	}
 	LIKWID_MARKER_CLOSE;
+	auto end_time = std::chrono::high_resolution_clock::now();
+	uint64_t runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
 //	fmt::print("scores: {}\n", scores);
 	std::string pr_path = fmt::format("{}/{}", graph_dir, "pr");
@@ -448,9 +457,10 @@ LIKWID_MARKER_STOP(lgroup);
 		                           constexpr double epsilon = 1e-4;
 		                           return std::fabs(value1 - value2) < epsilon;
 	                           });
-	fmt::print("valid_pr?: {}\n", valid_pr);
-	for (uint32_t i = 0; i < 20; ++i) {
-		fmt::print("{} : {}\n", mapped_results[i], pr[i]);
-	}
+	fmt::print("valid_pr: {}\n", valid_pr);
+//	for (uint32_t i = 0; i < 20; ++i) {
+//		fmt::print("{} : {}\n", mapped_results[i], pr[i]);
+//	}
+	fmt::print("runtime: {}\n", runtime);
 	return 0;
 }
