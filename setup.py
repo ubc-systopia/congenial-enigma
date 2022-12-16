@@ -132,7 +132,8 @@ def main(args):
         'pr_experiments', 
         'convert_map_to_binary', 
         'compute_ccs', 
-        'stats'
+        'stats',
+        'par_hilbert_bench'
     ]
     
     # compile
