@@ -21,37 +21,37 @@
 
 
 struct Quad {
-	uint16_t qx;
-	uint16_t qy;
+	uint32_t qx;
+	uint32_t qy;
 	uint32_t q_idx;
 	uint32_t nnz;
-	std::vector<uint16_t> edges;
+	std::vector<uint32_t> edges;
 };
 
-void write_binary_qs(std::string filename, std::vector<Quad> &qs, uint16_t q_side_len, uint16_t n_quads_per_side) {
+void write_binary_qs(std::string filename, std::vector<Quad> &qs, uint32_t q_side_len, uint32_t n_quads_per_side) {
 	std::ofstream out(filename, std::ios::binary | std::ios::out | std::ios::trunc);
 	// write the number of quadrants, sidelength of quadrants, and number of quads per side
 	uint32_t n_quads = qs.size();
 	out.write(reinterpret_cast<char *>(&n_quads), sizeof(uint32_t));
-	out.write(reinterpret_cast<char *>(&q_side_len), sizeof(uint16_t));
-	out.write(reinterpret_cast<char *>(&n_quads_per_side), sizeof(uint16_t));
+	out.write(reinterpret_cast<char *>(&q_side_len), sizeof(uint32_t));
+	out.write(reinterpret_cast<char *>(&n_quads_per_side), sizeof(uint32_t));
 
 	// write each quadrant and its metadata
 	for (uint32_t i = 0; i < n_quads; ++i) {
-		uint16_t qx = qs[i].qx;
-		uint16_t qy = qs[i].qy;
+		uint32_t qx = qs[i].qx;
+		uint32_t qy = qs[i].qy;
 		uint32_t q_idx = qs[i].q_idx;
 		uint32_t nnz = qs[i].nnz;
 
-		out.write(reinterpret_cast<char *>(&qx), sizeof(uint16_t));
-		out.write(reinterpret_cast<char *>(&qy), sizeof(uint16_t));
+		out.write(reinterpret_cast<char *>(&qx), sizeof(uint32_t));
+		out.write(reinterpret_cast<char *>(&qy), sizeof(uint32_t));
 		out.write(reinterpret_cast<char *>(&q_idx), sizeof(uint32_t));
 		out.write(reinterpret_cast<char *>(&nnz), sizeof(uint32_t));
 
 		// write the flattened edges in this quadrant
 		out.write(
 			reinterpret_cast<const char *>(qs[i].edges.data()),
-			qs[i].nnz * sizeof(uint16_t) * 2);
+			qs[i].nnz * sizeof(uint32_t) * 2);
 	}
 	out.close();
 }
@@ -92,14 +92,14 @@ void horder_edges_in_qs(std::vector<Quad> &qs, uint32_t side_len) {
 		// create a temporary vector to store the reordered edges
 		uint32_t nnz = qs[i].nnz;
 		struct IndexedEdge {
-			uint16_t src;
-			uint16_t dest;
+			uint32_t src;
+			uint32_t dest;
 			uint32_t h_idx;
 		};
 		std::vector<IndexedEdge> copy(nnz);
 		for (uint32_t j = 0; j < nnz; ++j) {
-			uint16_t src = qs[i].edges[j * 2];
-			uint16_t dest = qs[i].edges[j * 2 + 1];
+			uint32_t src = qs[i].edges[j * 2];
+			uint32_t dest = qs[i].edges[j * 2 + 1];
 			copy[j].src = src;
 			copy[j].dest = dest;
 			copy[j].h_idx = xy2d(side_len, src, dest);
@@ -125,8 +125,8 @@ void horder_qs(std::vector<Quad> &qs, uint32_t side_len) {
 //	fmt::print("n: {}\n", n);
 #pragma omp parallel for schedule(static)
 	for (uint32_t i = 0; i < qs.size(); ++i) {
-		uint16_t qx = qs[i].qx;
-		uint16_t qy = qs[i].qy;
+		uint32_t qx = qs[i].qx;
+		uint32_t qy = qs[i].qy;
 		qs[i].q_idx = xy2d(n, qx, qy);
 	}
 
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 	std::string graph_name = "";
 	std::string data_dir = "";
 	bool hilbert = false;
-	uint16_t q_side_len = 0;
+	uint32_t q_side_len = 0;
 
 	while ((opt = getopt(argc, argv, "hg:d:l:")) != -1) {
 		switch (opt) {
@@ -227,8 +227,6 @@ int main(int argc, char *argv[]) {
 	topology_init();
 	auto topo = get_cpuTopology();
 	if (q_side_len > 0xFFFF || q_side_len == 0) {fmt::print("Invalid SideLength input: {}\n", q_side_len); return 0;}
-
-
 
 	uint64_t L1_CACHE_SIZE = topo->cacheLevels[0].size;
 	uint64_t L2_CACHE_SIZE = topo->cacheLevels[1].size;
@@ -263,7 +261,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
-	uint16_t n_quads_per_side = (n / q_side_len) + 1;
+	uint32_t n_quads_per_side = (n / q_side_len) + 1;
 	uint64_t hyp_n = highest_power_of_2_greater_than(n);
 	uint32_t hyp_n_quads = highest_power_of_2_greater_than(n_quads_per_side - 1);
 
@@ -293,10 +291,10 @@ int main(int argc, char *argv[]) {
 		short start_bit = n_vid_bits - n_q_bits;
 		q_mask = ((1 << n_q_bits) - 1) << start_bit;
 		e_mask = ((1 << start_bit) - 1);
-		uint16_t qx = (src & q_mask) >> start_bit;
-		uint16_t qy = (dest & q_mask) >> start_bit;
-		uint16_t local_src = src & e_mask;
-		uint16_t local_dest = dest & e_mask;
+		uint32_t qx = (src & q_mask) >> start_bit;
+		uint32_t qy = (dest & q_mask) >> start_bit;
+		uint32_t local_src = src & e_mask;
+		uint32_t local_dest = dest & e_mask;
 
 		uint32_t qidx = qx * n_quads_per_side + qy;
 //		uint16_t t = 0;
@@ -325,10 +323,10 @@ int main(int argc, char *argv[]) {
 		short start_bit = n_vid_bits - n_q_bits;
 		q_mask = ((1 << n_q_bits) - 1) << start_bit;
 		e_mask = ((1 << start_bit) - 1);
-		uint16_t qx = (src & q_mask) >> start_bit;
-		uint16_t qy = (dest & q_mask) >> start_bit;
-		uint16_t local_src = src & e_mask;
-		uint16_t local_dest = dest & e_mask;
+		uint32_t qx = (src & q_mask) >> start_bit;
+		uint32_t qy = (dest & q_mask) >> start_bit;
+		uint32_t local_src = src & e_mask;
+		uint32_t local_dest = dest & e_mask;
 		uint32_t qidx = qx * n_quads_per_side + qy;
 		uint32_t n_edges_seen = n_edges_seen_per_q[qidx];
 		qs[qidx].edges[n_edges_seen] = local_src;
@@ -337,9 +335,10 @@ int main(int argc, char *argv[]) {
 	}
 	std::string bin_file_name = hilbert ? "hqs" : "qs";
 	std::string quad_path = fmt::format("{}/{}.bin", graph_dir, bin_file_name);
-	horder_edges_in_qs(qs, q_side_len);
 
 	if (hilbert) {
+		// order the edge within a quadrant using the hilbert
+		horder_edges_in_qs(qs, q_side_len);
 		// order the quadrants using the hilbert order
 		horder_qs(qs, n_quads_per_side);
 	}
@@ -412,9 +411,9 @@ LIKWID_MARKER_START(lgroup);
 #pragma omp for schedule(static, 1)
 			for (uint32_t quad_id = 0; quad_id < qs.size(); ++quad_id) {
 				Quad &q = qs[quad_id];
-				for (uint16_t i = 0; i < q.nnz; ++i) {
-					uint16_t qx = q.qx;
-					uint16_t qy = q.qy;
+				uint32_t qx = q.qx;
+				uint32_t qy = q.qy;
+				for (uint32_t i = 0; i < q.nnz; ++i) {
 					uint32_t src = (qx * q_side_len) + q.edges[i * 2];
 					uint32_t dest = (qy * q_side_len) + q.edges[i * 2 + 1];
 					incoming_total[tid][dest] += outgoing_contrib[src];
