@@ -30,9 +30,10 @@ find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-SET(CMAKE_C_COMPILER icx)
+SET(CMAKE_C_COMPILER icx) # todo use icx compiler when using intel dpl
 set(ParSlashburnDir "../par_slashburn")
-
+set(IPS4ODir "../par_slashburn/ips4o")
+add_subdirectory(${IPS4ODir} ips4o)
 
 add_executable(graph_preprocess main.cpp io.cpp io.h typedefs.h util.cpp util.h rabbit_util.cpp rabbit_util.h sql.cpp sql.h Hilbert.cpp Hilbert.h ${ParSlashburnDir}/pvector.h)
 target_include_directories(graph_preprocess PUBLIC ${ParSlashburnDir})
@@ -59,6 +60,9 @@ target_include_directories(stats PUBLIC ${ParSlashburnDir})
 
 add_executable(par_hilbert_bench par_hilbert_bench.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h)
 target_include_directories(par_hilbert_bench PUBLIC ${ParSlashburnDir})
+
+add_executable(hilburn_preproc hilburn_preproc.cpp hilburn_preproc.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h)
+target_include_directories(hilburn_preproc PUBLIC ${ParSlashburnDir} ${IPS4ODir})
 
 find_package(likwid REQUIRED)
 
@@ -88,4 +92,6 @@ if (Boost_FOUND)
     target_link_libraries(stats ${Boost_LIBRARIES} Eigen3::Eigen fmt::fmt igraph::igraph oneDPL sqlite3 Spectra)
 
     target_link_libraries(par_hilbert_bench ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid)
+
+    target_link_libraries(hilburn_preproc ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid ips4o)
 endif ()
