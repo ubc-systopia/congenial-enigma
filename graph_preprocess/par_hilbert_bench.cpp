@@ -18,9 +18,16 @@
 #include "util.h"
 #include <bitset>
 #include <limits.h>
+#include <taskflow/taskflow.hpp>  // Taskflow is header-only
+#include "wsq.h"
+#include <thread>
+#include <vector>
+#include <iostream>
+#include <mutex>
+#include <sched.h>
+#include <pthread.h>
 
-
-struct Quad {
+struct BenchQuad {
 	uint32_t qx;
 	uint32_t qy;
 	uint32_t q_idx;
@@ -28,7 +35,7 @@ struct Quad {
 	std::vector<uint32_t> edges;
 };
 
-void write_binary_qs(std::string filename, std::vector<Quad> &qs, uint32_t q_side_len, uint32_t n_quads_per_side) {
+void write_binary_qs(std::string filename, std::vector<BenchQuad> &qs, uint32_t q_side_len, uint32_t n_quads_per_side) {
 	std::ofstream out(filename, std::ios::binary | std::ios::out | std::ios::trunc);
 	// write the number of quadrants, sidelength of quadrants, and number of quads per side
 	uint32_t n_quads = qs.size();
@@ -72,7 +79,7 @@ uint64_t highest_power_of_2_greater_than(uint32_t x) {
 }
 
 
-ostream &operator<<(ostream &os, const Quad q) {
+ostream &operator<<(ostream &os, const BenchQuad q) {
 //	os << g.id << endl << g.scores.size() << endl;
 	os << "Q" << q.q_idx << ": (" << q.qx << ", " << q.qy << "), "
 	   << q.nnz;
@@ -85,7 +92,7 @@ ostream &operator<<(ostream &os, const Quad q) {
  * @param qs
  * @param side_len
  */
-void horder_edges_in_qs(std::vector<Quad> &qs, uint32_t side_len) {
+void horder_edges_in_qs(std::vector<BenchQuad> &qs, uint32_t side_len) {
 
 #pragma omp parallel for schedule(static)
 	for (uint32_t i = 0; i < qs.size(); ++i) {
@@ -119,7 +126,7 @@ void horder_edges_in_qs(std::vector<Quad> &qs, uint32_t side_len) {
 	}
 }
 
-void horder_qs(std::vector<Quad> &qs, uint32_t side_len) {
+void horder_qs(std::vector<BenchQuad> &qs, uint32_t side_len) {
 	uint64_t n = hyperceiling(side_len);
 //	fmt::print("side_len: {}\n", side_len);
 //	fmt::print("n: {}\n", n);
@@ -135,7 +142,7 @@ void horder_qs(std::vector<Quad> &qs, uint32_t side_len) {
 		dpl::execution::par_unseq,
 		qs.begin(),
 		qs.end(),
-		[](const Quad &a, const Quad &b) -> bool {
+		[](const BenchQuad &a, const BenchQuad &b) -> bool {
 			return a.q_idx < b.q_idx;
 		}
 	);
@@ -204,13 +211,15 @@ int main(int argc, char *argv[]) {
 	int opt;
 	uint32_t n = 0; // n vertices
 	uint64_t m = 0; // n edges
-	int num_expts = 0;
+	int num_expts = -1;
 	std::string graph_name = "";
 	std::string data_dir = "";
 	bool hilbert = false;
 	uint32_t q_side_len = 0;
+	std::string schedule = ""; // 1 of {"static", "dynamic", "taskflow"}
+	// bool preprocess = false; // if preprocess flag passed in, the quadrants
 
-	while ((opt = getopt(argc, argv, "hg:d:l:e:")) != -1) {
+	while ((opt = getopt(argc, argv, "hg:d:l:e:s:")) != -1) {
 		switch (opt) {
 			case 'h':
 				hilbert = !hilbert;
@@ -225,8 +234,20 @@ int main(int argc, char *argv[]) {
 				q_side_len = atoi(optarg);
 			case 'e':
 				num_expts = atoi(optarg);
+			case 's':
+				schedule = optarg;
 		}
 	}
+
+	if (schedule == "") {
+		std::cout << "Please supply a valid OMP Schedule string (1 of: {static, dynamic, taskflow}\n";
+		return 1;
+	}
+	if (schedule == "dynamic") { omp_set_schedule(omp_sched_dynamic, 1); }
+	else if (schedule == "static") { omp_set_schedule(omp_sched_static, 1); }
+	else { omp_set_schedule(omp_sched_static, 1); }
+
+
 	topology_init();
 	auto topo = get_cpuTopology();
 	if (q_side_len > 0xFFFFFFFF || q_side_len == 0) {
@@ -279,7 +300,7 @@ int main(int argc, char *argv[]) {
 //	fmt::print("n_vid_bits: {}\n", n_vid_bits);
 //	fmt::print("n_q_bits: {}\n", n_q_bits);
 	uint64_t total_n_quads = n_quads_per_side * n_quads_per_side;
-	std::vector<Quad> qs(total_n_quads);
+	std::vector<BenchQuad> qs(total_n_quads);
 	std::vector<uint32_t> n_edges_seen_per_q(total_n_quads);
 
 	// iterate over the edges of the graphs, computing the number of edges that will
@@ -311,7 +332,7 @@ int main(int argc, char *argv[]) {
 	uint64_t total_edges = 0;
 #pragma omp parallel for schedule(static) reduction(+:total_edges)
 	for (uint32_t i = 0; i < total_n_quads; ++i) {
-		Quad &q = qs[i];
+		BenchQuad &q = qs[i];
 //		fmt::print("({} {}), {}\n", q.qx, q.qy, q.nnz);
 		q.edges.resize(q.nnz * 2); // each non-zero consists of src, dest - so mult. by 2
 		total_edges += q.edges.size();
@@ -353,7 +374,7 @@ int main(int argc, char *argv[]) {
 //		fmt::print("q.qx, q.qy, q_idx, nnz: {} {} {} {}\n", q.qx, q.qy, q.q_idx, q.nnz);
 //		fmt::print("q.edges: {}\n", q.edges);
 //	}
-	write_binary_qs(quad_path, qs, q_side_len, n_quads_per_side);
+	// write_binary_qs(quad_path, qs, q_side_len, n_quads_per_side);
 
 //#pragma omp parallel for schedule(static, 1)
 //	for (uint32_t i = 0; i < 12; ++i) {
@@ -396,44 +417,94 @@ int main(int argc, char *argv[]) {
 	std::vector<double> pr(n);
 	std::vector<double> mapped_results(n);
 	read_binary_container<std::vector<double>>(pr_path, pr);
-	// init likwid markers
+
+	// init likwid markers separately for each experimental run
+	std::string expt_title = "Parallel-PageRank";
+
 	LIKWID_MARKER_INIT;
-	std::string likwid_marker_group_name = "Parallel-PageRank";
-	const char *lgroup = likwid_marker_group_name.c_str();
+
 #pragma omp parallel
 	{
 		LIKWID_MARKER_THREADINIT;
-		LIKWID_MARKER_REGISTER(lgroup);
+	}
+	for (int expt_num = 0; expt_num < num_expts; ++expt_num) {
+		std::string likwid_marker_group_name = fmt::format("{}-{}", expt_title, expt_num);
+		const char *lgroup = likwid_marker_group_name.c_str();
+#pragma omp parallel
+		{
+			LIKWID_MARKER_REGISTER(lgroup);
+		}
 	}
 
 
-	// repeat the pagerank experiment, recording the execution times and cache statistic for each experiment
-	for (int expt_num = 0; expt_num < num_expts; ++expt_num) {
-		auto start_time = std::chrono::high_resolution_clock::now();
+	if (schedule == "taskflow") {
+		fmt::print("taskflow\n");
+		fmt::print("omp_get_max_threads(): {}\n", omp_get_max_threads());
+		WorkStealingQueue<uint32_t> queue;
+		unsigned num_cpus = std::thread::hardware_concurrency();
+		std::cout << "Launching " << num_cpus << " threads\n";
 
-		for (int iter = 0; iter < num_iters; iter++) {
+		// A mutex ensures orderly access to std::cout from multiple threads.
+//		std::mutex iomutex;
+		std::vector<std::thread> threads(num_cpus);
+		fmt::print("n_quads: {}\n", qs.size());
+		// first vector will populate work queue
+		threads[0] = std::thread([&]() {
+			for (int i = 0; i < 100'000'000; i = i + 1) { queue.push(i); }
+			while (!queue.empty()) { std::optional<int> item = queue.pop(); }
+		});
+		// all others will steal
+
+		for (unsigned i = 1; i < num_cpus; ++i) {
+			threads[i] = std::thread([&]() {
+				while (!queue.empty()) { std::optional<int> item = queue.steal(); }
+			});
+		}
+
+		for (auto &t: threads) {
+			t.join();
+		}
+
+//		std::thread main([&] () {
+//			for (uint32_t i = 0; i < qs.size(); ++i) { wqueue.push(i); }
+//			while (!wqueue.empty())
+//			thread_local
+//		});
+	} else {
+
+		// repeat the pagerank experiment, recording the execution times and cache statistic for each experiment
+		for (int expt_num = 0; expt_num < num_expts; ++expt_num) {
+			std::string likwid_marker_group_name = fmt::format("{}-{}", expt_title, expt_num);
+			const char *lgroup = likwid_marker_group_name.c_str();
+			auto start_time = std::chrono::high_resolution_clock::now();
+
+			for (int iter = 0; iter < num_iters; iter++) {
 //		fmt::print("Iteration: {}\n", iter);
 #pragma omp parallel
-			{
-				int tid = omp_get_thread_num();
-				incoming_total[tid].fill(0);
+				{
+					int tid = omp_get_thread_num();
+					incoming_total[tid].fill(0);
 //			fmt::print("incoming_total[tid]: {}\n", incoming_total[tid]);
 
-				LIKWID_MARKER_START(lgroup);
+//	WorkSt
+					LIKWID_MARKER_START(lgroup);
 #pragma omp for schedule(static, 1)
-				for (uint32_t quad_id = 0; quad_id < qs.size(); ++quad_id) {
-					Quad &q = qs[quad_id];
-					uint32_t qx = q.qx;
-					uint32_t qy = q.qy;
-					for (uint32_t i = 0; i < q.nnz; ++i) {
-						uint32_t src = (qx * q_side_len) + q.edges[i * 2];
-						uint32_t dest = (qy * q_side_len) + q.edges[i * 2 + 1];
-						incoming_total[tid][dest] += outgoing_contrib[src];
+					for (uint32_t quad_id = 0; quad_id < qs.size(); ++quad_id) {
+						BenchQuad &q = qs[quad_id];
+						uint32_t qx = q.qx;
+						uint32_t qy = q.qy;
+						for (uint32_t i = 0; i < q.nnz; ++i) {
+							uint32_t src = (qx * q_side_len) + q.edges[i * 2];
+							uint32_t dest = (qy * q_side_len) + q.edges[i * 2 + 1];
+							incoming_total[tid][dest] += outgoing_contrib[src];
+						}
 					}
+					LIKWID_MARKER_STOP(lgroup);
 				}
-				LIKWID_MARKER_STOP(lgroup);
 
 //#pragma omp barrier
+
+//  likwid-perfctr -C N:0-13 -g INSTR_RETIRED_ANY:FIXC0,L2_TRANS_ALL_REQUESTS:PMC0,L2_RQSTS_MISS:PMC1 -o ./lkwd.csv -O -m /home/atrostan/workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/par_hilbert_bench -h -d /media/atrostan/data/ -g sx-stackoverflow -l 65536 -e 1
 
 #pragma omp for schedule(static)
 				for (uint32_t i = 0; i < n; i++) {
@@ -447,25 +518,28 @@ int main(int argc, char *argv[]) {
 //				incoming_total[i] = 0;
 				}
 			}
-		}
-		LIKWID_MARKER_CLOSE;
-		auto end_time = std::chrono::high_resolution_clock::now();
-		uint64_t runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
+			auto end_time = std::chrono::high_resolution_clock::now();
+			uint64_t runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
 #pragma omp parallel for
-		for (uint32_t i = 0; i < n; ++i) {
-			mapped_results[i] = scores[iso_map[i]];
+			for (uint32_t i = 0; i < n; ++i) {
+				mapped_results[i] = scores[iso_map[i]];
+			}
+			bool valid_pr = std::equal(dpl::execution::par_unseq,
+			                           mapped_results.begin(), mapped_results.end(),
+			                           pr.begin(),
+			                           [](double value1, double value2) {
+				                           constexpr double epsilon = 1e-4;
+				                           return std::fabs(value1 - value2) < epsilon;
+			                           });
+			fmt::print("Expt {} - valid_pr: {}\n", expt_num, valid_pr);
+			fmt::print("Expt {} - runtime: {}\n", expt_num, runtime);
 		}
-		bool valid_pr = std::equal(dpl::execution::par_unseq,
-		                           mapped_results.begin(), mapped_results.end(),
-		                           pr.begin(),
-		                           [](double value1, double value2) {
-			                           constexpr double epsilon = 1e-4;
-			                           return std::fabs(value1 - value2) < epsilon;
-		                           });
-		fmt::print("Expt {} - valid_pr: {}\n", expt_num, valid_pr);
-		fmt::print("Expt {} - runtime: {}\n", expt_num, runtime);
 	}
+
+	LIKWID_MARKER_CLOSE;
+
 
 	return 0;
 }

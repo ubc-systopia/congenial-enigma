@@ -20,6 +20,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
+#include "Quad.h"
 
 #ifndef GRAPH_SIMPLIFY_IO_H
 #define GRAPH_SIMPLIFY_IO_H
@@ -88,7 +89,6 @@ void insert_graph_into_preproc_table(std::string graph_name, std::string sqlite_
 void write_permutation(std::string path, std::map<ul, ul> &map, ul n, ull m);
 
 
-
 void write_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges, io_mode &mode);
 
 void write_binary_edge_list(std::string path, std::vector<std::pair<ul, ul>> &edges);
@@ -100,6 +100,7 @@ void read_map(std::string in_path, std::vector<ul> &mp);
 void write_row_to_csv(PRExptRow &r, std::string csv_path);
 
 void read_text_degree_file(std::string path, std::vector<uint32_t> &deg);
+
 template<typename C>
 void read_binary_container(std::string inpath, C &container) {
 	std::ifstream ifs(inpath, std::ios::binary);
@@ -114,30 +115,34 @@ void write_binary_container(std::string outpath, C &container) {
 	oa << container;
 }
 
+void
+write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_len, uint32_t wing_width, uint32_t n,
+                 uint64_t m, bool is_rect);
 
-namespace Eigen{
+
+std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect);
+namespace Eigen {
 // https://scicomp.stackexchange.com/a/21438
-	template <class SparseMatrix>
-	inline void write_binary_sparse(const std::string& filename, const SparseMatrix& matrix) {
+	template<class SparseMatrix>
+	inline void write_binary_sparse(const std::string &filename, const SparseMatrix &matrix) {
 		assert(matrix.isCompressed() == true);
 		std::ofstream out(filename, std::ios::binary | std::ios::out | std::ios::trunc);
-		if(out.is_open())
-		{
+		if (out.is_open()) {
 			typename SparseMatrix::Index rows, cols, nnzs, outS, innS;
-			rows = matrix.rows()     ;
-			cols = matrix.cols()     ;
-			nnzs = matrix.nonZeros() ;
+			rows = matrix.rows();
+			cols = matrix.cols();
+			nnzs = matrix.nonZeros();
 			outS = matrix.outerSize();
 			innS = matrix.innerSize();
 
-			out.write(reinterpret_cast<char*>(&rows), sizeof(typename SparseMatrix::Index));
-			out.write(reinterpret_cast<char*>(&cols), sizeof(typename SparseMatrix::Index));
-			out.write(reinterpret_cast<char*>(&nnzs), sizeof(typename SparseMatrix::Index));
-			out.write(reinterpret_cast<char*>(&outS), sizeof(typename SparseMatrix::Index));
-			out.write(reinterpret_cast<char*>(&innS), sizeof(typename SparseMatrix::Index));
+			out.write(reinterpret_cast<char *>(&rows), sizeof(typename SparseMatrix::Index));
+			out.write(reinterpret_cast<char *>(&cols), sizeof(typename SparseMatrix::Index));
+			out.write(reinterpret_cast<char *>(&nnzs), sizeof(typename SparseMatrix::Index));
+			out.write(reinterpret_cast<char *>(&outS), sizeof(typename SparseMatrix::Index));
+			out.write(reinterpret_cast<char *>(&innS), sizeof(typename SparseMatrix::Index));
 
 			typename SparseMatrix::Index sizeIndexS = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::StorageIndex));
-			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar      ));
+			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar));
 
 //			auto p1 = matrix.outerIndexPtr();
 //			for (uint32_t i = 0; i < outS; ++i) {
@@ -151,38 +156,37 @@ namespace Eigen{
 
 			// value is redundant - don't care about weights of edges
 //			out.write(reinterpret_cast<const char*>(matrix.valuePtr()),       sizeScalar * nnzs);
-			out.write(reinterpret_cast<const char*>(matrix.outerIndexPtr()),  sizeIndexS  * outS);
-			out.write(reinterpret_cast<const char*>(matrix.innerIndexPtr()),  sizeIndexS  * nnzs);
+			out.write(reinterpret_cast<const char *>(matrix.outerIndexPtr()), sizeIndexS * outS);
+			out.write(reinterpret_cast<const char *>(matrix.innerIndexPtr()), sizeIndexS * nnzs);
 
 			out.close();
-		}
-		else {
+		} else {
 			std::cout << "Can not write to file: " << filename << std::endl;
 		}
 	}
 
-	template <class SparseMatrix>
-	inline void read_binary_sparse(const std::string& filename, SparseMatrix& matrix) {
+	template<class SparseMatrix>
+	inline void read_binary_sparse(const std::string &filename, SparseMatrix &matrix) {
 		std::ifstream in(filename, std::ios::binary | std::ios::in);
-		if(in.is_open()) {
+		if (in.is_open()) {
 			typename SparseMatrix::Index rows, cols, nnz, inSz, outSz;
-			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar      ));
-			typename SparseMatrix::Index sizeIndex  = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Index       ));
+			typename SparseMatrix::Index sizeScalar = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Scalar));
+			typename SparseMatrix::Index sizeIndex = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::Index));
 			typename SparseMatrix::Index sizeIndexS = static_cast<typename SparseMatrix::Index>(sizeof(typename SparseMatrix::StorageIndex));
 			std::cout << sizeScalar << " " << sizeIndex << std::endl;
-			in.read(reinterpret_cast<char*>(&rows ), sizeIndex);
-			in.read(reinterpret_cast<char*>(&cols ), sizeIndex);
-			in.read(reinterpret_cast<char*>(&nnz  ), sizeIndex);
-			in.read(reinterpret_cast<char*>(&outSz), sizeIndex);
-			in.read(reinterpret_cast<char*>(&inSz ), sizeIndex);
+			in.read(reinterpret_cast<char *>(&rows ), sizeIndex);
+			in.read(reinterpret_cast<char *>(&cols ), sizeIndex);
+			in.read(reinterpret_cast<char *>(&nnz  ), sizeIndex);
+			in.read(reinterpret_cast<char *>(&outSz), sizeIndex);
+			in.read(reinterpret_cast<char *>(&inSz ), sizeIndex);
 
 			matrix.resize(rows, cols);
 			matrix.makeCompressed();
 			matrix.resizeNonZeros(nnz);
 
-			in.read(reinterpret_cast<char*>(matrix.valuePtr())     , sizeScalar * nnz  );
-			in.read(reinterpret_cast<char*>(matrix.outerIndexPtr()), sizeIndexS * outSz);
-			in.read(reinterpret_cast<char*>(matrix.innerIndexPtr()), sizeIndexS * nnz );
+			in.read(reinterpret_cast<char *>(matrix.valuePtr()), sizeScalar * nnz);
+			in.read(reinterpret_cast<char *>(matrix.outerIndexPtr()), sizeIndexS * outSz);
+			in.read(reinterpret_cast<char *>(matrix.innerIndexPtr()), sizeIndexS * nnz);
 
 			matrix.finalize();
 			in.close();

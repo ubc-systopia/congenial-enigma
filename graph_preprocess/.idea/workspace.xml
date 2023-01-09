@@ -10,32 +10,28 @@
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager">
-    <generated>
-      <config projectName="graph_preprocess" targetName="compute_ccs" />
-      <config projectName="graph_preprocess" targetName="stats" />
-      <config projectName="graph_preprocess" targetName="graph_preprocess" />
-      <config projectName="graph_preprocess" targetName="ips4o_example" />
-      <config projectName="graph_preprocess" targetName="hilburn_preproc" />
-      <config projectName="graph_preprocess" targetName="cuthill_mckee" />
-      <config projectName="graph_preprocess" targetName="sb_furhilbert" />
-      <config projectName="graph_preprocess" targetName="slashburn" />
-      <config projectName="graph_preprocess" targetName="fmt" />
-      <config projectName="graph_preprocess" targetName="pr_experiments" />
-      <config projectName="graph_preprocess" targetName="par_hilbert_bench" />
-      <config projectName="graph_preprocess" targetName="convert_map_to_binary" />
-    </generated>
+    <generated />
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Debug-intel_compile" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="intel_compile" GENERATION_OPTIONS="-D CMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/latest/linux/bin/dpcpp" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/hilburn_preproc.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hilburn_preproc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hilburn_pr.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wsq.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hilburn_preproc.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_preproc.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hilburn_preproc.h" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_preproc.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/par_hilbert_bench.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/par_hilbert_bench.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/util.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/io.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../konect_scraper/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -79,23 +75,24 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.2933861&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="CMake Application.hilburn_preproc">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.hilburn_pr">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
     <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="convert_map_to_binary" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="convert_map_to_binary" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="convert_map_to_binary">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -105,27 +102,26 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="fmt" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="fmt" CONFIG_NAME="Debug">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="graph_preprocess" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-i -t -g $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/orig.net -b $PROJECT_DIR$/../konect_scraper/data/graphs.db -m 2137 -o $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/comp " REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="graph_preprocess" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="graph_preprocess">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g chess -d /media/atrostan/patterson_backup/data -l 256 -w 2376 -t 6" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
+    <configuration name="hilburn_pr" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g wikipedia_link_vls -d /media/atrostan/patterson_backup/data/ -l 256 -w 2940 -i 20" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_pr" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_pr">
+      <envs>
+        <env name="OMP_PROC_BIND" value="close" />
+        <env name="OMP_PLACES" value="{0},{1},{2},{3},{4},{5}" />
+      </envs>
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ips4o_example" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ips4o_example" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="ips4o_example">
+    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-b -g wikipedia_link_vls -d /media/atrostan/patterson_backup/data/ -l 256 -w 2940" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-h -d /media/atrostan/patterson_backup/data -g radoslaw_email -l 65535" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
+    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-h -g radoslaw_email -d /media/atrostan/patterson_backup/data -l 65535 -e 1 -s taskflow" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -152,17 +148,15 @@
     </configuration>
     <list>
       <item itemvalue="CMake Application.compute_ccs" />
-      <item itemvalue="CMake Application.convert_map_to_binary" />
       <item itemvalue="CMake Application.cuthill_mckee" />
       <item itemvalue="CMake Application.graph_preprocess" />
+      <item itemvalue="CMake Application.hilburn_pr" />
       <item itemvalue="CMake Application.hilburn_preproc" />
       <item itemvalue="CMake Application.par_hilbert_bench" />
       <item itemvalue="CMake Application.pr_experiments" />
       <item itemvalue="CMake Application.sb_furhilbert" />
       <item itemvalue="CMake Application.slashburn" />
       <item itemvalue="CMake Application.stats" />
-      <item itemvalue="CMake Application.fmt" />
-      <item itemvalue="CMake Application.ips4o_example" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -218,7 +212,10 @@
       <workItem from="1670955306776" duration="26439000" />
       <workItem from="1671038827256" duration="6156000" />
       <workItem from="1671061579691" duration="6019000" />
-      <workItem from="1672773090238" duration="24285000" />
+      <workItem from="1672773090238" duration="73661000" />
+      <workItem from="1673217128172" duration="81000" />
+      <workItem from="1673217215925" duration="1470000" />
+      <workItem from="1673218697504" duration="1424000" />
     </task>
     <servers />
   </component>
@@ -235,5 +232,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/par_hilbert_bench.cpp</url>
+          <line>501</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

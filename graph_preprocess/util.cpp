@@ -254,3 +254,7 @@ std::string corner_str(Corner c) {
 uint32_t int_log(int base, uint32_t x) {
 	return (int) (log(x) / log(base));
 }
+
+bool is_power_of_2(uint32_t n) {
+	return (n > 0 && ((n & (n - 1)) == 0));
+}

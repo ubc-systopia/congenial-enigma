@@ -21,17 +21,103 @@
 #include "rabbit_util.h"
 #include <eigen3/Eigen/Sparse>
 
+
+std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect) {
+	std::ifstream in(path, std::ios::binary | std::ios::in);
+	if (in.is_open()) {
+		uint32_t n_quads, q_side_len, wing_width, n;
+		uint64_t m;
+		in.read(reinterpret_cast<char *>(&n_quads ), sizeof(uint32_t));
+		in.read(reinterpret_cast<char *>(&q_side_len ), sizeof(uint32_t));
+		in.read(reinterpret_cast<char *>(&wing_width  ), sizeof(uint32_t));
+		in.read(reinterpret_cast<char *>(&n), sizeof(uint32_t));
+		in.read(reinterpret_cast<char *>(&m ), sizeof(uint64_t));
+		std::vector<uint64_t> res(3);
+		res[0] = n_quads;
+		res[1] = n;
+		res[2] = m;
+
+		// allocate the quad array
+		qs = new Quad[n_quads];
+		// write read quadrant and its metadata
+		for (uint32_t i = 0; i < n_quads; ++i) {
+			uint32_t qx, qy, q_idx, nnz;
+			Quad &q = qs[i];
+
+			in.read(reinterpret_cast<char *>(&qx), sizeof(uint32_t));
+			in.read(reinterpret_cast<char *>(&qy), sizeof(uint32_t));
+
+			// we need to store an additional integer to denote the endpoint of tail rectangle
+			if (is_rect) {
+				in.read(reinterpret_cast<char *>(&q_idx), sizeof(uint32_t));
+				q.q_idx = q_idx;
+			}
+
+			in.read(reinterpret_cast<char *>(&nnz), sizeof(uint32_t));
+			q.qx = qx;
+			q.qy = qy;
+			q.nnz = nnz;
+			q.edges = new uint32_t[nnz * 2];
+			// read the flattened edges in this quadrant
+			in.read(
+				reinterpret_cast<char *>(q.edges),
+				q.nnz * sizeof(uint32_t) * 2
+			);
+		}
+		return res;
+	}
+	in.close();
+}
+
+void
+write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_len, uint32_t wing_width, uint32_t n,
+                 uint64_t m, bool is_rect) {
+	std::ofstream out(path, std::ios::binary | std::ios::out | std::ios::trunc);
+	// write the number of quadrants, sidelength of quadrants, and number of quads per side
+	out.write(reinterpret_cast<char *>(&n_quads), sizeof(uint32_t));
+	out.write(reinterpret_cast<char *>(&q_side_len), sizeof(uint32_t));
+	out.write(reinterpret_cast<char *>(&wing_width), sizeof(uint32_t));
+	out.write(reinterpret_cast<char *>(&n), sizeof(uint32_t));
+	out.write(reinterpret_cast<char *>(&m), sizeof(uint64_t));
+//	out.write(reinterpret_cast<char *>(&n_quads_per_side), sizeof(uint32_t));
+
+	// write each quadrant and its metadata
+	for (uint32_t i = 0; i < n_quads; ++i) {
+		uint32_t qx = qs[i].qx;
+		uint32_t qy = qs[i].qy;
+
+		uint32_t nnz = qs[i].nnz;
+
+		out.write(reinterpret_cast<char *>(&qx), sizeof(uint32_t));
+		out.write(reinterpret_cast<char *>(&qy), sizeof(uint32_t));
+
+		// we need to store an additional integer to denote the endpoint of tail rectangle
+		if (is_rect) {
+			uint32_t q_idx = qs[i].q_idx;
+			out.write(reinterpret_cast<char *>(&q_idx), sizeof(uint32_t));
+		}
+
+		out.write(reinterpret_cast<char *>(&nnz), sizeof(uint32_t));
+
+		// write the flattened edges in this quadrant
+		out.write(
+			reinterpret_cast<const char *>(qs[i].edges),
+			qs[i].nnz * sizeof(uint32_t) * 2);
+	}
+	out.close();
+}
+
 void write_row_to_csv(PRExptRow &r, std::string csv_path) {
 	std::ofstream outfile(csv_path, std::ios_base::app);
 
-	outfile << 	r.graph_name.c_str()	<< "," <<
-				r.datetime.c_str()		<< "," <<
-				r.expt_num     			<< "," <<
-				r.num_iters			    << "," <<
-				r.vertex_order.c_str()	<< "," <<
-				r.edge_order.c_str()	<< "," <<
-				r.runtime	<< "," <<
-				r.valid << "\n";
+	outfile << r.graph_name.c_str() << "," <<
+	        r.datetime.c_str() << "," <<
+	        r.expt_num << "," <<
+	        r.num_iters << "," <<
+	        r.vertex_order.c_str() << "," <<
+	        r.edge_order.c_str() << "," <<
+	        r.runtime << "," <<
+	        r.valid << "\n";
 
 	outfile.close();
 }
@@ -243,19 +329,19 @@ par_read_edge_list(std::string input_path, std::vector<std::pair<ul, ul>> &mappe
 	auto unique_es_time = duration_cast<time_unit>(end - start);
 
 	std::vector<time_unit> times = {
-			ingest_time,
-			sort_vs_time,
-			unique_es_time,
-			sort_es_time,
-			unique_es_time,
+		ingest_time,
+		sort_vs_time,
+		unique_es_time,
+		sort_es_time,
+		unique_es_time,
 	};
 
 	std::vector<std::string> col_labels = {
-			"ingest",
-			"sort_vs",
-			"unique_vs",
-			"sort_es",
-			"unique_es",
+		"ingest",
+		"sort_vs",
+		"unique_vs",
+		"sort_es",
+		"unique_es",
 	};
 
 
@@ -344,19 +430,19 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
 	auto unique_es_time = duration_cast<time_unit>(end - start);
 
 	std::vector<time_unit> times = {
-			ingest_time,
-			sort_vs_time,
-			unique_es_time,
-			sort_es_time,
-			unique_es_time,
+		ingest_time,
+		sort_vs_time,
+		unique_es_time,
+		sort_es_time,
+		unique_es_time,
 	};
 
 	std::vector<std::string> col_labels = {
-			"ingest",
-			"sort_vs",
-			"unique_vs",
-			"sort_es",
-			"unique_es",
+		"ingest",
+		"sort_vs",
+		"unique_vs",
+		"sort_es",
+		"unique_es",
 	};
 
 
@@ -386,5 +472,5 @@ void read_map(std::string in_path, std::vector<ul> &mp) {
 		}
 	}
 }
- // Eigen
+// Eigen
 

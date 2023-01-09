@@ -29,6 +29,8 @@ void par_translate_edge_list(std::vector<Edge> &indexed_edges,
                              std::vector<Edge> &mapped_edges,
                              std::vector<ul> &iso_map, ull m);
 
+bool is_power_of_2(uint32_t n);
+
 void par_sort_edges(std::vector<Edge> &edges, Order ord, ul n);
 
 uint32_t next_largest_multiple(uint32_t n, uint32_t critical_depth);

@@ -237,6 +237,13 @@ def distinct(column, table):
     return rows
 
 
+def get_wing_width(graph_name):
+    sb_k = single_val_get('par_sb_k', 'statistics', graph_name)
+    sb_n_iters = single_val_get('par_sb_n_iters', 'statistics', graph_name)
+    wing_width = sb_k * sb_n_iters
+    return wing_width
+
+
 def insert_row_if_not_exists(graph_name, table):
     conn = connect()
     cursor = conn.cursor()

@@ -9,13 +9,29 @@ set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_CXX_FLAGS "-fopenmp -DLIKWID_PERFMON")
 
+#set(CMAKE_CXX_COMPILER /opt/intel/oneapi/compiler/2022.1.0/linux/bin/dpcpp)
+
 set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -Wextra -pedantic -O3")
+
+#-D CMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/latest/linux/bin-llvm/clang++
 
 FetchContent_Declare(fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG master
         )
 FetchContent_MakeAvailable(fmt)
+
+FetchContent_Declare(taskflow
+        GIT_REPOSITORY https://github.com/taskflow/taskflow.git
+        GIT_TAG master
+        )
+FetchContent_MakeAvailable(taskflow)
+#
+#FetchContent_Declare(work-stealing-queue
+#        GIT_REPOSITORY https://github.com/taskflow/work-stealing-queue.git
+#        GIT_TAG master
+#        )
+#FetchContent_MakeAvailable(work-stealing-queue)
 
 FetchContent_Declare(Spectra
         GIT_REPOSITORY https://github.com/yixuan/spectra.git
@@ -30,7 +46,7 @@ find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-SET(CMAKE_C_COMPILER icx) # todo use icx compiler when using intel dpl
+SET(CMAKE_C_COMPILER /opt/intel/oneapi/compiler/2022.1.0/linux/bin/icx) # todo use icx compiler when using intel dpl
 set(ParSlashburnDir "../par_slashburn")
 set(IPS4ODir "../par_slashburn/ips4o")
 add_subdirectory(${IPS4ODir} ips4o)
@@ -58,13 +74,17 @@ target_include_directories(compute_ccs PUBLIC ${ParSlashburnDir})
 add_executable(stats stats.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h ${ParSlashburnDir}/cc.h ${ParSlashburnDir}/cc.cpp stats.h)
 target_include_directories(stats PUBLIC ${ParSlashburnDir})
 
-add_executable(par_hilbert_bench par_hilbert_bench.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h)
+add_executable(par_hilbert_bench par_hilbert_bench.cpp io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h wsq.h)
 target_include_directories(par_hilbert_bench PUBLIC ${ParSlashburnDir})
 
-add_executable(hilburn_preproc hilburn_preproc.cpp hilburn_preproc.h io.cpp io.h sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h)
+add_executable(hilburn_preproc hilburn_preproc.cpp hilburn_preproc.h io.cpp io.h util.h util.cpp sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h Quad.h)
 target_include_directories(hilburn_preproc PUBLIC ${ParSlashburnDir} ${IPS4ODir})
 
+add_executable(hilburn_pr hilburn_pr.cpp io.cpp io.h util.h util.cpp sql.cpp sql.h rabbit_util.cpp rabbit_util.h ${ParSlashburnDir}/pvector.h Hilbert.cpp Hilbert.h Quad.h)
+target_include_directories(hilburn_pr PUBLIC ${ParSlashburnDir} ${IPS4ODir})
+
 find_package(likwid REQUIRED)
+#find_package(taskflow REQUIRED)
 
 if (Boost_FOUND)
 
@@ -91,7 +111,8 @@ if (Boost_FOUND)
 
     target_link_libraries(stats ${Boost_LIBRARIES} Eigen3::Eigen fmt::fmt igraph::igraph oneDPL sqlite3 Spectra)
 
-    target_link_libraries(par_hilbert_bench ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid)
+    target_link_libraries(par_hilbert_bench ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid Taskflow pthread)
 
     target_link_libraries(hilburn_preproc ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid ips4o)
+    target_link_libraries(hilburn_pr ${Boost_LIBRARIES} fmt::fmt igraph::igraph oneDPL sqlite3 likwid ips4o)
 endif ()

@@ -4,6 +4,15 @@
 
 #include "hilburn_preproc.h"
 
+struct pair_hash {
+	template<class T1, class T2>
+	size_t operator()(const std::pair<T1, T2> &pair) const {
+		std::hash<T1>()(pair.first) ^ std::hash<T2>()(pair.second);
+	}
+};
+
+typedef std::unordered_map<std::pair<uint32_t, uint32_t>, bool, pair_hash> edge_list_map;
+
 bool sort_by_q_idx(Quad *x, Quad *y) { return x->q_idx < y->q_idx; }
 
 /**
@@ -170,10 +179,6 @@ void read_degs(std::string out_path, std::string in_path, std::vector<uint32_t> 
 
 }
 
-bool is_power_of_2(uint32_t n) {
-	return (n > 0 && ((n & (n - 1)) == 0));
-}
-
 uint32_t mod(const uint32_t v, const uint32_t n) {
 //	assert(is_power_of_2(n));
 	return v & (n - 1);
@@ -187,8 +192,124 @@ uint32_t mod(const uint32_t v, const uint32_t n) {
  * @return
  */
 std::pair<uint32_t, uint32_t> edge_offset(uint32_t u, uint32_t v, uint32_t q_side_len) {
-//	return {u % q_side_len, v % q_side_len};
-	return {mod(u, q_side_len), mod(v, q_side_len)};
+	return {u % q_side_len, v % q_side_len};
+//	return {mod(u, q_side_len), mod(v, q_side_len)};
+}
+
+uint32_t filter_empty_quads(Quad *&qs, uint32_t n_quads) {
+	uint32_t n_empty = 0;
+#pragma omp parallel for reduction(+:n_empty)
+	for (uint32_t i = 0; i < n_quads; ++i) {
+		if (qs[i].nnz == 0) {
+			n_empty++;
+		}
+	}
+
+	uint32_t reduced_size = n_quads - n_empty;
+	Quad *new_qs = new Quad[reduced_size];
+	// create a new quad array, copy over the relevant data, and swap the pointers
+	uint32_t non_empty_idx = 0;
+	for (uint32_t i = 0; i < n_quads; ++i) {
+		if (qs[i].nnz == 0) { continue; }
+		new_qs[non_empty_idx].qx = qs[i].qx;
+		new_qs[non_empty_idx].qy = qs[i].qy;
+		new_qs[non_empty_idx].q_idx = qs[i].q_idx;
+		new_qs[non_empty_idx].nnz = qs[i].nnz;
+		new_qs[non_empty_idx].edges = qs[i].edges;
+
+		qs[i].qx = -1;
+		qs[i].qy = -1;
+		qs[i].q_idx = -1;
+		qs[i].nnz = -1;
+		qs[i].edges = nullptr;
+
+		non_empty_idx++;
+	}
+	qs = new_qs;
+	return reduced_size;
+}
+
+
+bool check_edge(uint32_t src, uint32_t dest, edge_list_map &map) {
+	std::pair<uint32_t, uint32_t> key = {src, dest};
+//	fmt::print("key, map[key]: {} {}\n", key, map[key]);
+	// incorrect mapping
+	if (map.find(key) == map.end()) { return false; }
+	else {
+		bool in_map = map[key];
+		// already seen this edge
+		if (in_map) { return false; }
+		else {
+			map.at(key) = true;
+			return true;
+		}
+	}
+}
+
+bool iterate_remap_check(Quad *qs, uint64_t n, bool is_rect, uint32_t v_offset,
+                         uint32_t wing_width, uint32_t q_side_len, edge_list_map &map) {
+// iterate over all the edges in the quadrant, remapping the vertex ids to their original values
+
+for (uint64_t i = 0; i < n; ++i) {
+		Quad &q = qs[i];
+		for (uint32_t j = 0; j < q.nnz; ++j) {
+			uint32_t src = q.edges[j * 2];
+			uint32_t dest = q.edges[j * 2 + 1];
+			if (is_rect) {
+//				 tail
+				uint32_t u = q.qx + src;
+				uint32_t v = q.qy + dest + v_offset;
+				bool res = check_edge(u, v, map);
+				if (not res) {
+					fmt::print("src, dest {}: {}\n", src, dest );
+					fmt::print("q.qx, q.qy, q_idx: {} {} {}\n", q.qx, q.qy, q.q_idx);
+					fmt::print("u, v: {} {}\n", u, v);
+
+					return false;
+				}
+			} else {
+				// wings
+				uint32_t u = q_side_len * q.qx + src;
+				uint32_t v = q_side_len * q.qy + dest + v_offset;
+				bool res = check_edge(u, v, map);
+				if (not res) { return false; }
+			}
+		}
+	}
+	return true;
+}
+
+bool check_all_edges(Quad *left_wing_qs, uint32_t n_nnz_lw_qs,
+                     Quad *right_wing_qs, uint32_t n_nnz_rw_qs,
+                     Quad *tail_rects, uint32_t n_nnz_tail_qs,
+                     std::vector<std::pair<uint32_t, uint32_t>> edge_list,
+                     uint32_t wing_width, uint32_t q_side_len) {
+
+	// construct a map from each to a boolean value
+	edge_list_map seen;
+	for (uint64_t i = 0; i < edge_list.size(); ++i) {
+		seen.insert({{edge_list[i].first, edge_list[i].second},
+		             false});
+	}
+	assert (seen.size() == edge_list.size());
+	bool res = false;
+	// check that each edge is seen exactly once
+	fmt::print("Checking left wing quads..\n");
+	if (!iterate_remap_check(left_wing_qs, n_nnz_lw_qs, false, 0, wing_width, q_side_len, seen)) return false;
+	fmt::print("Checking right wing quads..\n");
+	if (!iterate_remap_check(right_wing_qs, n_nnz_rw_qs, false, wing_width, wing_width, q_side_len, seen)) return false;
+	fmt::print("Checking tail rectangles..\n");
+	if (!iterate_remap_check(tail_rects, n_nnz_tail_qs, true, 0, wing_width, q_side_len, seen)) return false;
+
+	fmt::print("Checking all edges seen..\n");
+	// finally, iterate over the edge map and check that all edges have been seen
+	for (const auto &kv: seen) {
+		if (!kv.second) {
+			fmt::print("kv: {}\n", kv);
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
@@ -208,14 +329,18 @@ int main(int argc, char *argv[]) {
 	uint32_t n = 0; // n vertices
 	uint64_t m = 0; // n edges
 	int num_expts = 0;
-	int n_threads = 0;
+//	int n_threads = 0;
 	std::string graph_name = "";
 	std::string data_dir = "";
 	uint32_t q_side_len = 0;
 	uint32_t wing_width = 0;
+	bool debug = false;
 
-	while ((opt = getopt(argc, argv, "g:d:l:e:w:t:")) != -1) {
+	while ((opt = getopt(argc, argv, "bg:d:l:e:w:")) != -1) {
 		switch (opt) {
+			case 'b':
+				debug = !debug;
+				break;
 			case 'g':
 				graph_name = optarg;
 				break;
@@ -226,8 +351,8 @@ int main(int argc, char *argv[]) {
 				q_side_len = atoi(optarg);
 			case 'w':
 				wing_width = atoi(optarg);
-			case 't':
-				n_threads = atoi(optarg);
+//			case 't':
+//				n_threads = atoi(optarg);
 //			case 'e':
 //				num_expts = atoi(optarg);
 		}
@@ -246,17 +371,23 @@ int main(int argc, char *argv[]) {
 
 	n = iso_map.size();
 	m = edge_list.size();
+
+	// for debug, maintain an edge set
+	std::set<std::pair<uint32_t, uint32_t>> edge_set;
 	fmt::print("n: {}\n", n);
 	fmt::print("m: {}\n", m);
 	// remap the edges of the graph and sort by src, dest
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
 	for (uint32_t i = 0; i < m; ++i) {
 		uint32_t src = edge_list[i].first;
 		uint32_t dest = edge_list[i].second;
 
 		edge_list[i].first = iso_map[src];
 		edge_list[i].second = iso_map[dest];
+		edge_set.insert({iso_map[src], iso_map[dest]});
 	}
+
+
 
 	// the slashburn isomorphism map, translate the edgelist, and sort by src, dest
 //	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
@@ -279,6 +410,8 @@ int main(int argc, char *argv[]) {
 	CSR out_csr = CSR(n, m, false);
 
 	out_csr.par_populate(out_degs, edge_list);
+
+
 
 	// before populating in the in-csr, sort the edgelist by ascending (dest, src)
 	ips4o::parallel::sort(
@@ -325,7 +458,6 @@ int main(int argc, char *argv[]) {
 			++n_edges_rwing;
 		}
 	}
-
 	// tail
 #pragma omp parallel for schedule(static) reduction(+:n_edges_tail)
 	for (uint32_t u = wing_width; u < n; ++u) {
@@ -343,7 +475,6 @@ int main(int argc, char *argv[]) {
 			++n_edges_tail;
 		}
 	}
-
 	fmt::print("n_edges_lwing: {}\n", n_edges_lwing);
 	fmt::print("n_edges_rwing: {}\n", n_edges_rwing);
 	fmt::print("n_edges_tail: {}\n", n_edges_tail);
@@ -354,7 +485,7 @@ int main(int argc, char *argv[]) {
 	// (horizontal stripes for the left wing, vertical stripes for the right wing)
 	// stripe_len is equal to the largest power of 2 smaller than the wing_width
 	uint32_t stripe_len = hyperceiling(wing_width) / 2;
-
+	fmt::print("stripe_len: {}\n", stripe_len);
 	// compute the number of quadrants for each section (left, right wing, tail) of the adjacency matrix
 	// and compute the number of edges per quadrant (to preallocate the edge array size per quadrant)
 
@@ -393,7 +524,9 @@ int main(int argc, char *argv[]) {
 			if (largest_dest_seen > max_dest_in_row) max_dest_in_row = largest_dest_seen;
 		}
 
-		uint32_t n_quads_in_row = (max_dest_in_row + q_side_len - 1) / q_side_len;
+
+// TODO is this offset below mandatoyr
+		uint32_t n_quads_in_row = (max_dest_in_row + q_side_len) / q_side_len;
 		n_qs_in_left_wing_row[row_idx / q_side_len] = n_quads_in_row;
 		n_qs_left_wing += n_quads_in_row;
 	}
@@ -411,11 +544,25 @@ int main(int argc, char *argv[]) {
 	);
 	fmt::print("cumulative_n_qs_per_row_in_left_wing: {}\n", cumulative_n_qs_per_row_in_left_wing);
 	Quad *left_wing_qs = new Quad[n_qs_left_wing]();
+
+	// assign the quad coordinates for the quadrants in the left wing
+#pragma omp parallel for schedule(static)
+	for (uint32_t i = 0; i < n_qs_per_side; i++) {
+		uint32_t n_qs = n_qs_in_left_wing_row[i];
+		for (uint32_t j = 0; j < n_qs; ++j) {
+			uint32_t quad_idx = cumulative_n_qs_per_row_in_left_wing[i] + j;
+			Quad &q = left_wing_qs[quad_idx];
+			q.q_idx = quad_idx;
+			q.qx = i;
+			q.qy = j;
+		}
+	}
+
 //	std::vector<Quad> left_wing_qs(n_qs_left_wing);
 	// compute the number of edges that will reside in each quadrant of the left wing
 	// this can be done in parallel since each thread exclusively inspects a quadrant
 	// row
-#pragma omp parallel for schedule(static, 1) reduction(+:n_qs_left_wing)
+#pragma omp parallel for schedule(static) reduction(+:n_qs_left_wing)
 	for (uint32_t row_idx = 0; row_idx < n; row_idx += q_side_len) {
 		for (uint32_t u = row_idx; u < row_idx + q_side_len && u < n; ++u) {
 			uint64_t start = out_csr.index[u];
@@ -431,9 +578,9 @@ int main(int argc, char *argv[]) {
 				uint32_t quad_col = v / q_side_len;
 				uint32_t quad_idx = cumulative_n_qs_per_row_in_left_wing[quad_row] + quad_col;
 				Quad &q = left_wing_qs[quad_idx];
-				q.q_idx = quad_idx;
-				q.qx = quad_row;
-				q.qy = quad_col;
+//				q.q_idx = quad_idx;
+//				q.qx = quad_row;
+//				q.qy = quad_col;
 				q.nnz++;
 			}
 		}
@@ -447,7 +594,7 @@ int main(int argc, char *argv[]) {
 		Quad &q = left_wing_qs[i];
 		if (q.nnz == 0) {
 //			 if this quadrant is empty, it should not exist
-			assert(false);
+//			assert(false);
 		}
 		q.edges = new uint32_t[q.nnz * 2]();
 	}
@@ -457,14 +604,14 @@ int main(int argc, char *argv[]) {
 	// edges in that quadrant row
 	uint32_t *n_edges_seen_in_left_wing_q = new uint32_t[n_qs_left_wing]();
 
-	fmt::print("stripe_len: {}\n", stripe_len);
-	fmt::print("n_stripes_per_side: {}\n", n_stripes_in_left_wing);
-	fmt::print("n_stripes_per_side: {}\n", n_stripes_in_right_wing);
+//	fmt::print("stripe_len: {}\n", stripe_len);
+//	fmt::print("n_stripes_per_side: {}\n", n_stripes_in_left_wing);
+//	fmt::print("n_stripes_per_side: {}\n", n_stripes_in_right_wing);
 	for (uint32_t stripe_idx = 0; stripe_idx < n_stripes_in_left_wing; stripe_idx++) {
 		uint32_t stripe_start = stripe_idx * stripe_len;
 		uint32_t stripe_end = (stripe_idx + 1) * stripe_len;
-		fmt::print("stripe_Start: {}\n", stripe_start);
-		fmt::print("stripe_end: {}\n", stripe_end);
+//		fmt::print("stripe_Start: {}\n", stripe_start);
+//		fmt::print("stripe_end: {}\n", stripe_end);
 
 #pragma omp parallel for schedule(static, 1)
 		for (uint32_t row_idx = stripe_start; row_idx < stripe_end; row_idx += q_side_len) {
@@ -478,6 +625,9 @@ int main(int argc, char *argv[]) {
 				uint32_t quad_row = u / q_side_len;
 				for (uint64_t offset = start; offset < end; offset++) {
 					uint32_t v = out_csr.neighbours[offset];
+					if (!edge_set.count({u, v})) {
+						fmt::print("left: {} {}\n", u, v);
+					}
 					if (v >= wing_width) break;
 					uint32_t quad_col = v / q_side_len;
 					uint32_t quad_idx = cumulative_n_qs_per_row_in_left_wing[quad_row] + quad_col;
@@ -495,6 +645,8 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
+
+
 
 	// compute the number of quadrants in the right wing
 	uint32_t n_qs_right_wing = 0;
@@ -514,14 +666,16 @@ int main(int argc, char *argv[]) {
 
 			// get the largest id neighbour of u
 			uint32_t largest_dest_seen = out_csr.neighbours[end - 1];
-
+			if (u == 1026) {
+				fmt::print("largest_dest_seen: {}\n", largest_dest_seen);
+			}
 			// if the vertex does not have any neighbours that reside in the right wing,
 			// continue
 			if (largest_dest_seen < wing_width) continue;
 			largest_dest_seen -= wing_width; // offset the neighbour id
 			if (largest_dest_seen > max_dest_in_row) max_dest_in_row = largest_dest_seen;
 		}
-		uint32_t n_quads_in_row = (max_dest_in_row + q_side_len - 1) / q_side_len;
+		uint32_t n_quads_in_row = (max_dest_in_row + q_side_len) / q_side_len;
 		n_qs_in_right_wing_row[row_idx / q_side_len] = n_quads_in_row;
 		n_qs_right_wing += n_quads_in_row;
 	}
@@ -540,6 +694,21 @@ int main(int argc, char *argv[]) {
 	);
 	fmt::print("cumulative_n_qs_per_row_in_right_wing: {}\n", cumulative_n_qs_per_row_in_right_wing);
 	Quad *right_wing_qs = new Quad[n_qs_right_wing]();
+
+	// assign the quad coordinates for the quadrants in the right wing
+#pragma omp parallel for schedule(static)
+	for (uint32_t i = 0; i < n_qs_in_right_wing_side; i++) {
+		uint32_t n_qs = n_qs_in_right_wing_row[i];
+		for (uint32_t j = 0; j < n_qs; ++j) {
+			uint32_t quad_idx = cumulative_n_qs_per_row_in_right_wing[i] + j;
+//			fmt::print("i, j: {} {} {}\n", i, j, quad_idx);
+
+			Quad &q = right_wing_qs[quad_idx];
+			q.q_idx = quad_idx;
+			q.qx = i;
+			q.qy = j;
+		}
+	}
 
 	// compute the number of edges that will reside in each quadrant of the right wing
 	// this can be done in parallel since each thread will exclusively modify a quadrant
@@ -561,15 +730,16 @@ int main(int argc, char *argv[]) {
 				end
 			);
 
+
 			uint32_t quad_row = u / q_side_len;
 			for (uint64_t offset = edge_start; offset < end; offset++) {
 				uint32_t v = out_csr.neighbours[offset];
 				uint32_t quad_col = (v - wing_width) / q_side_len;
 				uint32_t quad_idx = cumulative_n_qs_per_row_in_right_wing[quad_row] + quad_col;
 				Quad &q = right_wing_qs[quad_idx];
-				q.q_idx = quad_idx;
-				q.qx = quad_row;
-				q.qy = quad_col;
+//				q.q_idx = quad_idx;
+//				q.qx = quad_row;
+//				q.qy = quad_col;
 				q.nnz++;
 			}
 		}
@@ -583,11 +753,21 @@ int main(int argc, char *argv[]) {
 		Quad &q = right_wing_qs[i];
 		if (q.nnz == 0) {
 //			 if this quadrant is empty, it should not exist
-			assert(false);
+//			assert(false);
 		}
 //		fmt::print("{} {} {} {}\n", q.q_idx,q.qx, q.qy, q.nnz);
 		q.edges = new uint32_t[q.nnz * 2]();
 	}
+
+	//	right 1282 2940
+	uint32_t t1 = 1282;
+	uint64_t o1 = out_csr.index[t1];
+	uint64_t o2 = out_csr.index[t1 + 1];
+	for (uint64_t o3 = o1; o3 < o2; o3++) {
+		fmt::print("out_csr.neighbours[o3]: {}\n", out_csr.neighbours[o3]);
+	}
+
+
 
 //	 (logically) separate the right wing into columns of size stripe_len
 //	 within a stripe, each thread will populate a quadrant row by iterating over the
@@ -597,8 +777,8 @@ int main(int argc, char *argv[]) {
 	for (uint32_t stripe_idx = 0; stripe_idx < n_stripes_in_right_wing; stripe_idx++) {
 		uint32_t stripe_start = stripe_idx * stripe_len + wing_width;
 		uint32_t stripe_end = (stripe_idx + 1) * stripe_len + wing_width;
-		fmt::print("stripe_Start: {}\n", stripe_start);
-		fmt::print("stripe_end: {}\n", stripe_end);
+//		fmt::print("stripe_Start: {}\n", stripe_start);
+//		fmt::print("stripe_end: {}\n", stripe_end);
 
 #pragma omp parallel for schedule(static, 1)
 		for (uint32_t col_idx = stripe_start; col_idx < stripe_end; col_idx += q_side_len) {
@@ -616,7 +796,10 @@ int main(int argc, char *argv[]) {
 					uint32_t quad_row = u / q_side_len;
 					uint32_t quad_idx = cumulative_n_qs_per_row_in_right_wing[quad_row] + quad_col;
 					Quad &q = right_wing_qs[quad_idx];
+
+
 					// compute the local (x, y) coordinate given (u, v)
+
 					auto p = edge_offset(u, v - wing_width, q_side_len);
 					uint32_t qu = p.first;
 					uint32_t qv = p.second;
@@ -682,10 +865,10 @@ int main(int argc, char *argv[]) {
 			if (quad_ub >= n) quad_ub = n;
 			uint32_t max_in_neigh = in_csr.neighbours[x_end - 1];
 			// find any tail in-neighbours that may be out of bounds from above
-			uint32_t min_in_neigh = get_min_id_in_range(u, wing_width + 1, quad_lb, in_csr);
+			uint32_t min_in_neigh = get_min_id_in_range(u, wing_width, quad_lb, in_csr);
 			if (max_in_neigh > quad_ub)
 				if (max_in_neigh > max_in_rect) max_in_rect = max_in_neigh;
-			if (min_in_neigh < quad_lb && min_in_neigh > wing_width)
+			if (min_in_neigh < quad_lb && min_in_neigh >= wing_width)
 				if (min_in_neigh < min_in_rect) min_in_rect = min_in_neigh;
 		}
 		rect_lbs[q_idx] = min_in_rect;
@@ -700,7 +883,10 @@ int main(int argc, char *argv[]) {
 		uint32_t ub = q + q_side_len > n ? n : q + q_side_len;
 		if (rect_ubs[q_idx] == 0) rect_ubs[q_idx] = ub;
 	}
+	rect_lbs[0] = wing_width;
 	rect_ubs[n_rects_in_tail - 1] = n - 1;
+
+	// assign the quad coordinates for the quadrants in the tail
 
 	// compute the number of edges in each tail rectangles to preallocate their edges arrays
 	// count the number of edges that lie within each tail rectangle
@@ -712,28 +898,30 @@ int main(int argc, char *argv[]) {
 	// r's width == q_side_len
 	// r's length == r.q_idx - r.qx
 	uint32_t total = 0;
+	uint32_t t_total = 0;
 #pragma omp parallel for schedule(static) reduction(+:total)
 	for (uint32_t q = wing_width; q < n; q += q_side_len) {
 //		fmt::print("q: {}\n", q);
 		uint32_t q_idx = (q - wing_width) / q_side_len;
-		uint32_t q_ub = q + q_side_len >= n ? n - 1 : q + q_side_len;
+		uint32_t q_ub = q + q_side_len >= n ? n : q + q_side_len;
 		uint32_t n_neighbours_in_rect = 0;
 		uint32_t x_lb = rect_lbs[q_idx];
 		uint32_t x_ub = rect_ubs[q_idx];
+
 		for (uint32_t u = x_lb; u <= x_ub; ++u) {
+
 			uint32_t n_neighbours_in_row = n_out_neighbours_between(u, q, q_ub, out_csr);
 			n_neighbours_in_rect += n_neighbours_in_row;
-			uint32_t start = out_csr.index[u];
-			uint32_t end = out_csr.index[u + 1];
+			uint64_t start = out_csr.index[u];
+			uint64_t end = out_csr.index[u + 1];
 		}
 		Quad &r = tail_rects[q_idx];
 		r.nnz = n_neighbours_in_rect;
 		r.qx = x_lb;
-		r.q_idx = x_ub;
+		r.q_idx = x_ub + 1;
 		r.qy = q;
 		total += n_neighbours_in_rect;
 	}
-//	fmt::print("total: {}\n", total);
 
 	// preallocate each edges array in the tail's rectangles
 #pragma omp parallel for schedule(static)
@@ -741,7 +929,7 @@ int main(int argc, char *argv[]) {
 		Quad &q = tail_rects[i];
 		if (q.nnz == 0) {
 //			 if this quadrant is empty, it should not exist
-			assert(false);
+//			assert(false);
 		}
 //		fmt::print("{} {} {} {}\n", q.q_idx,q.qx, q.qy, q.nnz);
 		q.edges = new uint32_t[q.nnz * 2]();
@@ -775,8 +963,11 @@ int main(int argc, char *argv[]) {
 
 			for (uint64_t out_edge_offset = offset; out_edge_offset < end; ++out_edge_offset) {
 				uint32_t v = out_csr.neighbours[out_edge_offset];
+				if (!edge_set.count({u, v})) {
+					fmt::print("tail: {} {}\n", u, v);
+				}
 				if (v >= q.qy + q_side_len) break;
-				auto p = edge_offset(u - wing_width, v - wing_width, rect_offset);
+				auto p = edge_offset(u - q.qx, v - q.qy, rect_offset);
 				uint32_t qu = p.first;
 				uint32_t qv = p.second;
 //				insert the offset (u, v) to the flattened edges array of q
@@ -789,9 +980,9 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	// assert that all edges in left, right wings and tail have been assigned to a quadrant
-	uint32_t lw_count_test = 0;
-	uint32_t rw_count_test = 0;
-	uint32_t tail_count_test = 0;
+	uint64_t lw_count_test = 0;
+	uint64_t rw_count_test = 0;
+	uint64_t tail_count_test = 0;
 
 #pragma omp parallel for schedule(static) reduction(+:lw_count_test)
 	for (uint32_t i = 0; i < n_qs_left_wing; ++i)
@@ -808,6 +999,7 @@ int main(int argc, char *argv[]) {
 	assert(lw_count_test == n_edges_lwing);
 	assert(rw_count_test == n_edges_rwing);
 	assert(tail_count_test == n_edges_tail);
+	assert(lw_count_test + rw_count_test + tail_count_test == m);
 
 	// hilbert order the edges within all quadrants
 #pragma omp parallel for schedule(static)
@@ -837,18 +1029,22 @@ int main(int argc, char *argv[]) {
 
 	uint32_t left_wing_stripe_idx = 1;
 	for (uint32_t i = n_quads_per_stripe; i < n_qs_per_side; i += n_quads_per_stripe) {
-		fmt::print("i: {}\n", i);
+//		fmt::print("i: {}\n", i);
 		cumulative_n_quads_per_left_wing_stripe[left_wing_stripe_idx] = cumulative_n_qs_per_row_in_left_wing[i];
 		++left_wing_stripe_idx;
 	}
 	cumulative_n_quads_per_left_wing_stripe[n_stripes_in_left_wing] = cumulative_n_qs_per_row_in_left_wing[n_qs_per_side];
-	print_arr<uint32_t>(cumulative_n_quads_per_left_wing_stripe, n_stripes_in_left_wing + 1);
+//	print_arr<uint32_t>(cumulative_n_quads_per_left_wing_stripe, n_stripes_in_left_wing + 1);
+
+	fmt::print("n_stripes_in_left_wing: {}\n", n_stripes_in_left_wing);
+	fmt::print("n_quads_per_stripe: {}\n", n_quads_per_stripe);
 	// hilbert sort all quadrants within a stripe
 	for (uint32_t i = 0; i < n_stripes_in_left_wing; ++i) {
 		uint32_t stripe_start = cumulative_n_quads_per_left_wing_stripe[i];
 		uint32_t stripe_end = cumulative_n_quads_per_left_wing_stripe[i + 1];
-		fmt::print("stripe_start, stripe_end: {} {}\n", stripe_start, stripe_end);
+//		fmt::print("stripe_start, stripe_end: {} {}\n", stripe_start, stripe_end);
 		// assign the hilbert idcs
+#pragma omp parallel for schedule(static)
 		for (uint32_t j = stripe_start; j < stripe_end; ++j) {
 			Quad &q = left_wing_qs[j];
 
@@ -860,9 +1056,6 @@ int main(int argc, char *argv[]) {
 			uint32_t hilbert_side_len = n_quads_per_stripe * 2;
 			uint32_t h_idx = xy2d(hilbert_side_len, qx, q.qy);
 			q.q_idx = h_idx;
-//			fmt::print("q.qx, q.qy, q.q_idx, h_side_len, h_idx\n");
-//			fmt::print(" {} {} {} {} {} \n", qx, q.qy, q.q_idx, hilbert_side_len, h_idx);
-
 		}
 
 		// sort the quadrants within this horizontal stripe by ascending hilbert index
@@ -890,7 +1083,7 @@ int main(int argc, char *argv[]) {
 	// get the number of quadrants in each quadrant column
 	uint32_t n_cols_in_right_wing = (right_wing_width + q_side_len - 1) / q_side_len;
 //	uint32_t *n_quads_in_right_wing_col = new uint32_t[n_cols_in_right_wing]();
-  std::vector<uint32_t> n_quads_in_right_wing_col(n_cols_in_right_wing);
+	std::vector<uint32_t> n_quads_in_right_wing_col(n_cols_in_right_wing);
 	uint32_t curr_col = 0;
 	uint32_t quad_count = 0;
 	for (uint32_t j = 0; j < n_qs_right_wing; ++j) {
@@ -924,37 +1117,96 @@ int main(int argc, char *argv[]) {
 	uint32_t right_wing_stripe_idx = 1;
 
 	for (uint32_t i = n_quads_per_stripe; i < n_qs_in_right_wing_length; i += n_quads_per_stripe) {
-		fmt::print("i: {}\n", i);
+//		fmt::print("i: {}\n", i);
 		cumulative_n_quads_per_right_wing_stripe[right_wing_stripe_idx] = cumulative_n_qs_per_col_in_right_wing[i];
 		++right_wing_stripe_idx;
 	}
 
 	cumulative_n_quads_per_right_wing_stripe[n_stripes_in_right_wing] = cumulative_n_qs_per_col_in_right_wing[n_qs_in_right_wing_length];
-	print_arr<uint32_t>(cumulative_n_quads_per_right_wing_stripe, n_stripes_in_right_wing + 1);
+//	print_arr<uint32_t>(cumulative_n_quads_per_right_wing_stripe, n_stripes_in_right_wing + 1);
 
+	// hilbert sort all quadrants within a stripe
+
+	for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
+		uint32_t stripe_start = cumulative_n_quads_per_right_wing_stripe[i];
+		uint32_t stripe_end = cumulative_n_quads_per_right_wing_stripe[i + 1];
+//		fmt::print("stripe_start, stripe_end: {} {}\n", stripe_start, stripe_end);
+		// assign the hilbert idcs
+#pragma omp parallel for schedule(static)
+		for (uint32_t j = stripe_start; j < stripe_end; ++j) {
+			Quad &q = right_wing_qs[j];
+			// offset the vertical stripe
+			uint32_t qy = q.qy - (n_quads_per_stripe * i);
+
+			// the coordinate system used to compute the hilbert index of each offset stripe
+			// is defined using the number of quads per stripe side length *2
+			uint32_t hilbert_side_len = n_quads_per_stripe * 2;
+
+			// since we want right wing stripes to be traversed vertically, swap qx and qy
+			// when computing the hilbert index
+			uint32_t h_idx = xy2d(hilbert_side_len, qy, q.qx);
+			q.q_idx = h_idx;
+		}
+//		// sort the quadrants within this horizontal stripe by ascending hilbert index
+		std::sort(
+			dpl::execution::par_unseq,
+			right_wing_qs + stripe_start,
+			right_wing_qs + stripe_end,
+			[](const Quad &l, const Quad &r) { return l.q_idx < r.q_idx; }
+		);
+	}
+
+
+	// before writing quadrants to disk, filter out any empty quads
+	// filter out fully zero quads
+	uint32_t n_nnz_lw_qs = filter_empty_quads(left_wing_qs, n_qs_left_wing);
+	uint32_t n_nnz_rw_qs = filter_empty_quads(right_wing_qs, n_qs_right_wing);
+	uint32_t n_nnz_tail_qs = filter_empty_quads(tail_rects, n_rects_in_tail);
+
+	// verify all edges assigned
+	if (debug) {
+		fmt::print("Verifying all edges have been correctly assigned to quadrants..\n");
+		bool all_edges_assigned = check_all_edges(
+			left_wing_qs, n_nnz_lw_qs,
+			right_wing_qs, n_nnz_rw_qs,
+			tail_rects, n_nnz_tail_qs,
+			edge_list,
+			wing_width, q_side_len
+		);
+		assert(all_edges_assigned);
+	} else {
+		fmt::print("Debug flag not passed; Skipping verification of edges.\n");
+	}
+
+
+	// write the quadrants to separate binary files
+	std::string lw_path = fmt::format("{}/{}", graph_dir, "lw.bin");
+	std::string rw_path = fmt::format("{}/{}", graph_dir, "rw.bin");
+	std::string tail_path = fmt::format("{}/{}", graph_dir, "tail.bin");
+	write_quad_array(lw_path, left_wing_qs, n_nnz_lw_qs, q_side_len, wing_width, n, m, false);
+	write_quad_array(rw_path, right_wing_qs, n_nnz_rw_qs, q_side_len, wing_width, n, m, false);
+	write_quad_array(tail_path, tail_rects, n_nnz_tail_qs, q_side_len, wing_width, n, m, true);
+
+//	fmt::print("{:*^30}\n", "left wing");
+//	for (uint32_t j = 0; j < n_qs_left_wing; ++j) {
+//		Quad &q = left_wing_qs[j];
+//		fmt::print(" {} {} {} {} \n", q.qx, q.qy, q.q_idx, q.nnz);
+//	}
+//
+//	fmt::print("{:*^30}\n", "right wing");
+//
 //	for (uint32_t j = 0; j < n_qs_right_wing; ++j) {
 //		Quad &q = right_wing_qs[j];
-//		fmt::print(" {} {} {}  \n", q.qx, q.qy, q.q_idx);
+//		fmt::print(" {} {} {} {} \n", q.qx, q.qy, q.q_idx, q.nnz);
 //	}
-//	Quad *shaped[100];
-//	std::sort(shaped, shaped + 3, sort_by_q_idx);
-
-//	fmt::print("*left_wing_qs: {}\n", left_wing_qs->q_idx);
-//#pragma omp parallel for schedule(static)
-//	for (uint32_t i = 0; i < n_rects_in_tail; ++i)
-//		tail_count_test += tail_rects[i].nnz;
-
-
-
-//	for (uint32_t q = wing_width; q < n; q += q_side_len) {
-//		fmt::print("{}, ", q);
+//
+//	fmt::print("{:*^30}\n", "tail");
+//
+//	for (uint32_t j = 0; j < n_rects_in_tail; ++j) {
+//		Quad &q = tail_rects[j];
+//		fmt::print(" {} {} {} {} \n", q.qx, q.qy, q.q_idx, q.nnz);
+//
 //	}
-//	fmt::print("\n" );
-//	print_arr<uint32_t>(rect_lbs, n_rects_in_tail);
-//	print_arr<uint32_t>(rect_ubs, n_rects_in_tail);
-
-
-
 
 	// clean up
 //	delete[]left_wing_qs;
