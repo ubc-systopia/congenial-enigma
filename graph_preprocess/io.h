@@ -117,10 +117,12 @@ void write_binary_container(std::string outpath, C &container) {
 
 void
 write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_len, uint32_t wing_width, uint32_t n,
-                 uint64_t m, bool is_rect);
+                 uint64_t m, bool is_rect, bool right_wing,
+                 uint32_t n_stripes_in_right_wing,
+                 uint32_t* cumulative_n_qs_per_rw_stripe);
 
 
-std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect);
+std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect, bool right_wing, uint32_t *& cumulative_n_qs_per_right_wing_stripe);
 namespace Eigen {
 // https://scicomp.stackexchange.com/a/21438
 	template<class SparseMatrix>

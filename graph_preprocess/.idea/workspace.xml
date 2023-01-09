@@ -10,28 +10,122 @@
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager">
-    <generated />
+    <generated>
+      <config projectName="graph_preprocess" targetName="Nightly" />
+      <config projectName="graph_preprocess" targetName="ExperimentalUpdate" />
+      <config projectName="graph_preprocess" targetName="NightlyUpdate" />
+      <config projectName="graph_preprocess" targetName="ContinuousConfigure" />
+      <config projectName="graph_preprocess" targetName="ExperimentalMemCheck" />
+      <config projectName="graph_preprocess" targetName="multi_condition" />
+      <config projectName="graph_preprocess" targetName="movable" />
+      <config projectName="graph_preprocess" targetName="hilburn_pr" />
+      <config projectName="graph_preprocess" targetName="do_while_loop" />
+      <config projectName="graph_preprocess" targetName="subflow_async" />
+      <config projectName="graph_preprocess" targetName="NightlyConfigure" />
+      <config projectName="graph_preprocess" targetName="subflows" />
+      <config projectName="graph_preprocess" targetName="par_hilbert_bench" />
+      <config projectName="graph_preprocess" targetName="Experimental" />
+      <config projectName="graph_preprocess" targetName="pipeline" />
+      <config projectName="graph_preprocess" targetName="NightlySubmit" />
+      <config projectName="graph_preprocess" targetName="cancellation" />
+      <config projectName="graph_preprocess" targetName="runtime" />
+      <config projectName="graph_preprocess" targetName="asyncs" />
+      <config projectName="graph_preprocess" targetName="utility" />
+      <config projectName="graph_preprocess" targetName="ExperimentalSubmit" />
+      <config projectName="graph_preprocess" targetName="cuthill_mckee" />
+      <config projectName="graph_preprocess" targetName="traversals" />
+      <config projectName="graph_preprocess" targetName="algorithms" />
+      <config projectName="graph_preprocess" targetName="async" />
+      <config projectName="graph_preprocess" targetName="condition" />
+      <config projectName="graph_preprocess" targetName="ExperimentalConfigure" />
+      <config projectName="graph_preprocess" targetName="convert_map_to_binary" />
+      <config projectName="graph_preprocess" targetName="ContinuousSubmit" />
+      <config projectName="graph_preprocess" targetName="attach_data" />
+      <config projectName="graph_preprocess" targetName="deferred_pipelines" />
+      <config projectName="graph_preprocess" targetName="switch_case" />
+      <config projectName="graph_preprocess" targetName="hilburn_preproc" />
+      <config projectName="graph_preprocess" targetName="parallel_for" />
+      <config projectName="graph_preprocess" targetName="fibonacci" />
+      <config projectName="graph_preprocess" targetName="NightlyStart" />
+      <config projectName="graph_preprocess" targetName="priorities" />
+      <config projectName="graph_preprocess" targetName="NightlyBuild" />
+      <config projectName="graph_preprocess" targetName="subflow" />
+      <config projectName="graph_preprocess" targetName="Continuous" />
+      <config projectName="graph_preprocess" targetName="ExperimentalStart" />
+      <config projectName="graph_preprocess" targetName="ContinuousTest" />
+      <config projectName="graph_preprocess" targetName="NightlyCoverage" />
+      <config projectName="graph_preprocess" targetName="reduce" />
+      <config projectName="graph_preprocess" targetName="text_pipeline" />
+      <config projectName="graph_preprocess" targetName="workers" />
+      <config projectName="graph_preprocess" targetName="while_loop" />
+      <config projectName="graph_preprocess" targetName="composition" />
+      <config projectName="graph_preprocess" targetName="stats" />
+      <config projectName="graph_preprocess" targetName="ips4o_example" />
+      <config projectName="graph_preprocess" targetName="observer" />
+      <config projectName="graph_preprocess" targetName="priority" />
+      <config projectName="graph_preprocess" targetName="control_flow" />
+      <config projectName="graph_preprocess" targetName="ContinuousStart" />
+      <config projectName="graph_preprocess" targetName="fmt" />
+      <config projectName="graph_preprocess" targetName="limited_concurrency" />
+      <config projectName="graph_preprocess" targetName="parallel_sort" />
+      <config projectName="graph_preprocess" targetName="ContinuousBuild" />
+      <config projectName="graph_preprocess" targetName="semaphores" />
+      <config projectName="graph_preprocess" targetName="worker_interface" />
+      <config projectName="graph_preprocess" targetName="pipelines" />
+      <config projectName="graph_preprocess" targetName="run_and_wait" />
+      <config projectName="graph_preprocess" targetName="run" />
+      <config projectName="graph_preprocess" targetName="scalable_pipeline" />
+      <config projectName="graph_preprocess" targetName="sb_furhilbert" />
+      <config projectName="graph_preprocess" targetName="parallel_data_pipeline" />
+      <config projectName="graph_preprocess" targetName="visualization" />
+      <config projectName="graph_preprocess" targetName="ExperimentalCoverage" />
+      <config projectName="graph_preprocess" targetName="ContinuousMemCheck" />
+      <config projectName="graph_preprocess" targetName="parallel_graph_pipeline" />
+      <config projectName="graph_preprocess" targetName="compute_ccs" />
+      <config projectName="graph_preprocess" targetName="if_else" />
+      <config projectName="graph_preprocess" targetName="graph_preprocess" />
+      <config projectName="graph_preprocess" targetName="NightlyTest" />
+      <config projectName="graph_preprocess" targetName="ExperimentalTest" />
+      <config projectName="graph_preprocess" targetName="cancel_async" />
+      <config projectName="graph_preprocess" targetName="scalable_pipelines" />
+      <config projectName="graph_preprocess" targetName="simple" />
+      <config projectName="graph_preprocess" targetName="nested_if_else" />
+      <config projectName="graph_preprocess" targetName="NightlyMemCheck" />
+      <config projectName="graph_preprocess" targetName="basics" />
+      <config projectName="graph_preprocess" targetName="ExperimentalBuild" />
+      <config projectName="graph_preprocess" targetName="pr_experiments" />
+      <config projectName="graph_preprocess" targetName="sorting" />
+      <config projectName="graph_preprocess" targetName="ContinuousCoverage" />
+      <config projectName="graph_preprocess" targetName="cancel" />
+      <config projectName="graph_preprocess" targetName="taskflow_pipeline" />
+      <config projectName="graph_preprocess" targetName="data_pipelines" />
+      <config projectName="graph_preprocess" targetName="ContinuousUpdate" />
+      <config projectName="graph_preprocess" targetName="NightlyMemoryCheck" />
+      <config projectName="graph_preprocess" targetName="compositions" />
+      <config projectName="graph_preprocess" targetName="work_stealing" />
+      <config projectName="graph_preprocess" targetName="slashburn" />
+      <config projectName="graph_preprocess" targetName="runtimes" />
+      <config projectName="graph_preprocess" targetName="parallel_deferred_pipeline" />
+    </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
-      <configuration PROFILE_NAME="Debug-intel_compile" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="intel_compile" GENERATION_OPTIONS="-D CMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/latest/linux/bin/dpcpp" />
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Default" GENERATION_OPTIONS="-D ONEDPL_PAR_BACKEND=openmp" />
+      <configuration PROFILE_NAME="Debug-intel_compile" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="intel_compile" GENERATION_OPTIONS="-D ONEDPL_PAR_BACKEND=openmp" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" />
+      <configuration PROFILE_NAME="RelWithDebInfo" ENABLED="true" CONFIG_NAME="RelWithDebInfo" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/hilburn_pr.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wsq.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dbg" beforeDir="false" afterPath="$PROJECT_DIR$/../dbg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hilburn_pr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_pr.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hilburn_preproc.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_preproc.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hilburn_preproc.h" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_preproc.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/par_hilbert_bench.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/par_hilbert_bench.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/util.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../konect_scraper/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/../konect_scraper/sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,7 +136,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-intel_compile" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -60,94 +154,516 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.advertisement.text.has.clang-format&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/atrostan/Workspace/repos/congenial-enigma/par_slashburn&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.2933861&quot;,
-    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.advertisement.text.has.clang-format": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/atrostan/Workspace/repos/congenial-enigma/par_slashburn",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "settings.editor.splitter.proportion": "0.2933861",
+    "structure.view.defaults.are.configured": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.hilburn_pr">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
+    <configuration name="Continuous" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="Continuous" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="cuthill_mckee" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 1601787 -m 8063026 -g $PROJECT_DIR$/../konect_scraper/data/graphs/trec-wt10g/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cuthill_mckee" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cuthill_mckee">
+    <configuration name="ContinuousBuild" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousBuild" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="graph_preprocess" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-i -t -g $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/orig.net -b $PROJECT_DIR$/../konect_scraper/data/graphs.db -m 2137 -o $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/comp " REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="graph_preprocess" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="graph_preprocess">
+    <configuration name="ContinuousConfigure" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousConfigure" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="hilburn_pr" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g wikipedia_link_vls -d /media/atrostan/patterson_backup/data/ -l 256 -w 2940 -i 20" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_pr" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_pr">
-      <envs>
-        <env name="OMP_PROC_BIND" value="close" />
-        <env name="OMP_PLACES" value="{0},{1},{2},{3},{4},{5}" />
-      </envs>
+    <configuration name="ContinuousCoverage" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousCoverage" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-b -g wikipedia_link_vls -d /media/atrostan/patterson_backup/data/ -l 256 -w 2940" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
+    <configuration name="ContinuousMemCheck" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousMemCheck" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-h -g radoslaw_email -d /media/atrostan/patterson_backup/data -l 65535 -e 1 -s taskflow" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
+    <configuration name="ContinuousStart" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousStart" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="pr_experiments" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 241 -m 1098 -i 20 -x 5 -p 0.85 -g /media/atrostan/patterson_backup/data/graphs/moreno_innovation -b /media/atrostan/patterson_backup/data/graphs.db -o sb -r /media/atrostan/patterson_backup/data/results/moreno_innovation/sb_hilbert_Wed_Dec_07_20_43_09_UTC_2022.csv -s hilbert" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="pr_experiments" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="pr_experiments">
+    <configuration name="ContinuousSubmit" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousSubmit" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="sb_furhilbert" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 54" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="sb_furhilbert" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="sb_furhilbert">
+    <configuration name="ContinuousTest" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousTest" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="slashburn" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 219 -m 586 -p 0.005 -g $PROJECT_DIR$/../konect_scraper/data/graphs/convote/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db -o $PROJECT_DIR$/../konect_scraper/data/graphs/convote/sb" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="slashburn" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="slashburn">
+    <configuration name="ContinuousUpdate" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ContinuousUpdate" CONFIG_NAME="Debug-intel_compile">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 22 -g /media/atrostan/patterson_backup/data/graphs/moreno_taro -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
+    <configuration name="Experimental" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="Experimental" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalBuild" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalBuild" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalConfigure" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalConfigure" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalCoverage" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalCoverage" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalMemCheck" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalMemCheck" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalStart" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalStart" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalSubmit" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalSubmit" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalTest" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalTest" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalUpdate" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ExperimentalUpdate" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Nightly" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="Nightly" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyBuild" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyBuild" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyConfigure" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyConfigure" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyCoverage" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyCoverage" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyMemCheck" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyMemCheck" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyMemoryCheck" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyMemoryCheck" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyStart" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyStart" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlySubmit" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlySubmit" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyTest" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyTest" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyUpdate" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="NightlyUpdate" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="algorithms" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="algorithms" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="algorithms">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="async" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="async" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="async">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="asyncs" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="asyncs" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="asyncs">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="attach_data" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="attach_data" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="attach_data">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="basics" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="basics" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="basics">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cancel" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cancel" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cancel">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cancel_async" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cancel_async" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cancel_async">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cancellation" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cancellation" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cancellation">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="composition" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="composition" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="composition">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="compositions" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compositions" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compositions">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="compute_ccs" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-f /media/atrostan/patterson_backup/data/graphs/moreno_innovation/comp.net -o /media/atrostan/patterson_backup/data/graphs/moreno_innovation/lscc.net -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="compute_ccs" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="compute_ccs">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="condition" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="condition" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="condition">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="control_flow" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="control_flow" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="control_flow">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="convert_map_to_binary" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="convert_map_to_binary" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="convert_map_to_binary">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cuthill_mckee" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 1601787 -m 8063026 -g $PROJECT_DIR$/../konect_scraper/data/graphs/trec-wt10g/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="cuthill_mckee" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="cuthill_mckee">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="data_pipelines" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="data_pipelines" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="data_pipelines">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="deferred_pipelines" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="deferred_pipelines" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="deferred_pipelines">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="do_while_loop" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="do_while_loop" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="do_while_loop">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="fibonacci" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="fibonacci" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="fibonacci">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="fmt" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="fmt" CONFIG_NAME="Debug-intel_compile">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="graph_preprocess" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-i -t -g $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/orig.net -b $PROJECT_DIR$/../konect_scraper/data/graphs.db -m 2137 -o $PROJECT_DIR$/../konect_scraper/data/graphs/foodweb-baydry/comp " REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="graph_preprocess" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="graph_preprocess">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="hilburn_pr" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g soc-LiveJournal1 -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1211650 -i 20 -s static" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_pr" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_pr">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g soc-LiveJournal1 -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1211650" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="if_else" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="if_else" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="if_else">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ips4o_example" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="ips4o_example" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="ips4o_example">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="limited_concurrency" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="limited_concurrency" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="limited_concurrency">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="movable" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="movable" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="movable">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="multi_condition" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="multi_condition" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="multi_condition">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="nested_if_else" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="nested_if_else" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="nested_if_else">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="observer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="observer" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="observer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="par_hilbert_bench" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-h -g radoslaw_email -d /media/atrostan/patterson_backup/data -l 65535 -e 1 -s taskflow" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="par_hilbert_bench" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="par_hilbert_bench">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="parallel_data_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="parallel_data_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="parallel_data_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="parallel_deferred_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="parallel_deferred_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="parallel_deferred_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="parallel_for" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="parallel_for" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="parallel_for">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="parallel_graph_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="parallel_graph_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="parallel_graph_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="parallel_sort" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="parallel_sort" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="parallel_sort">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pipelines" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="pipelines" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="pipelines">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="pr_experiments" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 241 -m 1098 -i 20 -x 5 -p 0.85 -g /media/atrostan/patterson_backup/data/graphs/moreno_innovation -b /media/atrostan/patterson_backup/data/graphs.db -o sb -r /media/atrostan/patterson_backup/data/results/moreno_innovation/sb_hilbert_Wed_Dec_07_20_43_09_UTC_2022.csv -s hilbert" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="pr_experiments" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="pr_experiments">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="priorities" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="priorities" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="priorities">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="priority" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="priority" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="priority">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="reduce" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="reduce" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="reduce">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="run" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="run" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="run">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="run_and_wait" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="run_and_wait" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="run_and_wait">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="runtime" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="runtime" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="runtime">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="runtimes" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="runtimes" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="runtimes">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sb_furhilbert" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 54" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="sb_furhilbert" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="sb_furhilbert">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="scalable_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="scalable_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="scalable_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="scalable_pipelines" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="scalable_pipelines" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="scalable_pipelines">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="semaphores" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="semaphores" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="semaphores">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="simple" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="simple" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="simple">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="slashburn" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-d -n 219 -m 586 -p 0.005 -g $PROJECT_DIR$/../konect_scraper/data/graphs/convote/comp.bin -b $PROJECT_DIR$/../konect_scraper/data/graphs.db -o $PROJECT_DIR$/../konect_scraper/data/graphs/convote/sb" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="slashburn" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="slashburn">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sorting" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="sorting" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="sorting">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="stats" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-n 22 -g /media/atrostan/patterson_backup/data/graphs/moreno_taro -d /media/atrostan/patterson_backup/data/graphs.db" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="stats" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="stats">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="subflow" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="subflow" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="subflow">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="subflow_async" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="subflow_async" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="subflow_async">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="subflows" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="subflows" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="subflows">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="switch_case" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="switch_case" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="switch_case">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="taskflow_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="taskflow_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="taskflow_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="text_pipeline" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="text_pipeline" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="text_pipeline">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="traversals" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="traversals" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="traversals">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utility" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="utility" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="utility">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="visualization" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="visualization" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="visualization">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="while_loop" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="while_loop" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="while_loop">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="work_stealing" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="work_stealing" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="work_stealing">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="worker_interface" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="worker_interface" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="worker_interface">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="workers" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="workers" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="workers">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <list>
       <item itemvalue="CMake Application.compute_ccs" />
+      <item itemvalue="CMake Application.convert_map_to_binary" />
       <item itemvalue="CMake Application.cuthill_mckee" />
       <item itemvalue="CMake Application.graph_preprocess" />
       <item itemvalue="CMake Application.hilburn_pr" />
@@ -157,6 +673,90 @@
       <item itemvalue="CMake Application.sb_furhilbert" />
       <item itemvalue="CMake Application.slashburn" />
       <item itemvalue="CMake Application.stats" />
+      <item itemvalue="CMake Application.fmt" />
+      <item itemvalue="CMake Application.Continuous" />
+      <item itemvalue="CMake Application.ContinuousBuild" />
+      <item itemvalue="CMake Application.ContinuousConfigure" />
+      <item itemvalue="CMake Application.ContinuousCoverage" />
+      <item itemvalue="CMake Application.ContinuousMemCheck" />
+      <item itemvalue="CMake Application.ContinuousStart" />
+      <item itemvalue="CMake Application.ContinuousSubmit" />
+      <item itemvalue="CMake Application.ContinuousTest" />
+      <item itemvalue="CMake Application.ContinuousUpdate" />
+      <item itemvalue="CMake Application.Experimental" />
+      <item itemvalue="CMake Application.ExperimentalBuild" />
+      <item itemvalue="CMake Application.ExperimentalConfigure" />
+      <item itemvalue="CMake Application.ExperimentalCoverage" />
+      <item itemvalue="CMake Application.ExperimentalMemCheck" />
+      <item itemvalue="CMake Application.ExperimentalStart" />
+      <item itemvalue="CMake Application.ExperimentalSubmit" />
+      <item itemvalue="CMake Application.ExperimentalTest" />
+      <item itemvalue="CMake Application.ExperimentalUpdate" />
+      <item itemvalue="CMake Application.Nightly" />
+      <item itemvalue="CMake Application.NightlyBuild" />
+      <item itemvalue="CMake Application.NightlyConfigure" />
+      <item itemvalue="CMake Application.NightlyCoverage" />
+      <item itemvalue="CMake Application.NightlyMemCheck" />
+      <item itemvalue="CMake Application.NightlyMemoryCheck" />
+      <item itemvalue="CMake Application.NightlyStart" />
+      <item itemvalue="CMake Application.NightlySubmit" />
+      <item itemvalue="CMake Application.NightlyTest" />
+      <item itemvalue="CMake Application.NightlyUpdate" />
+      <item itemvalue="CMake Application.async" />
+      <item itemvalue="CMake Application.attach_data" />
+      <item itemvalue="CMake Application.cancel" />
+      <item itemvalue="CMake Application.cancel_async" />
+      <item itemvalue="CMake Application.composition" />
+      <item itemvalue="CMake Application.condition" />
+      <item itemvalue="CMake Application.do_while_loop" />
+      <item itemvalue="CMake Application.fibonacci" />
+      <item itemvalue="CMake Application.if_else" />
+      <item itemvalue="CMake Application.limited_concurrency" />
+      <item itemvalue="CMake Application.multi_condition" />
+      <item itemvalue="CMake Application.nested_if_else" />
+      <item itemvalue="CMake Application.observer" />
+      <item itemvalue="CMake Application.parallel_data_pipeline" />
+      <item itemvalue="CMake Application.parallel_deferred_pipeline" />
+      <item itemvalue="CMake Application.parallel_for" />
+      <item itemvalue="CMake Application.parallel_graph_pipeline" />
+      <item itemvalue="CMake Application.parallel_sort" />
+      <item itemvalue="CMake Application.pipeline" />
+      <item itemvalue="CMake Application.priority" />
+      <item itemvalue="CMake Application.reduce" />
+      <item itemvalue="CMake Application.run" />
+      <item itemvalue="CMake Application.run_and_wait" />
+      <item itemvalue="CMake Application.runtime" />
+      <item itemvalue="CMake Application.scalable_pipeline" />
+      <item itemvalue="CMake Application.simple" />
+      <item itemvalue="CMake Application.subflow" />
+      <item itemvalue="CMake Application.subflow_async" />
+      <item itemvalue="CMake Application.switch_case" />
+      <item itemvalue="CMake Application.taskflow_pipeline" />
+      <item itemvalue="CMake Application.text_pipeline" />
+      <item itemvalue="CMake Application.visualization" />
+      <item itemvalue="CMake Application.while_loop" />
+      <item itemvalue="CMake Application.worker_interface" />
+      <item itemvalue="CMake Application.algorithms" />
+      <item itemvalue="CMake Application.asyncs" />
+      <item itemvalue="CMake Application.basics" />
+      <item itemvalue="CMake Application.cancellation" />
+      <item itemvalue="CMake Application.compositions" />
+      <item itemvalue="CMake Application.control_flow" />
+      <item itemvalue="CMake Application.data_pipelines" />
+      <item itemvalue="CMake Application.deferred_pipelines" />
+      <item itemvalue="CMake Application.movable" />
+      <item itemvalue="CMake Application.pipelines" />
+      <item itemvalue="CMake Application.priorities" />
+      <item itemvalue="CMake Application.runtimes" />
+      <item itemvalue="CMake Application.scalable_pipelines" />
+      <item itemvalue="CMake Application.semaphores" />
+      <item itemvalue="CMake Application.sorting" />
+      <item itemvalue="CMake Application.subflows" />
+      <item itemvalue="CMake Application.traversals" />
+      <item itemvalue="CMake Application.utility" />
+      <item itemvalue="CMake Application.work_stealing" />
+      <item itemvalue="CMake Application.workers" />
+      <item itemvalue="CMake Application.ips4o_example" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -216,6 +816,7 @@
       <workItem from="1673217128172" duration="81000" />
       <workItem from="1673217215925" duration="1470000" />
       <workItem from="1673218697504" duration="1424000" />
+      <workItem from="1673224379542" duration="23688000" />
     </task>
     <servers />
   </component>

@@ -22,7 +22,7 @@
 #include <eigen3/Eigen/Sparse>
 
 
-std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect) {
+std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect, bool right_wing, uint32_t *& cumulative_n_qs_per_right_wing_stripe) {
 	std::ifstream in(path, std::ios::binary | std::ios::in);
 	if (in.is_open()) {
 		uint32_t n_quads, q_side_len, wing_width, n;
@@ -32,7 +32,7 @@ std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect)
 		in.read(reinterpret_cast<char *>(&wing_width  ), sizeof(uint32_t));
 		in.read(reinterpret_cast<char *>(&n), sizeof(uint32_t));
 		in.read(reinterpret_cast<char *>(&m ), sizeof(uint64_t));
-		std::vector<uint64_t> res(3);
+		std::vector<uint64_t> res(4);
 		res[0] = n_quads;
 		res[1] = n;
 		res[2] = m;
@@ -64,14 +64,26 @@ std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect)
 				q.nnz * sizeof(uint32_t) * 2
 			);
 		}
+		if (right_wing){
+			uint32_t n_stripes_in_right_wing;
+			in.read(reinterpret_cast<char *>(&n_stripes_in_right_wing), sizeof(uint32_t));
+			cumulative_n_qs_per_right_wing_stripe = new uint32_t[n_stripes_in_right_wing]();
+			in.read(
+				reinterpret_cast<char *>(cumulative_n_qs_per_right_wing_stripe),
+				n_stripes_in_right_wing * sizeof(uint32_t)
+			);
+		}
 		return res;
 	}
 	in.close();
 }
 
 void
-write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_len, uint32_t wing_width, uint32_t n,
-                 uint64_t m, bool is_rect) {
+write_quad_array(std::string path, Quad *qs, uint32_t n_quads,
+                 uint32_t q_side_len, uint32_t wing_width, uint32_t n,
+                 uint64_t m, bool is_rect, bool right_wing,
+                 uint32_t n_stripes_in_right_wing,
+                 uint32_t *cumulative_n_qs_per_rw_stripe) {
 	std::ofstream out(path, std::ios::binary | std::ios::out | std::ios::trunc);
 	// write the number of quadrants, sidelength of quadrants, and number of quads per side
 	out.write(reinterpret_cast<char *>(&n_quads), sizeof(uint32_t));
@@ -103,6 +115,15 @@ write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_l
 		out.write(
 			reinterpret_cast<const char *>(qs[i].edges),
 			qs[i].nnz * sizeof(uint32_t) * 2);
+	}
+	if (right_wing) {
+		out.write(reinterpret_cast<char *>(&n_stripes_in_right_wing), sizeof(uint32_t));
+
+		// in order to process the right wing in stripes of size stripe len
+		// persist the cumulative number of quadrants in each right wing stripe
+		out.write(
+			reinterpret_cast<const char *>(cumulative_n_qs_per_rw_stripe),
+			n_stripes_in_right_wing * sizeof(uint32_t));
 	}
 	out.close();
 }

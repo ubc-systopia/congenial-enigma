@@ -58,5 +58,18 @@ auto omp_accumulate(const pvector<T> &v, U init) {
 	return sum;
 }
 
+template<typename T>
+void print_arr(T *arr, uint64_t size) {
+	std::cout << "[";
+	for (uint64_t i = 0; i < size - 1; ++i) { std::cout << arr[i] << ", "; }
+	std::cout << arr[size - 1] <<"]\n";
+}
+
+template<typename T>
+void print_arr_slice(T *arr, uint64_t start, uint64_t end) {
+	std::cout << "[";
+	for (uint64_t i = start; i < end - 1; ++i) { std::cout << arr[i] << ", "; }
+	std::cout << arr[end - 1] <<"]\n";
+}
 
 #endif //GRAPH_PREPROCESS_UTIL_H

@@ -60,12 +60,6 @@ void print_out_neighs(uint32_t u, CSR &out_csr) {
 	fmt::print("\n");
 }
 
-template<typename T>
-void print_arr(T *arr, uint64_t size) {
-	fmt::print("[");
-	for (uint64_t i = 0; i < size - 1; ++i) { fmt::print("{},", arr[i]); }
-	fmt::print("{}]\n", arr[size - 1]);
-}
 
 uint32_t n_out_neighbours(uint32_t u, CSR &out_csr) {
 	if (u > out_csr.num_nodes) return 0;
@@ -384,11 +378,14 @@ int main(int argc, char *argv[]) {
 
 		edge_list[i].first = iso_map[src];
 		edge_list[i].second = iso_map[dest];
-		edge_set.insert({iso_map[src], iso_map[dest]});
+		if (debug) {
+			edge_set.insert({iso_map[src], iso_map[dest]});
+		}
+
 	}
 
 
-
+	fmt::print("Sorting by source..\n");
 	// the slashburn isomorphism map, translate the edgelist, and sort by src, dest
 //	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
 	ips4o::parallel::sort(edge_list.begin(), edge_list.end());
@@ -410,9 +407,7 @@ int main(int argc, char *argv[]) {
 	CSR out_csr = CSR(n, m, false);
 
 	out_csr.par_populate(out_degs, edge_list);
-
-
-
+	fmt::print("Sorting by dest..\n");
 	// before populating in the in-csr, sort the edgelist by ascending (dest, src)
 	ips4o::parallel::sort(
 		edge_list.begin(),
@@ -625,9 +620,12 @@ int main(int argc, char *argv[]) {
 				uint32_t quad_row = u / q_side_len;
 				for (uint64_t offset = start; offset < end; offset++) {
 					uint32_t v = out_csr.neighbours[offset];
-					if (!edge_set.count({u, v})) {
-						fmt::print("left: {} {}\n", u, v);
+					if (debug){
+						if (!edge_set.count({u, v})) {
+							fmt::print("left: {} {}\n", u, v);
+						}
 					}
+
 					if (v >= wing_width) break;
 					uint32_t quad_col = v / q_side_len;
 					uint32_t quad_idx = cumulative_n_qs_per_row_in_left_wing[quad_row] + quad_col;
@@ -758,16 +756,6 @@ int main(int argc, char *argv[]) {
 //		fmt::print("{} {} {} {}\n", q.q_idx,q.qx, q.qy, q.nnz);
 		q.edges = new uint32_t[q.nnz * 2]();
 	}
-
-	//	right 1282 2940
-	uint32_t t1 = 1282;
-	uint64_t o1 = out_csr.index[t1];
-	uint64_t o2 = out_csr.index[t1 + 1];
-	for (uint64_t o3 = o1; o3 < o2; o3++) {
-		fmt::print("out_csr.neighbours[o3]: {}\n", out_csr.neighbours[o3]);
-	}
-
-
 
 //	 (logically) separate the right wing into columns of size stripe_len
 //	 within a stripe, each thread will populate a quadrant row by iterating over the
@@ -963,9 +951,12 @@ int main(int argc, char *argv[]) {
 
 			for (uint64_t out_edge_offset = offset; out_edge_offset < end; ++out_edge_offset) {
 				uint32_t v = out_csr.neighbours[out_edge_offset];
-				if (!edge_set.count({u, v})) {
-					fmt::print("tail: {} {}\n", u, v);
+				if (debug) {
+					if (!edge_set.count({u, v})) {
+						fmt::print("tail: {} {}\n", u, v);
+					}
 				}
+
 				if (v >= q.qy + q_side_len) break;
 				auto p = edge_offset(u - q.qx, v - q.qy, rect_offset);
 				uint32_t qu = p.first;
@@ -1123,8 +1114,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	cumulative_n_quads_per_right_wing_stripe[n_stripes_in_right_wing] = cumulative_n_qs_per_col_in_right_wing[n_qs_in_right_wing_length];
-//	print_arr<uint32_t>(cumulative_n_quads_per_right_wing_stripe, n_stripes_in_right_wing + 1);
 
+	fmt::print("cumulative_n_quads_per_right_wing_stripe\n");
+	print_arr<uint32_t>(cumulative_n_quads_per_right_wing_stripe, n_stripes_in_right_wing + 1);
+//
 	// hilbert sort all quadrants within a stripe
 
 	for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
@@ -1183,9 +1176,9 @@ int main(int argc, char *argv[]) {
 	std::string lw_path = fmt::format("{}/{}", graph_dir, "lw.bin");
 	std::string rw_path = fmt::format("{}/{}", graph_dir, "rw.bin");
 	std::string tail_path = fmt::format("{}/{}", graph_dir, "tail.bin");
-	write_quad_array(lw_path, left_wing_qs, n_nnz_lw_qs, q_side_len, wing_width, n, m, false);
-	write_quad_array(rw_path, right_wing_qs, n_nnz_rw_qs, q_side_len, wing_width, n, m, false);
-	write_quad_array(tail_path, tail_rects, n_nnz_tail_qs, q_side_len, wing_width, n, m, true);
+	write_quad_array(lw_path, left_wing_qs, n_nnz_lw_qs, q_side_len, wing_width, n, m, false, false, -1, nullptr);
+	write_quad_array(rw_path, right_wing_qs, n_nnz_rw_qs, q_side_len, wing_width, n, m, false, true, n_stripes_in_right_wing + 1, cumulative_n_quads_per_right_wing_stripe);
+	write_quad_array(tail_path, tail_rects, n_nnz_tail_qs, q_side_len, wing_width, n, m, true, false, 0, nullptr);
 
 //	fmt::print("{:*^30}\n", "left wing");
 //	for (uint32_t j = 0; j < n_qs_left_wing; ++j) {

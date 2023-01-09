@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_CXX_FLAGS "-fopenmp -DLIKWID_PERFMON")
+set(CMAKE_CXX_FLAGS "-fopenmp -DLIKWID_PERFMON -DTBB_ENABLE_IPO=OFF")
 
-#set(CMAKE_CXX_COMPILER /opt/intel/oneapi/compiler/2022.1.0/linux/bin/dpcpp)
+#set(CMAKE_CXX_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icpx)
 
 set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -Wextra -pedantic -O3")
 
@@ -46,7 +46,7 @@ find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-SET(CMAKE_C_COMPILER /opt/intel/oneapi/compiler/2022.1.0/linux/bin/icx) # todo use icx compiler when using intel dpl
+SET(CMAKE_C_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icx) # todo use icx compiler when using intel dpl
 set(ParSlashburnDir "../par_slashburn")
 set(IPS4ODir "../par_slashburn/ips4o")
 add_subdirectory(${IPS4ODir} ips4o)
