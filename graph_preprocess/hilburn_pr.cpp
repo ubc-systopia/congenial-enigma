@@ -46,6 +46,8 @@ public:
 
 	uint32_t n_vertices() const { return _n_vertices; }
 
+	uint64_t size() const { return _n_threads * _n_vertices * sizeof(float); }
+
 	float *operator[](uint16_t thread_id) { return data + thread_id * _n_vertices; }
 
 	float &operator()(uint16_t thread_id, uint32_t vertex_id) {
@@ -69,8 +71,7 @@ void merge_incoming_totals(PageRankGrid &grid, float *incoming_total,
 #pragma omp parallel for schedule(static)
 	for (uint32_t u = 0; u < end; ++u)
 		for (uint16_t t = 0; t < n_threads; ++t) {
-//			fmt::print("offset + u: {}\n", offset + u);
-//			fmt::print("grid(t, u): {}\n", grid(t, u));
+
 			incoming_total[offset + u] += grid(t, u);
 			grid(t, u) = 0;
 		}
@@ -81,6 +82,8 @@ void merge_incoming_totals(PageRankGrid &grid, float *incoming_total,
 void iterate_left_wing(Quad *qs, uint32_t n_qs,
                        uint32_t q_side_len,
                        PageRankGrid &grid, float *outgoing_contrib,
+											 float *incoming_total,
+											 uint32_t wing_width,
                        bool debug) {
 	std::vector<uint16_t> thread_assignments;
 	// if debugging, keep track of which thread computed which quadrant
@@ -91,8 +94,9 @@ void iterate_left_wing(Quad *qs, uint32_t n_qs,
 	{
 		int tid = omp_get_thread_num();
 //#pragma omp for schedule(runtime)
-#pragma omp for schedule(static, 1)
+//#pragma omp for schedule(static, 1)
 //#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(static, 1) reduction(+:incoming_total[:wing_width])
 		for (uint32_t i = 0; i < n_qs; ++i) {
 			Quad &q = qs[i];
 			if (debug) {
@@ -106,8 +110,8 @@ void iterate_left_wing(Quad *qs, uint32_t n_qs,
 				uint32_t u = q_side_len * q.qx + src;
 				uint32_t v = q_side_len * q.qy + dest;
 //				grid[tid][v] += outgoing_contrib[u];
-				grid(tid, v) += outgoing_contrib[u];
-
+//				grid(tid, v) += outgoing_contrib[u];
+				incoming_total[v] += outgoing_contrib[u];
 			}
 		}
 	}
@@ -164,7 +168,14 @@ void iterate_right_wing(Quad *qs, uint32_t n_qs,
 		for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
 			uint32_t stripe_start = cumulative_n_qs_per_right_wing_stripe[i];
 			uint32_t stripe_end = cumulative_n_qs_per_right_wing_stripe[i + 1];
-#pragma omp for schedule(static, 1)
+//			uint32_t u_start = wing_width + (n_qs_per_stripe * i);
+//			uint32_t u_end = wing_width + (n_qs_per_stripe * (i + 1));
+			uint32_t v_start = wing_width + (n_qs_per_stripe * q_side_len * i);
+			uint32_t v_end = wing_width + (n_qs_per_stripe * q_side_len * (i + 1));
+			v_end = (v_end > n) ? n : v_end;
+			uint32_t v_len = v_end - v_start;
+//#pragma omp for schedule(static, 1)
+#pragma omp for schedule(static, 1) reduction(+:incoming_total[v_start:v_len])
 			for (uint32_t j = stripe_start; j < stripe_end; ++j) {
 				Quad &q = qs[j];
 //				fmt::print("q.nnz: {}\n", q.nnz);
@@ -175,22 +186,26 @@ void iterate_right_wing(Quad *qs, uint32_t n_qs,
 				for (uint32_t k = 0; k < q.nnz; ++k) {
 					uint32_t src = q.edges[k * 2];
 					uint32_t dest = q.edges[k * 2 + 1];
-
 //					omp_all
 					uint32_t u = q_side_len * q.qx + src;
-					uint32_t v = q_side_len * qy + dest;
-					grid(tid, v) += outgoing_contrib[u];
+//					uint32_t v = q_side_len * qy + dest;
+					uint32_t v = q_side_len * q.qy + dest + wing_width;
+//					fmt::print("v_start, v_end: {}  {}\n", v_start, v_end);
+//					fmt::print("tid, u, v: {} {} {} {} {} \n", tid, u, v, v_start, v_end);
+
+					incoming_total[v] += outgoing_contrib[u];
+//					grid(tid, v) += outgoing_contrib[u];
 //					grid[tid][v] += outgoing_contrib[u];
 				}
 			}
 
 			// once we've completed this stripe, merge the results into
 			// the global incoming total array
-			uint32_t v_offset = wing_width + (n_qs_per_stripe * q_side_len * i);
-			uint32_t v_end = wing_width + (n_qs_per_stripe * q_side_len * (i + 1));
-			v_end = (v_end > n) ? n : v_end;
-			v_end -= v_offset;
-			merge_incoming_totals(grid, incoming_total, v_offset, v_end, n_threads);
+//			uint32_t v_offset = wing_width + (n_qs_per_stripe * q_side_len * i);
+//			uint32_t v_end = wing_width + (n_qs_per_stripe * q_side_len * (i + 1));
+//			v_end = (v_end > n) ? n : v_end;
+//			v_end -= v_offset;
+//			merge_incoming_totals(grid, incoming_total, v_offset, v_end, n_threads);
 
 //			fmt::print("{} {} {} {}\n", stripe_start, stripe_end, v_offset, v_end);
 		}
@@ -297,6 +312,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	uint32_t stripe_len = hyperceiling(wing_width) / 2;
+	fmt::print("stripe_len: {}\n", stripe_len);
 	// evenly divides since both num, denom guaranteed to be powers of 2
 	uint32_t n_qs_per_stripe = stripe_len / q_side_len;
 	uint32_t right_wing_width = n - wing_width;
@@ -306,10 +322,22 @@ int main(int argc, char *argv[]) {
 	print_arr<uint32_t>(cumulative_n_qs_per_right_wing_stripe, n_stripes_in_right_wing + 1);
 
 	// set the number of threads == number of available cores
-//	setenv("OMP_PLACES", "threads", 1);
 	setenv("OMP_PLACES", "cores", 1);
-//	setenv("OMP_PROC_BIND", "spread", 1);
 	setenv("OMP_PROC_BIND", "close", 1);
+
+	int default_omp_stack_size = kmp_get_stacksize() ; // the amount of stack memory assigned to each thread, in bytes
+	uint32_t required_stack_size = wing_width * 4;
+
+	uint32_t stack_size = hyperceiling(required_stack_size);
+	fmt::print(" {} {} {}\n", default_omp_stack_size, required_stack_size, stack_size);
+	fmt::print("kmp_get_stacksize() / 1024: {}\n", kmp_get_stacksize());
+	if (stack_size > default_omp_stack_size) {
+		std::string stack_size_str = fmt::format("{}B", stack_size);
+		fmt::print("Setting OMP_STACKSIZE to {}.\n",  stack_size_str);
+		setenv("OMP_STACKSIZE", stack_size_str.c_str(), 1);
+	}
+	fmt::print("kmp_get_stacksize() / 1024: {}\n", kmp_get_stacksize());
+
 	int n_cores = omp_get_num_places();
 	int partition_n_places = omp_get_partition_num_places();
 	int n_threads = n_cores;
@@ -317,6 +345,10 @@ int main(int argc, char *argv[]) {
 	fmt::print("n_cores: {}\n", n_cores);
 	fmt::print("partition_n_places: {}\n", partition_n_places);
 	fmt::print("n_threads: {}\n", n_threads);
+//	uint16_t n_threads = omp_get_max_threads();
+//	fmt::print("n_threads: {}\n", n_threads);
+	fmt::print("_: {}\n", _OPENMP);
+
 
 
 	// read out degree file
@@ -339,8 +371,11 @@ int main(int argc, char *argv[]) {
 	const float base_score = (1.0f - alpha) / n;
 
 	// thread private arrays
-	PageRankGrid incoming_totals = PageRankGrid(n_threads, wing_width);
+//	PageRankGrid incoming_totals = PageRankGrid(n_threads, wing_width);
+	PageRankGrid incoming_totals = PageRankGrid(0, 0);
+	fmt::print("incoming_totals.size(): {}\n", incoming_totals.size());
 
+//	return 0;
 	// global arrays
 	float *incoming_total = new float[n]();
 	float *outgoing_contrib = new float[n]();
@@ -355,12 +390,12 @@ int main(int argc, char *argv[]) {
 	auto start_time = std::chrono::high_resolution_clock::now();
 
 
-
+	fmt::print("size_of(float): {}\n", sizeof(float));
 	for (int iter = 0; iter < num_iterations; iter++) {
 //		fmt::print("Iteration: {}\n", iter);
 		// left wing
-		iterate_left_wing(lw_qs, n_lw_qs, q_side_len, incoming_totals, outgoing_contrib, debug);
-		merge_incoming_totals(incoming_totals, incoming_total, 0, wing_width, n_threads);
+		iterate_left_wing(lw_qs, n_lw_qs, q_side_len, incoming_totals, outgoing_contrib, incoming_total, wing_width, debug);
+//		merge_incoming_totals(incoming_totals, incoming_total, 0, wing_width, n_threads);
 
 		// right wing
 		iterate_right_wing(rw_qs, n_rw_qs,

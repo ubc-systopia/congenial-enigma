@@ -120,12 +120,8 @@
     <list default="true" id="75f29ff7-bbbd-4cbe-a498-3e9b76772236" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../dbg" beforeDir="false" afterPath="$PROJECT_DIR$/../dbg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hilburn_pr.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_pr.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hilburn_preproc.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/hilburn_preproc.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/io.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/io.h" beforeDir="false" afterPath="$PROJECT_DIR$/io.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../par_slashburn" beforeDir="false" afterPath="$PROJECT_DIR$/../par_slashburn" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -154,27 +150,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.advertisement.text.has.clang-format": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/home/atrostan/Workspace/repos/congenial-enigma/par_slashburn",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "CMakeSettings",
-    "settings.editor.splitter.proportion": "0.2933861",
-    "structure.view.defaults.are.configured": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.advertisement.text.has.clang-format&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/atrostan/Workspace/repos/congenial-enigma/par_slashburn&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CPPToolchains&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.2933861&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -321,11 +317,6 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="algorithms" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="algorithms" CONFIG_NAME="Debug-intel_compile" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="algorithms">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -431,12 +422,12 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="hilburn_pr" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g soc-LiveJournal1 -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1211650 -i 20 -s static" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_pr" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_pr">
+    <configuration name="hilburn_pr" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g dbpedia-link -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1826880 -i 20 -s static" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_pr" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_pr">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g soc-LiveJournal1 -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1211650" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
+    <configuration name="hilburn_preproc" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-g dbpedia-link -d /media/atrostan/patterson_backup/data/ -l 65536 -w 1826880" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="graph_preprocess" TARGET_NAME="hilburn_preproc" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="graph_preprocess" RUN_TARGET_NAME="hilburn_preproc">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -816,7 +807,8 @@
       <workItem from="1673217128172" duration="81000" />
       <workItem from="1673217215925" duration="1470000" />
       <workItem from="1673218697504" duration="1424000" />
-      <workItem from="1673224379542" duration="23688000" />
+      <workItem from="1673224379542" duration="47395000" />
+      <workItem from="1673460391511" duration="8867000" />
     </task>
     <servers />
   </component>

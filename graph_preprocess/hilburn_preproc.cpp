@@ -244,7 +244,7 @@ bool iterate_remap_check(Quad *qs, uint64_t n, bool is_rect, uint32_t v_offset,
                          uint32_t wing_width, uint32_t q_side_len, edge_list_map &map) {
 // iterate over all the edges in the quadrant, remapping the vertex ids to their original values
 
-for (uint64_t i = 0; i < n; ++i) {
+	for (uint64_t i = 0; i < n; ++i) {
 		Quad &q = qs[i];
 		for (uint32_t j = 0; j < q.nnz; ++j) {
 			uint32_t src = q.edges[j * 2];
@@ -255,7 +255,7 @@ for (uint64_t i = 0; i < n; ++i) {
 				uint32_t v = q.qy + dest + v_offset;
 				bool res = check_edge(u, v, map);
 				if (not res) {
-					fmt::print("src, dest {}: {}\n", src, dest );
+					fmt::print("src, dest {}: {}\n", src, dest);
 					fmt::print("q.qx, q.qy, q_idx: {} {} {}\n", q.qx, q.qy, q.q_idx);
 					fmt::print("u, v: {} {}\n", u, v);
 
@@ -367,7 +367,9 @@ int main(int argc, char *argv[]) {
 	m = edge_list.size();
 
 	// for debug, maintain an edge set
-	std::set<std::pair<uint32_t, uint32_t>> edge_set;
+//	std::set<std::pair<uint32_t, uint32_t>> edge_set;
+	edge_list_map edge_set;
+
 	fmt::print("n: {}\n", n);
 	fmt::print("m: {}\n", m);
 	// remap the edges of the graph and sort by src, dest
@@ -379,7 +381,7 @@ int main(int argc, char *argv[]) {
 		edge_list[i].first = iso_map[src];
 		edge_list[i].second = iso_map[dest];
 		if (debug) {
-			edge_set.insert({iso_map[src], iso_map[dest]});
+			edge_set.insert({{iso_map[src], iso_map[dest]}, true});
 		}
 
 	}
@@ -485,15 +487,21 @@ int main(int argc, char *argv[]) {
 	// and compute the number of edges per quadrant (to preallocate the edge array size per quadrant)
 
 	// compute the number of stripes in each wing
-	uint32_t n_stripes_in_left_wing = (n + stripe_len - 1) / stripe_len;
+	uint32_t n_stripes_in_left_wing = (n + stripe_len) / stripe_len;
+//	uint32_t n_stripes_in_left_wing = (n + stripe_len - 1) / stripe_len;
+
 	// since we'll compute the edges in the densest quadrant when iterating over the
 	// edges of the left wing, we can ignore these when iterating over the right wing
 	uint32_t right_wing_width = n - wing_width;
-	uint32_t n_stripes_in_right_wing = (right_wing_width + stripe_len - 1) / stripe_len;
+//	uint32_t n_stripes_in_right_wing = (right_wing_width + stripe_len - 1) / stripe_len;
+	uint32_t n_stripes_in_right_wing = (right_wing_width + stripe_len) / stripe_len;
+//	uint32_t n_stripes_in_right_wing = (right_wing_width + 1) / stripe_len;
 
 	// compute the number of quadrants in the left wing
 	uint32_t n_qs_left_wing = 0;
-	uint32_t n_qs_per_side = (n + q_side_len - 1) / q_side_len;
+//	uint32_t n_qs_per_side = (n + q_side_len - 1) / q_side_len;
+	uint32_t n_qs_per_side = (n + q_side_len) / q_side_len;
+
 	std::vector<uint32_t> n_qs_in_left_wing_row(n_qs_per_side);
 	fmt::print("n_qs_per_side: {}\n", n_qs_per_side);
 
@@ -620,7 +628,7 @@ int main(int argc, char *argv[]) {
 				uint32_t quad_row = u / q_side_len;
 				for (uint64_t offset = start; offset < end; offset++) {
 					uint32_t v = out_csr.neighbours[offset];
-					if (debug){
+					if (debug) {
 						if (!edge_set.count({u, v})) {
 							fmt::print("left: {} {}\n", u, v);
 						}
@@ -648,7 +656,8 @@ int main(int argc, char *argv[]) {
 
 	// compute the number of quadrants in the right wing
 	uint32_t n_qs_right_wing = 0;
-	uint32_t n_qs_in_right_wing_side = (wing_width + q_side_len - 1) / q_side_len;
+//	uint32_t n_qs_in_right_wing_side = (wing_width + q_side_len - 1) / q_side_len;
+	uint32_t n_qs_in_right_wing_side = (wing_width + q_side_len) / q_side_len;
 	std::vector<uint32_t> n_qs_in_right_wing_row(n_qs_in_right_wing_side);
 	fmt::print("n_qs_in_right_wing_side: {}\n", n_qs_in_right_wing_side);
 	fmt::print("n_qs_in_right_wing_row: {}\n", n_qs_in_right_wing_row);
@@ -829,7 +838,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 //	(max_dest_in_row + q_side_len - 1) / q_side_len;
-	uint32_t n_rects_in_tail = (tail_size + q_side_len - 1) / q_side_len;
+//	uint32_t n_rects_in_tail = (tail_size + q_side_len - 1) / q_side_len;
+	uint32_t n_rects_in_tail = (tail_size + q_side_len) / q_side_len;
 	uint32_t *rect_lbs = new uint32_t[n_rects_in_tail]();
 	uint32_t *rect_ubs = new uint32_t[n_rects_in_tail]();
 	Quad *tail_rects = new Quad[n_rects_in_tail]();
@@ -1015,7 +1025,8 @@ int main(int argc, char *argv[]) {
 // smaller than the wing width)
 
 	// count the number of quadrants within each stripe
-	uint32_t n_quads_per_stripe = (stripe_len + q_side_len - 1) / q_side_len;
+//	uint32_t n_quads_per_stripe = (stripe_len + q_side_len - 1) / q_side_len;
+	uint32_t n_quads_per_stripe = stripe_len / q_side_len; // both powers of 2 so even division
 	uint32_t *cumulative_n_quads_per_left_wing_stripe = new uint32_t[n_stripes_in_left_wing + 1]();
 
 	uint32_t left_wing_stripe_idx = 1;
@@ -1072,13 +1083,15 @@ int main(int argc, char *argv[]) {
 		}
 	);
 	// get the number of quadrants in each quadrant column
-	uint32_t n_cols_in_right_wing = (right_wing_width + q_side_len - 1) / q_side_len;
+//	uint32_t n_cols_in_right_wing = (right_wing_width + q_side_len - 1) / q_side_len;
+	uint32_t n_cols_in_right_wing = (right_wing_width + q_side_len) / q_side_len;
 //	uint32_t *n_quads_in_right_wing_col = new uint32_t[n_cols_in_right_wing]();
 	std::vector<uint32_t> n_quads_in_right_wing_col(n_cols_in_right_wing);
 	uint32_t curr_col = 0;
 	uint32_t quad_count = 0;
 	for (uint32_t j = 0; j < n_qs_right_wing; ++j) {
 		Quad &q = right_wing_qs[j];
+//		fmt::print("q.qx, q.qy, curr_col, quad_count: {} {}\n", q.qx, q.qy, curr_col, quad_count);
 		if (q.qy != curr_col) {
 			n_quads_in_right_wing_col[curr_col] = quad_count;
 			curr_col = q.qy;
@@ -1104,7 +1117,8 @@ int main(int argc, char *argv[]) {
 
 	uint32_t *cumulative_n_quads_per_right_wing_stripe = new uint32_t[n_stripes_in_right_wing + 1]();
 
-	uint32_t n_qs_in_right_wing_length = ((n - wing_width) + q_side_len - 1) / q_side_len;
+//	uint32_t n_qs_in_right_wing_length = ((n - wing_width) + q_side_len - 1) / q_side_len;
+	uint32_t n_qs_in_right_wing_length = ((n - wing_width) + q_side_len) / q_side_len;
 	uint32_t right_wing_stripe_idx = 1;
 
 	for (uint32_t i = n_quads_per_stripe; i < n_qs_in_right_wing_length; i += n_quads_per_stripe) {
@@ -1145,7 +1159,9 @@ int main(int argc, char *argv[]) {
 			dpl::execution::par_unseq,
 			right_wing_qs + stripe_start,
 			right_wing_qs + stripe_end,
-			[](const Quad &l, const Quad &r) { return l.q_idx < r.q_idx; }
+			[](const Quad &l, const Quad &r) {
+				return l.q_idx < r.q_idx;
+			}
 		);
 	}
 
@@ -1155,6 +1171,25 @@ int main(int argc, char *argv[]) {
 	uint32_t n_nnz_lw_qs = filter_empty_quads(left_wing_qs, n_qs_left_wing);
 	uint32_t n_nnz_rw_qs = filter_empty_quads(right_wing_qs, n_qs_right_wing);
 	uint32_t n_nnz_tail_qs = filter_empty_quads(tail_rects, n_rects_in_tail);
+	
+	
+	// filtering out fully zero quads may have invalidated the cumulative number of quads per vertical stripe in the right
+	// wing
+	// so recompute the valid start and end points of the left wing vertical stripes
+	uint32_t stripe_idx = 1;
+	uint32_t next_stripe = n_quads_per_stripe;
+	for (uint32_t i = 0; i < n_nnz_rw_qs; ++i) {
+		Quad &q = right_wing_qs[i];
+		if (q.qy == next_stripe) {
+			cumulative_n_quads_per_right_wing_stripe[stripe_idx] = i;
+			next_stripe += n_quads_per_stripe;
+			stripe_idx++;
+		}
+	}
+	cumulative_n_quads_per_right_wing_stripe[n_stripes_in_right_wing] = n_nnz_rw_qs;
+
+	fmt::print("cumulative_n_quads_per_right_wing_stripe\n");
+	print_arr<uint32_t>(cumulative_n_quads_per_right_wing_stripe, n_stripes_in_right_wing + 1);
 
 	// verify all edges assigned
 	if (debug) {
@@ -1177,8 +1212,12 @@ int main(int argc, char *argv[]) {
 	std::string rw_path = fmt::format("{}/{}", graph_dir, "rw.bin");
 	std::string tail_path = fmt::format("{}/{}", graph_dir, "tail.bin");
 	write_quad_array(lw_path, left_wing_qs, n_nnz_lw_qs, q_side_len, wing_width, n, m, false, false, -1, nullptr);
-	write_quad_array(rw_path, right_wing_qs, n_nnz_rw_qs, q_side_len, wing_width, n, m, false, true, n_stripes_in_right_wing + 1, cumulative_n_quads_per_right_wing_stripe);
+	write_quad_array(rw_path, right_wing_qs, n_nnz_rw_qs, q_side_len, wing_width, n, m, false, true,
+	                 n_stripes_in_right_wing + 1, cumulative_n_quads_per_right_wing_stripe);
 	write_quad_array(tail_path, tail_rects, n_nnz_tail_qs, q_side_len, wing_width, n, m, true, false, 0, nullptr);
+
+
+
 
 //	fmt::print("{:*^30}\n", "left wing");
 //	for (uint32_t j = 0; j < n_qs_left_wing; ++j) {
