@@ -92,7 +92,8 @@ echo "${METIS_FILES}"
 
 # run run_metis.sh for each file in the list;
 total_metis_files=$(echo "$METIS_FILES" | wc -l)
-obj_types=("vol" "cut")
+# obj_types=("vol" "cut")
+obj_types=("vol")
 for obj_type in "${obj_types[@]}"; do 
 		LOG "Running for objective type $obj_type from objective types ${obj_types[@]}"
 		count=1
