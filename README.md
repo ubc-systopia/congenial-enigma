@@ -50,6 +50,9 @@ See [requirements.txt](./requirements.txt)
 
 ## C++
 
+### Ninja
+You need to install Ninja from [here](https://ninja-build.org/)
+
 ### g++11
 ```
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
