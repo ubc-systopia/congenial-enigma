@@ -42,6 +42,7 @@ def init(input_data_dir=None):
     all_networks_url = "http://konect.cc/networks/"
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
+    corder_home = os.path.join(repo_root, "Corder-TPDS-21")
 
     pbrcm_home = os.path.join(repo_root, "ParallelBatchRCM")
 
@@ -99,6 +100,7 @@ def init(input_data_dir=None):
 
     rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
+    corder_executable = os.path.join(corder_home, 'corder')
 
     pr_experiments_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "pr_experiments")
@@ -160,6 +162,8 @@ def init(input_data_dir=None):
         "app_name": app_name,
 
         "rabbit_home": rabbit_home,
+        "corder_home": corder_home,
+        "corder_executable": corder_executable,
 
         "dbg_home": dbg_home,
         "dbg_apps_dir": dbg_apps_dir,
@@ -262,7 +266,9 @@ def init(input_data_dir=None):
             "sb": "Slashburn",
             "par_slashburn": "Slashburn",
             "sort": "Descending Degree Sort",
-            'rabbit': "Rabbit Order"
+            'rabbit': "Rabbit Order",
+            'corder': "Corder",
+            'degree-based-grouping': 'DBG'
         },
         "edge_orderings": {
             'row': "Row",

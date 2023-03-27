@@ -39,6 +39,8 @@ def construct_main_args_from_config(args):
     for bool_arg in bool_args:
         if data[bool_arg]:
             args += [f'--{bool_arg}']
+        else:
+            args += [f'--no-{bool_arg}']
 
     mn_graph_n = data['graph-numbers']['min']
     mx_graph_n = data['graph-numbers']['max']

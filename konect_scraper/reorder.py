@@ -20,7 +20,8 @@ def compute_dbg_order(graph_name, order_str):
     make_executable = settings['make_executable']
     max_iters = settings['dbg']['max_iters']
     sqlite3_db_path = settings['sqlite3']['sqlite3_db_path']
-    order_file = os.path.join(dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
+    order_file = os.path.join(
+        dbg_datasets_dir, f"{graph_name}.{dbg_order_idx}.map")
 
     graphs_dir = settings['graphs_dir']
     graph_dir = os.path.join(graphs_dir, graph_name)
@@ -91,6 +92,7 @@ def compute_rabbit(graph_path, order_path, graph_name, comms_path):
 
     return
 
+
 def compute_par_slashburn(graph_path, order_path):
     settings = config.settings
     percent = settings['hyperparameters']['slashburn']['percent']
@@ -108,8 +110,27 @@ def compute_par_slashburn(graph_path, order_path):
     logging.info(f"Executing: " + ' '.join(args))
 
     res = subprocess.check_output(args)
-    return 
-    
+    return
+
+
+def compute_corder(graph_path, order_path,):
+
+    settings = config.settings
+    executable = settings['corder_executable']
+    args = [executable]
+    args += [
+        '-d', graph_path,
+        '-a', str(7),  # parallel corder
+        '-s', str(1024),  # partition size (default from paper)
+        '-o', order_path
+    ]
+
+    logging.info(f"Executing: " + ' '.join(args))
+
+    res = subprocess.check_output(args)
+    return
+
+
 def compute_slashburn(graph_path, order_path, directed, n, m):
     settings = config.settings
     percent = settings['hyperparameters']['slashburn']['percent']
@@ -197,7 +218,8 @@ def compute_ordering(graph_name, order, ovewrite):
     binary_suffix = settings['binary_suffix']
     extension = f".{binary_suffix}"
 
-    comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
+    comp_graph_path = os.path.join(
+        graph_dir, settings['compressed_el_file_name'] + extension)
     directed = bool(get_directed(graph_name))
     n = get_n(graph_name)
     m = get_m(graph_name)
@@ -219,32 +241,46 @@ def compute_ordering(graph_name, order, ovewrite):
         case "rbt":
             extension = ".net"
 
-            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
+            comp_graph_path = os.path.join(
+                graph_dir, settings['compressed_el_file_name'] + extension)
             comms_path = os.path.join(graph_dir, "comms")
             compute_rabbit(comp_graph_path, order_path, graph_name, comms_path)
 
         case "parsb":
-            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            comp_graph_path = os.path.join(
+                graph_dir, settings['compressed_el_file_name'] + ".net")
             compute_par_slashburn(comp_graph_path, order_path)
 
         case "sb":
-            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + ".net")
+            comp_graph_path = os.path.join(
+                graph_dir, settings['compressed_el_file_name'] + ".net")
             # compute_par_slashburn(comp_graph_path, order_path)
             compute_slashburn(comp_graph_path, order_path, directed, n, m)
 
         case "cm":
             extension = ".net"
 
-            comp_graph_path = os.path.join(graph_dir, settings['compressed_el_file_name'] + extension)
+            comp_graph_path = os.path.join(
+                graph_dir, settings['compressed_el_file_name'] + extension)
             cm_order_path = order_path
             rcm_order_path = os.path.join(graph_dir, 'rev_cm')
             # compute_cuthill_mckee(comp_graph_path, n, m)
-            compute_parallel_batch_cm(comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+            compute_parallel_batch_cm(
+                comp_graph_path, n, m, directed, cm_order_path, rcm_order_path)
+
         case "rev_cm":
             return
 
+        case "corder":
+            extension = ".net"
+            comp_graph_path = os.path.join(
+                graph_dir, settings['compressed_el_file_name'] + extension)
+            corder_path = order_path
+            compute_corder(comp_graph_path, corder_path)
+
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
+
         # case ""
     logging.info(f"Copying {graph_name}-{order_str} to  binary")
     copy_order_file_to_binary(n, order_path, binary_order_path)
@@ -254,17 +290,16 @@ def compute_ordering(graph_name, order, ovewrite):
         copy_order_file_to_binary(n, order_path, binary_order_path)
 
 
-
-
 def main(rows, orders, overwrite):
     settings = config.settings
-    
+
     # compute the given orders for each of the datasets
     for row in rows:
         graph_name = row['graph_name']
 
         for order in orders:
-            if order == 'orig': continue
+            if order == 'orig':
+                continue
             compute_ordering(graph_name, order, overwrite)
     return
 

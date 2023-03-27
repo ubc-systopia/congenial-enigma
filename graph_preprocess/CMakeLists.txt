@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_CXX_FLAGS "-qopenmp -DLIKWID_PERFMON -DTBB_ENABLE_IPO=OFF")
+set(CMAKE_CXX_FLAGS "-fopenmp -DLIKWID_PERFMON -DTBB_ENABLE_IPO=OFF")
 
 #set(CMAKE_CXX_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icpx)
 

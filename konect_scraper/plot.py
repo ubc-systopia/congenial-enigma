@@ -135,7 +135,7 @@ def aggregate_plots(graph_names, orders, all_spy_path):
     bbox_inches = settings['plot']['bbox_inches']
     pad_inches = settings['plot']['pad_inches']
     order_names = [
-        # "Original",
+        "Original",
         # "Compressed"
     ] + \
         [orderings[o] for o in orders]
@@ -147,14 +147,14 @@ def aggregate_plots(graph_names, orders, all_spy_path):
     ax_size = settings['plot']['ax_size']
     n_rows = len(graph_names)
     # n_cols = len(orders) + 2  # include the original and compressed
-    n_cols = len(orders)   # include the original and compressed
+    n_cols = len(orders) +1  # include the original and compressed
     fig_size = (n_cols * ax_size, n_rows * ax_size,)
 
     image_paths = np.zeros((n_rows, n_cols), dtype=object)
 
-    # image_paths[:, 0] = [
-    #     os.path.join(plots_dir, graph_name, adj_mat_format, f'orig.{fmt}') for graph_name in graph_names
-    # ]
+    image_paths[:, 0] = [
+        os.path.join(plots_dir, graph_name, adj_mat_format, f'orig.{fmt}') for graph_name in graph_names
+    ]
 
     # image_paths[:, 1] = [
     #     os.path.join(plots_dir, graph_name, adj_mat_format, f'comp.{fmt}') for graph_name in graph_names
@@ -163,8 +163,8 @@ def aggregate_plots(graph_names, orders, all_spy_path):
     for row_idx, graph_name in enumerate(graph_names):
         for ord_idx, order in enumerate(orders):
             print(f"{ord_idx, order=}")
-            # col_idx = ord_idx + 1
-            col_idx = ord_idx 
+            col_idx = ord_idx + 1
+            # col_idx = ord_idx 
             image_paths[row_idx][col_idx] = os.path.join(
                 plots_dir, graph_name, adj_mat_format, f'{order}.{fmt}')
     print(f"{image_paths=}")
@@ -178,14 +178,14 @@ def aggregate_plots(graph_names, orders, all_spy_path):
             if len(axs.shape) == 1:  # 1d, reshape to 2d
                 axs = axs.reshape((1, axs.shape[0]))
             ax = axs[row_idx, col_idx]
-
+            print(f"{im_path=}")
             img = read_image(im_path, fmt)
             # ax.imshow(img, interpolation='none', extent=[0, n - 1, n - 1, 0], rasterized=True)
             if col_idx == 0:
                 o = 'orig'
-                o = 'rnd'
+                # o = 'rnd'
             else:
-                o = orders[col_idx ]
+                o = orders[col_idx - 1]
             ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
 
             ax_plot_order(ax, graph_name, True, '', .5, o, rasterized=True)

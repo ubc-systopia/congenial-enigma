@@ -63,10 +63,11 @@ def main(args):
     rabbit_cmake_build_dir = settings['rabbit_cmake_build_dir']
     cmake_build_type = settings['cmake_build_type']
     cmake_make_program = settings['cmake_make_program']  # ninja
-
+    
     graph_preprocess_dir = settings["graph_preprocess_dir"]
     rabbit_home = settings["rabbit_home"]
     dbg_home = settings['dbg_home']
+    corder_home = settings['corder_home']
     par_slashburn_dir = settings['par_slashburn_dir']
 
     cmake_executable = settings["cmake_executable"]
@@ -261,6 +262,16 @@ def main(args):
     args = ['ant', 'ivy-setupjars', 'jar']
     print(" ".join(args))
     subprocess.check_output(args, cwd=webgraph_dir, env=env)
+    print(res.decode('utf-8'))
+
+    # compile corder
+
+    args = [
+        make_executable,
+        "-j", str(n_threads)
+    ]
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=corder_home)
     print(res.decode('utf-8'))
 
 

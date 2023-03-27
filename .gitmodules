@@ -27,3 +27,6 @@
 	path = webgraph
 	url = https://github.com/atrostan/webgraph.git
     branch = master
+[submodule "Corder-TPDS-21"]
+	path = Corder-TPDS-21
+	url = https://github.com/atrostan/Corder-TPDS-21.git
