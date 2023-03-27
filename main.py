@@ -48,6 +48,7 @@ def main(args):
     orders = args.reorder
     io_modes = args.io_modes
     directed = args.directed
+    bipartite = args.bipartite
     run_pr_expts = args.run_pr_expts
     json_args_path = args.json_args
     debug = args.debug
@@ -68,6 +69,9 @@ def main(args):
         graph_type = 'directed'
     else:
         graph_type = 'undirected'
+    
+    if bipartite:
+        graph_type = 'bipartite'
 
     graph_ns = list(map(int, args.graph_numbers))
 
@@ -180,6 +184,11 @@ if __name__ == '__main__':
                         required=True,
                         help='Whether to download and preprocess directed/undirected graphs.\n'
                         '(Bipartite graphs currently unsupported).')
+
+    parser.add_argument('-b', '--bipartite',
+                        action=argparse.BooleanOptionalAction,
+                        required=True,
+                        help='Whether to download and preprocess Bipartite graphs.\n')
 
     parser.add_argument('-g', '--graph-numbers', nargs='+', required=True,
                         help='If specified, only download and scrape these graphs\n'

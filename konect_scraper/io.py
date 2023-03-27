@@ -99,9 +99,8 @@ def find(name, path):
 def file_exists_and_is_nonempty(path):
     return os.path.exists(path) and os.path.getsize(path) > 0
 
-def load_quads(filename, is_rect=False):
+def load_striped_quads(filename, is_rect=False):
     quads = []
-    print(filename)
     with open(filename, 'rb') as f:
         n_quads = struct.unpack('I', f.read(4))[0]
         q_side_len = struct.unpack('I', f.read(4))[0]
@@ -123,17 +122,39 @@ def load_quads(filename, is_rect=False):
                 quads.append((qx, qy, q_idx, nnz, edges))
             else:
                 quads.append((qx, qy, nnz, edges))
-            if qx == 5:
-                for src, dest in edges:
-                    if qx * q_side_len + src == 1282:
-                        # print(src, dest)
-                        if 'rw' in filename:
-                            print(qy * q_side_len +dest+wing_width)
-                            if qy * q_side_len +dest+wing_width == 2940:
-                                print(src, dest)
-                            print(qx, qy)
-                        else:
-                            print(qy * q_side_len +dest)
+
+        n_stripes = struct.unpack('I', f.read(4))[0]
+        cumulative_n_qs_per_stripe = np.fromfile(
+            f,
+            dtype=np.dtype('u4'),
+            count=n_stripes
+        ).reshape(n_stripes)
+
+    return quads, q_side_len, wing_width, n, m, n_stripes, cumulative_n_qs_per_stripe
+
+def load_quads(filename, is_rect=False):
+    quads = []
+    with open(filename, 'rb') as f:
+        n_quads = struct.unpack('I', f.read(4))[0]
+        q_side_len = struct.unpack('I', f.read(4))[0]
+        wing_width = struct.unpack('I', f.read(4))[0]
+        n = struct.unpack('I', f.read(4))[0]
+        m = struct.unpack('L', f.read(8))[0]
+        for i in range(n_quads):
+            qx = struct.unpack('I', f.read(4))[0]
+            qy = struct.unpack('I', f.read(4))[0]
+            if is_rect:
+                q_idx = struct.unpack('I', f.read(4))[0]
+            nnz = struct.unpack('I', f.read(4))[0]
+            edges = np.fromfile(
+                f,
+                dtype=np.dtype('u4'),
+                count=nnz*2
+            ).reshape(nnz, 2)
+            if is_rect:
+                quads.append((qx, qy, q_idx, nnz, edges))
+            else:
+                quads.append((qx, qy, nnz, edges))
 
     return quads, q_side_len, wing_width, n, m
 

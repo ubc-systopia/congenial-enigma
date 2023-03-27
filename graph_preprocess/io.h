@@ -53,7 +53,8 @@ std::pair<ul, ull> read_edge_list(std::string input_path, ull m, std::vector<std
                                   std::vector<std::pair<ul, ul>> &mapped_edges, std::string graph_name,
                                   std::string sqlite_db_path);
 
-
+void read_degs(std::string out_path, std::string in_path, std::vector<uint32_t> &out_degs,
+               std::vector<uint32_t> &in_degs, uint32_t n, std::vector<uint32_t> &iso_map);
 template<typename T>
 void read_edge_list_by_mode(std::string path, std::vector<T> &edges, io_mode &mode) {
 	std::string input_path;
@@ -120,7 +121,8 @@ write_quad_array(std::string path, Quad *qs, uint32_t n_quads, uint32_t q_side_l
                  uint64_t m, bool is_rect, bool right_wing,
                  uint32_t n_stripes_in_right_wing,
                  uint32_t* cumulative_n_qs_per_rw_stripe);
-
+void write_isomap(std::string path, std::vector<uint32_t> &iso_map, uint32_t n,
+                  uint32_t n1, uint32_t n2, uint64_t m);
 
 std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect, bool right_wing, uint32_t *& cumulative_n_qs_per_right_wing_stripe);
 namespace Eigen {

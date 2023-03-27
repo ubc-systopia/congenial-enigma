@@ -30,6 +30,7 @@ class IOMode(Enum):
 
 def init(input_data_dir=None):
     global settings
+    global graph_titles
 
     debug = False
 
@@ -74,8 +75,9 @@ def init(input_data_dir=None):
     orig_el_file_name = f"orig.{edgelist_file_suffix}"
     compressed_el_file_name = "comp"
     pagerank_file_name = "pr"
-
-    cmake_build_dir = "cmake-build-debug"
+    # cmake_build_type = 'Debug'
+    cmake_build_type = 'Release'
+    cmake_build_dir = f"cmake-build-{cmake_build_type.lower()}"
     graph_preprocess_dir = os.path.join(repo_root, "graph_preprocess")
 
     # EXECUTABLES
@@ -145,6 +147,11 @@ def init(input_data_dir=None):
         cache_stats['l2_size'] = -1
         cache_stats['l3_size'] = -1
 
+    # a map from konect graph names to their titles
+    graph_titles = {
+
+    }
+
     settings = {
         "debug": debug,
         "repo_root": repo_root,
@@ -171,7 +178,7 @@ def init(input_data_dir=None):
         "graph_preprocess_dir": graph_preprocess_dir,
         "cmake_build_dir": cmake_build_dir,
         "rabbit_cmake_build_dir": rabbit_cmake_build_dir,
-        "cmake_build_type": "Debug",
+        "cmake_build_type": cmake_build_type,
         "cmake_make_program": "ninja",
 
         "all_networks_url": all_networks_url,
@@ -246,6 +253,16 @@ def init(input_data_dir=None):
             'hs': "hubsort",
             'dbg': "degree-based-grouping",
             'orig': "original",
+            'corder': "corder"
+        },
+        "vorder_titles" : {
+            "Original": "Original",
+            "random": "Random",
+            "rbt": "Rabbit",
+            "sb": "Slashburn",
+            "par_slashburn": "Slashburn",
+            "sort": "Descending Degree Sort",
+            'rabbit': "Rabbit Order"
         },
         "edge_orderings": {
             'row': "Row",
@@ -291,7 +308,7 @@ def init(input_data_dir=None):
                 'hc': 'HubCluster',
                 'dbg': 'DBG',
             },
-            "degree_used_for_reordering": 0,
+            "degree_used_for_reordering": 1,
             # only run 1 iteration of PR - we're interested in the ordering,
             # not the PR
             'max_iters': 1,

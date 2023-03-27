@@ -133,7 +133,7 @@ def main(args):
         'convert_map_to_binary', 
         'compute_ccs', 
         'stats',
-        'par_hilbert_bench'
+        # 'par_hilbert_bench'
     ]
     
     # compile

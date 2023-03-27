@@ -119,6 +119,54 @@ void merge_incoming_totals(PageRankGrid &grid, float *incoming_total,
 //}
 
 
+
+void right_wing_tasks(Quad *qs,
+                      uint32_t wing_width, uint32_t q_side_len,
+                      float *outgoing_contrib,
+                      uint32_t *cumulative_n_qs_per_right_wing_stripe,
+                      uint32_t n_stripes_in_right_wing,
+                      uint32_t n_qs_per_stripe,
+                      float *incoming_total,
+                      uint32_t n, int n_cores) {
+	for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
+		uint32_t stripe_start = cumulative_n_qs_per_right_wing_stripe[i];
+		uint32_t stripe_end = cumulative_n_qs_per_right_wing_stripe[i + 1];
+		uint32_t v_start = wing_width + (n_qs_per_stripe * q_side_len * i);
+		uint32_t v_end = wing_width + (n_qs_per_stripe * q_side_len * (i + 1));
+		v_end = (v_end > n) ? n : v_end;
+		uint32_t v_len = v_end - v_start;
+//https://stackoverflow.com/questions/13065943/task-based-programming-pragma-omp-task-versus-pragma-omp-parallel-for
+		// spawn tasks for right wing
+#pragma omp parallel num_threads(n_cores)
+#pragma omp single nowait
+		{
+#pragma omp taskgroup task_reduction(+:incoming_total[v_start:v_len])
+			{
+				for (uint32_t j = stripe_start; j < stripe_end; ++j) {
+					uint32_t task_priority = stripe_end - j;
+					Quad &q = qs[j];
+					uint32_t qx = q_side_len * q.qx;
+					uint32_t qy = q_side_len * q.qy;
+#pragma omp task shared(outgoing_contrib) \
+        in_reduction(+:incoming_total[v_start:v_len]) \
+        priority(task_priority) \
+        affinity(outgoing_contrib[qx:qx+q_side_len], incoming_total[qy:qy+q_side_len])
+					{
+						Quad &q = qs[j];
+						for (uint32_t k = 0; k < q.nnz; ++k) {
+							uint32_t src = q.edges[k * 2];
+							uint32_t dest = q.edges[k * 2 + 1];
+							uint32_t u = q_side_len * q.qx + src;
+							uint32_t v = q_side_len * q.qy + dest + wing_width;
+							incoming_total[v] += outgoing_contrib[u];
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void iterate_left_wing(Quad *qs, uint32_t n_qs,
                        uint32_t q_side_len,
                        PageRankGrid &grid, float *outgoing_contrib,
