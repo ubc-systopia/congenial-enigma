@@ -118,7 +118,6 @@ def split_aggregate_plots(graph_names, orders, fmt):
     max_rows_per_agg_spy_plot = settings['plot']['max_rows_per_agg_spy_plot']
     plot_num = 0
     plots_dir = settings['plots_dir']
-
     if len(graph_names) > max_rows_per_agg_spy_plot:
         chnks = chunks(graph_names, max_rows_per_agg_spy_plot)
         for graph_chunk in chnks:
@@ -135,34 +134,43 @@ def aggregate_plots(graph_names, orders, all_spy_path):
     orderings = settings['orderings']
     bbox_inches = settings['plot']['bbox_inches']
     pad_inches = settings['plot']['pad_inches']
-    order_names = ["Original", "Compressed"] + [orderings[o] for o in orders]
+    order_names = [
+        # "Original",
+        # "Compressed"
+    ] + \
+        [orderings[o] for o in orders]
+    print(f"{order_names=}")
     adj_mat_format = settings['plot']['adj_mat_format']
     plots_dir = settings['plots_dir']
     fmt = settings['plot']['format']
     dpi = settings['plot']['dpi']
     ax_size = settings['plot']['ax_size']
     n_rows = len(graph_names)
-    n_cols = len(orders) + 2  # include the original and compressed
+    # n_cols = len(orders) + 2  # include the original and compressed
+    n_cols = len(orders)   # include the original and compressed
     fig_size = (n_cols * ax_size, n_rows * ax_size,)
 
     image_paths = np.zeros((n_rows, n_cols), dtype=object)
 
-    image_paths[:, 0] = [
-        os.path.join(plots_dir, graph_name, adj_mat_format, f'orig.{fmt}') for graph_name in graph_names
-    ]
+    # image_paths[:, 0] = [
+    #     os.path.join(plots_dir, graph_name, adj_mat_format, f'orig.{fmt}') for graph_name in graph_names
+    # ]
 
-    image_paths[:, 1] = [
-        os.path.join(plots_dir, graph_name, adj_mat_format, f'comp.{fmt}') for graph_name in graph_names
-    ]
+    # image_paths[:, 1] = [
+    #     os.path.join(plots_dir, graph_name, adj_mat_format, f'comp.{fmt}') for graph_name in graph_names
+    # ]
 
     for row_idx, graph_name in enumerate(graph_names):
         for ord_idx, order in enumerate(orders):
-            col_idx = ord_idx + 2
+            print(f"{ord_idx, order=}")
+            # col_idx = ord_idx + 1
+            col_idx = ord_idx 
             image_paths[row_idx][col_idx] = os.path.join(
                 plots_dir, graph_name, adj_mat_format, f'{order}.{fmt}')
-
-    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=fig_size)
-
+    print(f"{image_paths=}")
+    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols,
+                            figsize=fig_size, sharey=True)
+    tick_fontsize = 30
     for row_idx, graph_name in enumerate(graph_names):
         n = get_n(graph_name)
         for col_idx in range(n_cols):
@@ -172,26 +180,54 @@ def aggregate_plots(graph_names, orders, all_spy_path):
             ax = axs[row_idx, col_idx]
 
             img = read_image(im_path, fmt)
-            ax.imshow(img, interpolation='none', extent=[0, n - 1, n - 1, 0])
-            ax.xaxis.tick_top()
+            # ax.imshow(img, interpolation='none', extent=[0, n - 1, n - 1, 0], rasterized=True)
+            if col_idx == 0:
+                o = 'orig'
+                o = 'rnd'
+            else:
+                o = orders[col_idx ]
+            ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
 
+            ax_plot_order(ax, graph_name, True, '', .5, o, rasterized=True)
+            ax.yaxis.offsetText.set_fontsize(0)
+            ax.get_yaxis().get_offset_text().set_position((-0.5, 0))
+
+            ax.xaxis.offsetText.set_fontsize(24)
+            ax.get_xaxis().get_offset_text().set_position((1.1,.15))
+
+            print(f"{ax.get_xticklabels()=}")
+            print(f"{ax.get_xticks()=}")
+            ax.xaxis.tick_top()
+            # ax.set_xticklabels(ax.get_xticks(), rotation=4)
+            # ax.xticks(fontsize=tick_fontsize)
+            # if col_idx == 0:
+            # ax.yticks(fontsize=tick_fontsize)
+            ax.tick_params(labelsize=tick_fontsize)
+
+    title_fontdict = {
+        'fontsize': tick_fontsize
+    }
     for ax, col in zip(axs[0], order_names):
-        ax.set_title(col)
+        ax.set_title(settings['vorder_titles'][col], fontdict=title_fontdict)
 
     for ax, row in zip(axs[:, 0], graph_names):
-        ax.set_ylabel(row, rotation=45, size='large')
+        # ax.set_ylabel(row, rotation=45, size='large')
+        ax.set_ylabel("Vertex ID", rotation=90, size=30)
         # graph names in y label of axes overwrites some figures - adjust it
-        ax.yaxis.set_label_coords(-.2, 0.5)
+        ax.yaxis.set_label_coords(-.33, 0.5)
     fig.tight_layout()
 
     plt.autoscale()
-
-    fig.savefig(all_spy_path, bbox_inches=bbox_inches, pad_inches=pad_inches)
+    all_spy_path = all_spy_path.replace(f".{fmt}", ".svg")
+    plt.tight_layout()
+    print(f"{all_spy_path=}")
+    fig.savefig(all_spy_path, bbox_inches=bbox_inches, pad_inches=pad_inches,
+                format='svg', dpi=100)
     plt.close(fig)
     return
 
 
-def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, ):
+def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, rasterized=False):
     settings = config.settings
     graphs_dir = settings['graphs_dir']
 
@@ -202,13 +238,17 @@ def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, ):
 
     adj_mat = get_adj_mat_from_edge_list(graph_path, directed)
     iso_path = os.path.join(graph_dir, order)
-    iso_map = read_iso_map(iso_path)
+    if order == 'orig':
+        n = get_n(graph_name)
+        iso_map = {i:i for i in range(0, n)}
+    else:
+        iso_map = read_iso_map(iso_path)
 
     map_mat = translate_adj_mat(adj_mat, iso_map)
     if plot_type == "adj_mat":
         ax.matshow(map_mat)
     else:
-        ax.spy(map_mat, markersize=markersize)
+        ax.spy(map_mat, markersize=markersize, rasterized=rasterized)
 
     # highlight the dense region defined by sb_k x sb_num_iters
     if order == 'sb':
@@ -220,16 +260,16 @@ def ax_plot_order(ax, graph_name, directed, plot_type, markersize, order, ):
                                      linewidth=1, edgecolor='r', alpha=0.3, zorder=2, facecolor='r')
             ax.add_patch(rect)
 
-    if order == 'rbt':
-        # read the original vertex id community assignment
-        comms_path = os.path.join(graph_dir, "comms")
-        comms = np.loadtxt(comms_path).astype(np.uint32)
-        mapped_comms = np.zeros(adj_mat.shape[0])
-        np.set_printoptions(threshold=sys.maxsize)
-        for i, c in enumerate(comms):
-            mapped_comms[iso_map[i]] = c
+    # if order == 'rbt':
+    #     # read the original vertex id community assignment
+    #     comms_path = os.path.join(graph_dir, "comms")
+    #     comms = np.loadtxt(comms_path).astype(np.uint32)
+    #     mapped_comms = np.zeros(adj_mat.shape[0])
+    #     np.set_printoptions(threshold=sys.maxsize)
+    #     for i, c in enumerate(comms):
+    #         mapped_comms[iso_map[i]] = c
 
-        plot_rbt_comms(ax, mapped_comms)
+    #     plot_rbt_comms(ax, mapped_comms)
 
     return
 
@@ -362,10 +402,11 @@ def plot_wing_width_bounds(ww, n):
     l3_annot_x = -600
     l2_annot_x = -550
     plt.vlines(x=l3_annot_x, ymin=0, ymax=l3_cache_size,
-       label=f'l3 cache size={l3_cache_size}')
+               label=f'l3 cache size={l3_cache_size}')
     plt.vlines(x=l2_annot_x, ymin=0, ymax=l2_cache_size,
-       label=f'l2 cache size={l2_cache_size}')
-    plt.text(l3_annot_x - 300, 0, f'l3={l3_cache_size}\nl2={l2_cache_size}\nn_threads={n_threads}', rotation=0, size=6)
+               label=f'l2 cache size={l2_cache_size}')
+    plt.text(l3_annot_x - 300, 0,
+             f'l3={l3_cache_size}\nl2={l2_cache_size}\nn_threads={n_threads}', rotation=0, size=6)
     # get the smallest power of two that fits in l3 cache
     l3_hypolog = 2 ** int(np.log2(l3_cache_size))
     q_side_len = int(l3_hypolog / 2)
@@ -498,7 +539,7 @@ def main(rows, orders):
 
     nrows = len(rows)
     # plot all orders + original and compressed isomorphisms
-    ncols = len(orders) + 2
+    ncols = len(orders) + 1
     ax_size = settings['plot']['ax_size']
     max_n = settings['plot']['max_n']
     figsize = (ncols * ax_size, nrows * ax_size,)

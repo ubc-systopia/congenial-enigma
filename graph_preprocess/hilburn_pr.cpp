@@ -15,7 +15,6 @@
 #include "fmt/core.h"
 #include "fmt/ranges.h"
 #include "io.h"
-#include "omp.h"
 #include "util.h"
 #include <bitset>
 #include <limits.h>
@@ -79,18 +78,67 @@ void merge_incoming_totals(PageRankGrid &grid, float *incoming_total,
 
 }
 
+
+void right_wing_tasks(Quad *qs,
+                      uint32_t wing_width, uint32_t q_side_len,
+                      float *outgoing_contrib,
+                      uint32_t *cumulative_n_qs_per_right_wing_stripe,
+                      uint32_t n_stripes_in_right_wing,
+                      uint32_t n_qs_per_stripe,
+                      float *incoming_total,
+                      uint32_t n, int n_cores) {
+	for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
+		uint32_t stripe_start = cumulative_n_qs_per_right_wing_stripe[i];
+		uint32_t stripe_end = cumulative_n_qs_per_right_wing_stripe[i + 1];
+		uint32_t v_start = wing_width + (n_qs_per_stripe * q_side_len * i);
+		uint32_t v_end = wing_width + (n_qs_per_stripe * q_side_len * (i + 1));
+		v_end = (v_end > n) ? n : v_end;
+		uint32_t v_len = v_end - v_start;
+//https://stackoverflow.com/questions/13065943/task-based-programming-pragma-omp-task-versus-pragma-omp-parallel-for
+		// spawn tasks for right wing
+#pragma omp parallel num_threads(n_cores)
+#pragma omp single nowait
+		{
+#pragma omp taskgroup task_reduction(+:incoming_total[v_start:v_len])
+			{
+				for (uint32_t j = stripe_start; j < stripe_end; ++j) {
+					uint32_t task_priority = stripe_end - j;
+					Quad &q = qs[j];
+					uint32_t qx = q_side_len * q.qx;
+					uint32_t qy = q_side_len * q.qy;
+#pragma omp task shared(outgoing_contrib) \
+        in_reduction(+:incoming_total[v_start:v_len]) \
+        priority(task_priority) \
+        affinity(outgoing_contrib[qx:qx+q_side_len], incoming_total[qy:qy+q_side_len])
+					{
+						Quad &q = qs[j];
+						for (uint32_t k = 0; k < q.nnz; ++k) {
+							uint32_t src = q.edges[k * 2];
+							uint32_t dest = q.edges[k * 2 + 1];
+							uint32_t u = q_side_len * q.qx + src;
+							uint32_t v = q_side_len * q.qy + dest + wing_width;
+							incoming_total[v] += outgoing_contrib[u];
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void iterate_left_wing(Quad *qs, uint32_t n_qs,
                        uint32_t q_side_len,
                        PageRankGrid &grid, float *outgoing_contrib,
-											 float *incoming_total,
-											 uint32_t wing_width,
-                       bool debug) {
-	std::vector<uint16_t> thread_assignments;
-	// if debugging, keep track of which thread computed which quadrant
-	if (debug) {
-		thread_assignments.resize(n_qs);
-	}
-#pragma omp parallel
+                       float *incoming_total,
+                       uint32_t wing_width,
+                       bool debug,
+                       int n_cores) {
+//	std::vector<uint16_t> thread_assignments;
+//	 if debugging, keep track of which thread computed which quadrant
+//	if (debug) {
+//		thread_assignments.resize(n_qs);
+//	}
+#pragma omp parallel num_threads(n_cores)
 	{
 		int tid = omp_get_thread_num();
 //#pragma omp for schedule(runtime)
@@ -99,9 +147,9 @@ void iterate_left_wing(Quad *qs, uint32_t n_qs,
 #pragma omp for schedule(static, 1) reduction(+:incoming_total[:wing_width])
 		for (uint32_t i = 0; i < n_qs; ++i) {
 			Quad &q = qs[i];
-			if (debug) {
-				thread_assignments[i] = tid;
-			}
+//			if (debug) {
+//				thread_assignments[i] = tid;
+//			}
 			//todo would the following benefit from vectorization? (test)
 //#pragma omp simd
 			for (uint32_t j = 0; j < q.nnz; ++j) {
@@ -115,13 +163,13 @@ void iterate_left_wing(Quad *qs, uint32_t n_qs,
 			}
 		}
 	}
-	if (debug) {
-		fmt::print("thread_assignments: {}\n", thread_assignments);
-		omp_sched_t sched;
-		int chunk;
-		omp_get_schedule(&sched, &chunk);
-		fmt::print("sched, chunk: {} {}\n", sched, chunk);
-	}
+//	if (debug) {
+//		fmt::print("thread_assignments: {}\n", thread_assignments);
+//		omp_sched_t sched;
+//		int chunk;
+//		omp_get_schedule(&sched, &chunk);
+//		fmt::print("sched, chunk: {} {}\n", sched, chunk);
+//	}
 
 
 }
@@ -129,11 +177,11 @@ void iterate_left_wing(Quad *qs, uint32_t n_qs,
 void iterate_tail(Quad *qs, uint32_t n_qs,
                   uint32_t q_side_len,
                   float *incoming_total, float *outgoing_contrib,
-                  uint32_t n) {
+                  uint32_t n, int num_cores) {
 	// each rectangle in the tail is guaranteed to write to an exclusive
 	// range of destination ids
 	// rectangles are sorted by qy
-#pragma omp parallel for schedule(static, 1)
+#pragma omp parallel for schedule(static, 1) num_threads(num_cores)
 	for (uint32_t i = 0; i < n_qs; ++i) {
 		Quad &q = qs[i];
 		uint32_t v_end = q.qy + q_side_len > n ? n : q.qy + q_side_len;
@@ -161,8 +209,8 @@ void iterate_right_wing(Quad *qs, uint32_t n_qs,
                         uint32_t n_stripes_in_right_wing,
                         uint32_t n_qs_per_stripe,
                         float *incoming_total,
-                        uint32_t n, uint16_t n_threads) {
-#pragma omp parallel
+                        uint32_t n, uint16_t n_threads, int num_cores) {
+#pragma omp parallel num_threads(num_cores)
 	{
 		int tid = omp_get_thread_num();
 		for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
@@ -233,10 +281,11 @@ int main(int argc, char *argv[]) {
 	uint32_t q_side_len = 0;
 	uint32_t wing_width = 0;
 	uint16_t num_iterations = 0;
+	int n_cores = 0;
 	bool debug = false;
 	std::string schedule = ""; // 1 of {"static", "dynamic"}
 
-	while ((opt = getopt(argc, argv, "bg:d:l:e:w:i:s:")) != -1) {
+	while ((opt = getopt(argc, argv, "bg:d:l:e:w:i:s:c:")) != -1) {
 		switch (opt) {
 			case 'b':
 				debug = !debug;
@@ -259,10 +308,19 @@ int main(int argc, char *argv[]) {
 			case 's':
 				schedule = optarg;
 				break;
+			case 'c':
+				n_cores = atoi(optarg);
+				break;
 		}
 	}
 	assert(is_power_of_2(q_side_len));
+	fmt::print("_OPENMP: {}\n", _OPENMP);
+	fmt::print("KMP_VERSION_MAJOR: {}\n", KMP_VERSION_MAJOR);
+	fmt::print("n_cores: {}\n", n_cores);
 
+//	return 0;
+
+	fmt::print("kmp: {}\n", kmp_get_stacksize());
 //	if (schedule == "") {
 //		std::cout << "Please supply a valid OMP Schedule string (1 of: {static, dynamic}\n";
 //		return 1;
@@ -294,14 +352,25 @@ int main(int argc, char *argv[]) {
 	std::vector<uint64_t> res;
 	uint32_t n, n_lw_qs, n_rw_qs, n_tail_qs;
 	uint64_t m;
+
 	res = read_quad_array(lw_path, lw_qs, false, false, empty);
+	fmt::print("Read left wing.\n");
 	n_lw_qs = res[0];
 	n = res[1];
 	m = res[2];
 	res = read_quad_array(rw_path, rw_qs, false, true, cumulative_n_qs_per_right_wing_stripe);
+	fmt::print("Read right wing.\n");
+
 	n_rw_qs = res[0];
 	res = read_quad_array(tail_path, tail_qs, true, false, empty);
+	fmt::print("Read tail wing.\n");
+
 	n_tail_qs = res[0];
+
+	for (uint32_t i = 0; i < 10; ++i) {
+		fmt::print("left_wing_qs[i].q_idx: {}\n", lw_qs[i].qx);
+		fmt::print("right_wing_qs[i].q_idx: {}\n", lw_qs[i].qy);
+	}
 
 	if (debug) {
 		//todo
@@ -321,11 +390,11 @@ int main(int argc, char *argv[]) {
 
 	print_arr<uint32_t>(cumulative_n_qs_per_right_wing_stripe, n_stripes_in_right_wing + 1);
 
-	// set the number of threads == number of available cores
-	setenv("OMP_PLACES", "cores", 1);
-	setenv("OMP_PROC_BIND", "close", 1);
+	// set the number of threads == number of available cores (e.g. cores, threads)
+//	setenv("OMP_PLACES", "cores", 1);
+//	setenv("OMP_PROC_BIND", "close", 1);
 
-	int default_omp_stack_size = kmp_get_stacksize() ; // the amount of stack memory assigned to each thread, in bytes
+	int default_omp_stack_size = kmp_get_stacksize(); // the amount of stack memory assigned to each thread, in bytes
 	uint32_t required_stack_size = wing_width * 4;
 
 	uint32_t stack_size = hyperceiling(required_stack_size);
@@ -333,23 +402,24 @@ int main(int argc, char *argv[]) {
 	fmt::print("kmp_get_stacksize() / 1024: {}\n", kmp_get_stacksize());
 	if (stack_size > default_omp_stack_size) {
 		std::string stack_size_str = fmt::format("{}B", stack_size);
-		fmt::print("Setting OMP_STACKSIZE to {}.\n",  stack_size_str);
-		setenv("OMP_STACKSIZE", stack_size_str.c_str(), 1);
+		fmt::print("Setting OMP_STACKSIZE to {}.\n", stack_size_str);
+//		setenv("OMP_STACKSIZE", stack_size_str.c_str(), 1);
+		setenv("OMP_STACKSIZE", "25m", 1);
 	}
 	fmt::print("kmp_get_stacksize() / 1024: {}\n", kmp_get_stacksize());
 
-	int n_cores = omp_get_num_places();
+	int omp_n_cores = omp_get_num_places();
 	int partition_n_places = omp_get_partition_num_places();
-	int n_threads = n_cores;
+	int n_threads = omp_n_cores;
+	if (n_cores == 0) n_cores = n_threads;
+	fmt::print("omp_get_max_threads(): {}\n", omp_get_max_threads());
+
 	omp_set_num_threads(n_threads);
-	fmt::print("n_cores: {}\n", n_cores);
+	fmt::print("omp_n_cores: {}\n", omp_n_cores);
 	fmt::print("partition_n_places: {}\n", partition_n_places);
 	fmt::print("n_threads: {}\n", n_threads);
 //	uint16_t n_threads = omp_get_max_threads();
 //	fmt::print("n_threads: {}\n", n_threads);
-	fmt::print("_: {}\n", _OPENMP);
-
-
 
 	// read out degree file
 	std::vector<uint32_t> deg(n);
@@ -394,21 +464,22 @@ int main(int argc, char *argv[]) {
 	for (int iter = 0; iter < num_iterations; iter++) {
 //		fmt::print("Iteration: {}\n", iter);
 		// left wing
-		iterate_left_wing(lw_qs, n_lw_qs, q_side_len, incoming_totals, outgoing_contrib, incoming_total, wing_width, debug);
+		iterate_left_wing(lw_qs, n_lw_qs, q_side_len, incoming_totals, outgoing_contrib, incoming_total, wing_width, debug,
+		                  n_cores);
 //		merge_incoming_totals(incoming_totals, incoming_total, 0, wing_width, n_threads);
 
 		// right wing
-		iterate_right_wing(rw_qs, n_rw_qs,
-		                   wing_width, q_side_len,
-		                   incoming_totals, outgoing_contrib,
-		                   cumulative_n_qs_per_right_wing_stripe,
-		                   n_stripes_in_right_wing,
-		                   n_qs_per_stripe,
-		                   incoming_total, n, n_threads);
+//		iterate_right_wing(rw_qs, n_rw_qs,
+//		                   wing_width, q_side_len,
+//		                   incoming_totals, outgoing_contrib,
+//		                   cumulative_n_qs_per_right_wing_stripe,
+//		                   n_stripes_in_right_wing,
+//		                   n_qs_per_stripe,
+//		                   incoming_total, n, n_threads, n_cores);
 		// tail
 		iterate_tail(tail_qs, n_tail_qs,
 		             q_side_len,
-		             incoming_total, outgoing_contrib, n);
+		             incoming_total, outgoing_contrib, n, n_cores);
 // compute the outgoing contributions for the next iteration
 //		print_arr_slice(incoming_total, wing_width, wing_width + 10);
 
@@ -443,7 +514,7 @@ int main(int argc, char *argv[]) {
 	                           });
 
 	uint32_t first_n = 32;
-	for (uint32_t i = 0; i < first_n; ++i){
+	for (uint32_t i = 0; i < first_n; ++i) {
 		fmt::print("{} {}\n", mapped_results[i], pr[i]);
 	}
 	fmt::print("valid_pr: {}\n", valid_pr);

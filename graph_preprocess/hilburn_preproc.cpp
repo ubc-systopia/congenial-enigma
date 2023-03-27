@@ -15,39 +15,6 @@ typedef std::unordered_map<std::pair<uint32_t, uint32_t>, bool, pair_hash> edge_
 
 bool sort_by_q_idx(Quad *x, Quad *y) { return x->q_idx < y->q_idx; }
 
-/**
- *
- * Reorder the edges contained in a quadrant using the hilbert order
-	* @param q
-	* @param side_len
- */
-void horder_edges_in_q(Quad &q, uint32_t side_len) {
-	// create a temporary vector to store the reordered edges
-	uint32_t nnz = q.nnz;
-	struct IndexedEdge {
-		uint32_t src;
-		uint32_t dest;
-		uint32_t h_idx;
-	};
-	std::vector<IndexedEdge> copy(nnz);
-	for (uint32_t j = 0; j < nnz; ++j) {
-		uint32_t src = q.edges[j * 2];
-		uint32_t dest = q.edges[j * 2 + 1];
-		copy[j].src = src;
-		copy[j].dest = dest;
-		copy[j].h_idx = xy2d(side_len, src, dest);
-	}
-	std::sort(
-		copy.begin(),
-		copy.end(),
-		[](const IndexedEdge &a, const IndexedEdge &b) -> bool { return a.h_idx < b.h_idx; }
-	);
-	// copy the (now sorted) edges back to the edges array
-	for (uint32_t j = 0; j < nnz; ++j) {
-		q.edges[j * 2] = copy[j].src;
-		q.edges[j * 2 + 1] = copy[j].dest;
-	}
-}
 
 void print_out_neighs(uint32_t u, CSR &out_csr) {
 	if (u > out_csr.num_nodes) return;
@@ -66,27 +33,6 @@ uint32_t n_out_neighbours(uint32_t u, CSR &out_csr) {
 	return out_csr.index[u + 1] - out_csr.index[u];
 }
 
-uint32_t get_min_id_in_range(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &out_csr) {
-	uint32_t start = out_csr.index[u];
-	uint32_t end = out_csr.index[u + 1];
-	if (start == end) { return -1; }
-
-	uint32_t min_neigh = out_csr.neighbours[start];
-	uint32_t max_neigh = out_csr.neighbours[end - 1];
-	uint64_t offset = lower_bound<uint32_t, uint64_t>(
-		v_min,
-		out_csr.neighbours,
-		start,
-		end
-	);
-	uint32_t candidate = out_csr.neighbours[offset];
-	if (offset == end) {
-		if (max_neigh < v_min) {
-			return -1;
-		}
-	}
-	return candidate;
-}
 
 uint32_t get_max_id_in_range(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &out_csr) {
 	uint32_t start = out_csr.index[u];
@@ -100,7 +46,8 @@ uint32_t get_max_id_in_range(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &ou
 //		start,
 //		end
 //	);
-	uint64_t offset = binary_search(out_csr.neighbours, v_max, start, end).second;
+//	uint64_t offset = bsearch(out_csr.neighbours, v_max, start, end).second;
+	uint64_t offset = 0;
 	uint32_t candidate = out_csr.neighbours[offset];
 //	print_out_neighs(u, out_csr);
 //	fmt::print("{} {} {} {}\n", offset, end, candidate, v_max);
@@ -119,108 +66,13 @@ uint32_t get_max_id_in_range(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &ou
 			}
 		}
 	}
-
-
 	return candidate;
 }
 
-/**
- * Get the number of out-neighbours of u, whose ID lies between
- * [v_min, v_max)
- * @param u
- * @param v_min
- * @param v_max
- * @param out_csr - the out-csr representing the graph storing u and its out-neighbours
- * @return
- */
-uint32_t n_out_neighbours_between(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &out_csr) {
-	uint32_t start = out_csr.index[u];
-	uint32_t end = out_csr.index[u + 1];
-	uint32_t min_neigh = out_csr.neighbours[start];
-	uint32_t max_neigh = out_csr.neighbours[end - 1];
-//	uint64_t min_offset, max_offset;
-//	auto p1 = binary_search(out_csr.neighbours, v_min, start, end);
-	uint64_t min_offset = lower_bound<uint32_t, uint64_t>(
-		v_min,
-		out_csr.neighbours,
-		start,
-		end
-	);
-	uint64_t max_offset = lower_bound<uint32_t, uint64_t>(
-		v_max,
-		out_csr.neighbours,
-		start,
-		end
-	);
-	return max_offset - min_offset;
-}
-
-
-void read_degs(std::string out_path, std::string in_path, std::vector<uint32_t> &out_degs,
-               std::vector<uint32_t> &in_degs, uint32_t n, std::vector<uint32_t> &iso_map) {
-	std::vector<uint32_t> ods(n);
-	std::vector<uint32_t> ids(n);
-
-	read_text_degree_file(out_path, ods);
-	read_text_degree_file(in_path, ids);
-
-#pragma omp parallel for schedule(static)
-	for (uint32_t i = 0; i < n; ++i) {
-		uint32_t parsb_id = iso_map[i];
-		out_degs[parsb_id] = ods[i];
-		in_degs[parsb_id] = ids[i];
-	}
-
-}
 
 uint32_t mod(const uint32_t v, const uint32_t n) {
 //	assert(is_power_of_2(n));
 	return v & (n - 1);
-}
-
-/**
- * Given an edge (u, v) that resides in a quadrant whose quadrant side length is q_side_len compute the local (offset) version of that edge
- * @param u
- * @param v
- * @param q_side_len
- * @return
- */
-std::pair<uint32_t, uint32_t> edge_offset(uint32_t u, uint32_t v, uint32_t q_side_len) {
-	return {u % q_side_len, v % q_side_len};
-//	return {mod(u, q_side_len), mod(v, q_side_len)};
-}
-
-uint32_t filter_empty_quads(Quad *&qs, uint32_t n_quads) {
-	uint32_t n_empty = 0;
-#pragma omp parallel for reduction(+:n_empty)
-	for (uint32_t i = 0; i < n_quads; ++i) {
-		if (qs[i].nnz == 0) {
-			n_empty++;
-		}
-	}
-
-	uint32_t reduced_size = n_quads - n_empty;
-	Quad *new_qs = new Quad[reduced_size];
-	// create a new quad array, copy over the relevant data, and swap the pointers
-	uint32_t non_empty_idx = 0;
-	for (uint32_t i = 0; i < n_quads; ++i) {
-		if (qs[i].nnz == 0) { continue; }
-		new_qs[non_empty_idx].qx = qs[i].qx;
-		new_qs[non_empty_idx].qy = qs[i].qy;
-		new_qs[non_empty_idx].q_idx = qs[i].q_idx;
-		new_qs[non_empty_idx].nnz = qs[i].nnz;
-		new_qs[non_empty_idx].edges = qs[i].edges;
-
-		qs[i].qx = -1;
-		qs[i].qy = -1;
-		qs[i].q_idx = -1;
-		qs[i].nnz = -1;
-		qs[i].edges = nullptr;
-
-		non_empty_idx++;
-	}
-	qs = new_qs;
-	return reduced_size;
 }
 
 
@@ -362,7 +214,6 @@ int main(int argc, char *argv[]) {
 	std::string binary_edge_list_path = fmt::format("{}/{}", graph_dir, "comp.bin");
 	read_binary_container<std::vector<uint32_t>>(binary_order_path, iso_map);
 	read_binary_container<std::vector<std::pair<uint32_t, uint32_t>>>(binary_edge_list_path, edge_list);
-
 	n = iso_map.size();
 	m = edge_list.size();
 
@@ -380,17 +231,16 @@ int main(int argc, char *argv[]) {
 
 		edge_list[i].first = iso_map[src];
 		edge_list[i].second = iso_map[dest];
-		if (debug) {
-			edge_set.insert({{iso_map[src], iso_map[dest]}, true});
-		}
+//		if (debug) {
+//			edge_set.insert({{iso_map[src], iso_map[dest]}, true});
+//		}
 
 	}
 
-
 	fmt::print("Sorting by source..\n");
 	// the slashburn isomorphism map, translate the edgelist, and sort by src, dest
-//	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
-	ips4o::parallel::sort(edge_list.begin(), edge_list.end());
+	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
+//	ips4o::parallel::sort(edge_list.begin(), edge_list.end());
 
 	// read the indegrees, outdegrees of the vertices of the graph, and translate using the
 	// slashburn isomap
@@ -411,13 +261,13 @@ int main(int argc, char *argv[]) {
 	out_csr.par_populate(out_degs, edge_list);
 	fmt::print("Sorting by dest..\n");
 	// before populating in the in-csr, sort the edgelist by ascending (dest, src)
-	ips4o::parallel::sort(
-		edge_list.begin(),
-		edge_list.end(),
-		[](std::pair<uint32_t, uint32_t> l, std::pair<uint32_t, uint32_t> r) -> bool {
-			if (l.second == r.second) { return l.first < r.first; }
-			return l.second < r.second;
-		}
+	std::sort(dpl::execution::par_unseq,
+	          edge_list.begin(),
+	          edge_list.end(),
+	          [](std::pair<uint32_t, uint32_t> l, std::pair<uint32_t, uint32_t> r) -> bool {
+		          if (l.second == r.second) { return l.first < r.first; }
+		          return l.second < r.second;
+	          }
 	);
 	in_csr.par_populate(in_degs, edge_list);
 	uint64_t n_edges_lwing = 0;
@@ -651,8 +501,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
-
-
 
 	// compute the number of quadrants in the right wing
 	uint32_t n_qs_right_wing = 0;
@@ -1165,14 +1013,26 @@ int main(int argc, char *argv[]) {
 		);
 	}
 
+	for (uint32_t i = 0; i < n_stripes_in_right_wing; ++i) {
+		uint32_t stripe_start = cumulative_n_quads_per_right_wing_stripe[i];
+		uint32_t stripe_end = cumulative_n_quads_per_right_wing_stripe[i + 1];
+		fmt::print("stripe_start, stripe_end: {} {}\n", stripe_start, stripe_end);
+		for (uint32_t j = stripe_start; j < stripe_end; ++j) {
+			Quad &q = right_wing_qs[j];
+			uint32_t u = q.qx ;
+//					uint32_t v = q_side_len * qy + dest;
+			uint32_t v = q.qy;
+			fmt::print("u, v: {} {} \n", u, v);
 
+		}
+	}
 	// before writing quadrants to disk, filter out any empty quads
 	// filter out fully zero quads
 	uint32_t n_nnz_lw_qs = filter_empty_quads(left_wing_qs, n_qs_left_wing);
 	uint32_t n_nnz_rw_qs = filter_empty_quads(right_wing_qs, n_qs_right_wing);
 	uint32_t n_nnz_tail_qs = filter_empty_quads(tail_rects, n_rects_in_tail);
-	
-	
+
+
 	// filtering out fully zero quads may have invalidated the cumulative number of quads per vertical stripe in the right
 	// wing
 	// so recompute the valid start and end points of the left wing vertical stripes

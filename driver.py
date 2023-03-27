@@ -25,7 +25,7 @@ def construct_main_args_from_config(args):
     if slurm:
         val_args += ['time', 'mem', 'cpus-per-task', 'constraint']
 
-    bool_args = ['directed', 'overwrite', 'debug']
+    bool_args = ['directed', 'overwrite', 'debug', 'bipartite']
     for val_arg in val_args:
         args += [f'--{val_arg}', str(data[val_arg])]
 

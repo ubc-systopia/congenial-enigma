@@ -15,6 +15,138 @@
 #include "fmt/ranges.h"
 #include "pvector.h"
 
+
+uint32_t get_min_id_in_range(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &out_csr) {
+	uint32_t start = out_csr.index[u];
+	uint32_t end = out_csr.index[u + 1];
+	if (start == end) { return -1; }
+
+	uint32_t min_neigh = out_csr.neighbours[start];
+	uint32_t max_neigh = out_csr.neighbours[end - 1];
+	uint64_t offset = lower_bound<uint32_t, uint64_t>(
+		v_min,
+		out_csr.neighbours,
+		start,
+		end
+	);
+	uint32_t candidate = out_csr.neighbours[offset];
+	if (offset == end) {
+		if (max_neigh < v_min) {
+			return -1;
+		}
+	}
+	return candidate;
+}
+
+/**
+ * Get the number of out-neighbours of u, whose ID lies between
+ * [v_min, v_max)
+ * @param u
+ * @param v_min
+ * @param v_max
+ * @param out_csr - the out-csr representing the graph storing u and its out-neighbours
+ * @return
+ */
+uint32_t n_out_neighbours_between(uint32_t u, uint32_t v_min, uint32_t v_max, CSR &out_csr) {
+	uint32_t start = out_csr.index[u];
+	uint32_t end = out_csr.index[u + 1];
+	uint32_t min_neigh = out_csr.neighbours[start];
+	uint32_t max_neigh = out_csr.neighbours[end - 1];
+//	uint64_t min_offset, max_offset;
+//	auto p1 = binary_search(out_csr.neighbours, v_min, start, end);
+	uint64_t min_offset = lower_bound<uint32_t, uint64_t>(
+		v_min,
+		out_csr.neighbours,
+		start,
+		end
+	);
+	uint64_t max_offset = lower_bound<uint32_t, uint64_t>(
+		v_max,
+		out_csr.neighbours,
+		start,
+		end
+	);
+	return max_offset - min_offset;
+}
+
+uint32_t filter_empty_quads(Quad *&qs, uint32_t n_quads) {
+	uint32_t n_empty = 0;
+#pragma omp parallel for reduction(+:n_empty)
+	for (uint32_t i = 0; i < n_quads; ++i) {
+		if (qs[i].nnz == 0) {
+			n_empty++;
+		}
+	}
+
+	uint32_t reduced_size = n_quads - n_empty;
+	Quad *new_qs = new Quad[reduced_size];
+	// create a new quad array, copy over the relevant data, and swap the pointers
+	uint32_t non_empty_idx = 0;
+	for (uint32_t i = 0; i < n_quads; ++i) {
+		if (qs[i].nnz == 0) { continue; }
+		new_qs[non_empty_idx].qx = qs[i].qx;
+		new_qs[non_empty_idx].qy = qs[i].qy;
+		new_qs[non_empty_idx].q_idx = qs[i].q_idx;
+		new_qs[non_empty_idx].nnz = qs[i].nnz;
+		new_qs[non_empty_idx].edges = qs[i].edges;
+
+		qs[i].qx = -1;
+		qs[i].qy = -1;
+		qs[i].q_idx = -1;
+		qs[i].nnz = -1;
+		qs[i].edges = nullptr;
+
+		non_empty_idx++;
+	}
+	qs = new_qs;
+	return reduced_size;
+}
+
+/**
+ *
+ * Reorder the edges contained in a quadrant using the hilbert order
+	* @param q
+	* @param side_len
+ */
+void horder_edges_in_q(Quad &q, uint32_t side_len) {
+	// create a temporary vector to store the reordered edges
+	uint32_t nnz = q.nnz;
+	struct IndexedEdge {
+		uint32_t src;
+		uint32_t dest;
+		uint32_t h_idx;
+	};
+	std::vector<IndexedEdge> copy(nnz);
+	for (uint32_t j = 0; j < nnz; ++j) {
+		uint32_t src = q.edges[j * 2];
+		uint32_t dest = q.edges[j * 2 + 1];
+		copy[j].src = src;
+		copy[j].dest = dest;
+		copy[j].h_idx = xy2d(side_len, src, dest);
+	}
+	std::sort(
+		copy.begin(),
+		copy.end(),
+		[](const IndexedEdge &a, const IndexedEdge &b) -> bool { return a.h_idx < b.h_idx; }
+	);
+	// copy the (now sorted) edges back to the edges array
+	for (uint32_t j = 0; j < nnz; ++j) {
+		q.edges[j * 2] = copy[j].src;
+		q.edges[j * 2 + 1] = copy[j].dest;
+	}
+}
+
+/**
+ * Given an edge (u, v) that resides in a quadrant whose quadrant side length is q_side_len compute the local (offset) version of that edge
+ * @param u
+ * @param v
+ * @param q_side_len
+ * @return
+ */
+std::pair<uint32_t, uint32_t> edge_offset(uint32_t u, uint32_t v, uint32_t q_side_len) {
+	return {u % q_side_len, v % q_side_len};
+}
+
 bool sortByDescendingDegree(const vertex &lhs, const vertex &rhs) {
 	if (lhs.degree != rhs.degree)
 		return lhs.degree > rhs.degree;

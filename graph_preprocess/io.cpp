@@ -21,6 +21,22 @@
 #include "rabbit_util.h"
 #include <eigen3/Eigen/Sparse>
 
+void read_degs(std::string out_path, std::string in_path, std::vector<uint32_t> &out_degs,
+               std::vector<uint32_t> &in_degs, uint32_t n, std::vector<uint32_t> &iso_map) {
+	std::vector<uint32_t> ods(n);
+	std::vector<uint32_t> ids(n);
+
+	read_text_degree_file(out_path, ods);
+	read_text_degree_file(in_path, ids);
+
+#pragma omp parallel for schedule(static)
+	for (uint32_t i = 0; i < n; ++i) {
+		uint32_t parsb_id = iso_map[i];
+		out_degs[parsb_id] = ods[i];
+		in_degs[parsb_id] = ids[i];
+	}
+
+}
 
 std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect, bool right_wing, uint32_t *& cumulative_n_qs_per_right_wing_stripe) {
 	std::ifstream in(path, std::ios::binary | std::ios::in);
@@ -36,7 +52,7 @@ std::vector<uint64_t> read_quad_array(std::string path, Quad *&qs, bool is_rect,
 		res[0] = n_quads;
 		res[1] = n;
 		res[2] = m;
-
+		fmt::print("n_quads: {}\n", n_quads);
 		// allocate the quad array
 		qs = new Quad[n_quads];
 		// write read quadrant and its metadata
@@ -139,6 +155,21 @@ void write_row_to_csv(PRExptRow &r, std::string csv_path) {
 	        r.edge_order.c_str() << "," <<
 	        r.runtime << "," <<
 	        r.valid << "\n";
+
+	outfile.close();
+}
+
+void write_isomap(std::string path, std::vector<uint32_t> &iso_map, uint32_t n,
+									uint32_t n1, uint32_t n2, uint64_t m) {
+	std::ofstream outfile(path);
+	outfile << fmt::format("{}\n", n);
+	outfile << fmt::format("{}\n", n1);
+	outfile << fmt::format("{}\n", n2);
+	outfile << fmt::format("{}\n", m);
+
+	for (uint32_t i = 0; i < n; ++i) {
+		outfile << fmt::format("{} {}\n", i, iso_map[i]);
+	}
 
 	outfile.close();
 }
