@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.23.0)
 project(graph_preprocess CXX)
 
 include(FetchContent)
@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_CXX_FLAGS "-fopenmp -DLIKWID_PERFMON -DTBB_ENABLE_IPO=OFF")
+set(CMAKE_CXX_FLAGS "-qopenmp -DLIKWID_PERFMON -DTBB_ENABLE_IPO=OFF")
 
 #set(CMAKE_CXX_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icpx)
 
@@ -21,11 +21,11 @@ FetchContent_Declare(fmt
         )
 FetchContent_MakeAvailable(fmt)
 
-FetchContent_Declare(taskflow
-        GIT_REPOSITORY https://github.com/taskflow/taskflow.git
-        GIT_TAG master
-        )
-FetchContent_MakeAvailable(taskflow)
+#FetchContent_Declare(taskflow
+#        GIT_REPOSITORY https://github.com/taskflow/taskflow.git
+#        GIT_TAG master
+#        )
+#FetchContent_MakeAvailable(taskflow)
 #
 #FetchContent_Declare(work-stealing-queue
 #        GIT_REPOSITORY https://github.com/taskflow/work-stealing-queue.git
@@ -45,8 +45,10 @@ find_package(Boost 1.58.0 EXACT COMPONENTS system filesystem graph serialization
 find_package(igraph REQUIRED)
 find_package(oneDPL REQUIRED)
 find_package(Eigen3 REQUIRED)
+#find_package(IntelDPCPP REQUIRED)
 
-SET(CMAKE_C_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icx) # todo use icx compiler when using intel dpl
+
+#SET(CMAKE_C_COMPILER /opt/intel/oneapi/compiler/2023.0.0/linux/bin/icx) # todo use icx compiler when using intel dpl
 set(ParSlashburnDir "../par_slashburn")
 set(IPS4ODir "../par_slashburn/ips4o")
 add_subdirectory(${IPS4ODir} ips4o)

@@ -505,6 +505,7 @@ int main(int argc, char *argv[]) {
 //#pragma omp barrier
 
 //  likwid-perfctr -C N:0-13 -g INSTR_RETIRED_ANY:FIXC0,L2_TRANS_ALL_REQUESTS:PMC0,L2_RQSTS_MISS:PMC1 -o ./lkwd.csv -O -m /home/atrostan/workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/par_hilbert_bench -h -d /media/atrostan/data/ -g sx-stackoverflow -l 65536 -e 1
+//  likwid-perfctr -C N:0-13 -g MEM_LOAD_RETIRED_L3_HIT:PMC0,MEM_LOAD_RETIRED_L3_MISS:PMC1,UOPS_RETIRED_ALL:PMC2 -o ./lkwd.csv -O -m /home/atrostan/workspace/repos/congenial-enigma/graph_preprocess/cmake-build-debug/par_hilbert_bench -h -d /media/atrostan/data/ -g sx-stackoverflow -l 65536 -e 1
 
 #pragma omp for schedule(static)
 				for (uint32_t i = 0; i < n; i++) {

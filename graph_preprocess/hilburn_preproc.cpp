@@ -389,8 +389,8 @@ int main(int argc, char *argv[]) {
 
 	fmt::print("Sorting by source..\n");
 	// the slashburn isomorphism map, translate the edgelist, and sort by src, dest
-//	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
-	ips4o::parallel::sort(edge_list.begin(), edge_list.end());
+	std::sort(dpl::execution::par_unseq, edge_list.begin(), edge_list.end());
+//	ips4o::parallel::sort(edge_list.begin(), edge_list.end());
 
 	// read the indegrees, outdegrees of the vertices of the graph, and translate using the
 	// slashburn isomap
@@ -411,7 +411,8 @@ int main(int argc, char *argv[]) {
 	out_csr.par_populate(out_degs, edge_list);
 	fmt::print("Sorting by dest..\n");
 	// before populating in the in-csr, sort the edgelist by ascending (dest, src)
-	ips4o::parallel::sort(
+    std::sort(dpl::execution::par_unseq,
+//	ips4o::parallel::sort(
 		edge_list.begin(),
 		edge_list.end(),
 		[](std::pair<uint32_t, uint32_t> l, std::pair<uint32_t, uint32_t> r) -> bool {
