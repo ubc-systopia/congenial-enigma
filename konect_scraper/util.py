@@ -686,6 +686,29 @@ def get_webgraph_jars(wgdir):
 
     return jars
 
+def save_gpop(edgelist_path, graph_dir):
+    """Convert a text edge list file to a GPOP csr (both csr, csc)
+
+    Args:
+        edgelist_path (_type_): _description_
+        graph_dir (_type_): _description_
+    """
+    settings = config.settings
+    csr_path = os.path.join(graph_dir, 'gpop_orig.bin')    
+    csc_path = os.path.join(graph_dir, 'gpop_orig_transpose.bin')
+    csr_gen_exec = settings['csr_gen_executable']    
+
+    args = [
+        csr_gen_exec,
+        edgelist_path,
+        csr_path,
+        '-r', csc_path
+    ]
+    logging.info(f"{' '.join(args)}")
+    res = subprocess.check_output(args)
+    
+    return 
+
 def save_webgraph(el_path, graph_dir):
     """
     Preprocess and save an edgelist using webgraph

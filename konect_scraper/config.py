@@ -43,7 +43,7 @@ def init(input_data_dir=None):
     repo_home = os.path.join(repo_root, "konect_scraper")
     rabbit_home = os.path.join(repo_root, "rabbit_order")
     corder_home = os.path.join(repo_root, "Corder-TPDS-21")
-
+    csr_gen_home = os.path.join(repo_root, "pcpm", "csr_gen")
     pbrcm_home = os.path.join(repo_root, "ParallelBatchRCM")
 
     dbg_home = os.path.join(repo_root, "dbg")  # todo replace
@@ -100,7 +100,10 @@ def init(input_data_dir=None):
 
     rabbit_cmake_build_dir = os.path.join(rabbit_home, "demo", cmake_build_dir)
     rabbit_order_executable = os.path.join(rabbit_cmake_build_dir, "reorder")
+
     corder_executable = os.path.join(corder_home, 'corder')
+
+    csr_gen_executable = os.path.join(csr_gen_home, 'a.out')
 
     pr_experiments_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "pr_experiments")
@@ -174,6 +177,8 @@ def init(input_data_dir=None):
         "dbg_datasets_dir": dbg_datasets_dir,
 
         "pbrcm_home": pbrcm_home,
+        "csr_gen_home": csr_gen_home,
+        "csr_gen_executable": csr_gen_executable,
 
         "make_executable": "make",
         "cmake_executable": "cmake",

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from konect_scraper import config
 from konect_scraper.download_and_extract import compress
-from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_connected_component, \
+from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_connected_component, save_gpop, \
     save_ground_truth_pr, set_n_m, single_val_numeric_set, save_peregrine, save_webgraph
 import networkx as nx
 import igraph as ig
@@ -58,6 +58,9 @@ def process(graph_name, io_modes, overwrite):
 
     logging.info(f"Preprocessing {graph_name} for webgraph..")
     save_webgraph(compressed_graph_path_with_extension, graph_dir)
+
+    logging.info(f"Preprocessing {graph_name} for gpop..")
+    save_gpop(compressed_graph_path_with_extension, graph_dir)
 
 
 def main(rows, io_modes, overwrite):

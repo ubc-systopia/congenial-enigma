@@ -265,13 +265,23 @@ def main(args):
     print(res.decode('utf-8'))
 
     # compile corder
-
     args = [
         make_executable,
         "-j", str(n_threads)
     ]
     print(" ".join(args))
     subprocess.check_output(args, cwd=corder_home)
+    print(res.decode('utf-8'))
+
+
+    csr_gen_home = settings['csr_gen_home']
+    # compile gpop preprocessing
+    args = [
+        make_executable,
+        "-j", str(n_threads)
+    ]
+    print(" ".join(args))
+    subprocess.check_output(args, cwd=csr_gen_home)
     print(res.decode('utf-8'))
 
 

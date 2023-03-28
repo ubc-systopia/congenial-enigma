@@ -275,8 +275,13 @@ def compute_ordering(graph_name, order, ovewrite):
             extension = ".net"
             comp_graph_path = os.path.join(
                 graph_dir, settings['compressed_el_file_name'] + extension)
+
+            # corder expects a gpop csr 
+            gpop_graph_path = os.path.join(graph_dir, 'gpop_orig.bin')
+            
             corder_path = order_path
-            compute_corder(comp_graph_path, corder_path)
+
+            compute_corder(gpop_graph_path, order_path)
 
         case _:
             logging.error(f"{order}: Unsupported Ordering!")
