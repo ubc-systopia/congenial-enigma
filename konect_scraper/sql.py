@@ -66,6 +66,28 @@ def append_df_to_table(df, table):
     conn.commit()
 
 
+
+
+def get_graphs_by_graph_num_list(ns, graph_type):
+    """given a a list of graph numbers and a graph type, return all relevant rows
+
+    Args:
+        ns (int pair): pair of ints - [min graph number, max graph number)
+        graph_type (string): type of graph - one of: directed, undirected, 
+                                                     bipartite
+    """
+    db_path = config.settings['sqlite3']['sqlite3_db_path']
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rrows = []
+    for n in ns:
+        sql = f"select * from {graph_type} where graph_number = {n}"
+        cursor = conn.execute(sql)
+        rows = cursor.fetchall()
+        rrows.append(rows[0])
+
+    return rrows
+
 def get_graphs_by_graph_numbers(ns, graph_type):
     """given a min, max graph numbers and a graph type, return all relevant rows
 

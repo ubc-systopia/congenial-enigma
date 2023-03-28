@@ -13,7 +13,7 @@ from konect_scraper import calc_stats, download_and_extract, preprocess, reorder
 from konect_scraper.config import IOMode
 from konect_scraper.sql import get_all_graphs_by_graph_names_where_stats_between, get_all_downloadable_graphs, \
     get_all_unipartite_directed_graphs, get_all_graphs_by_graph_names, get_all_unipartite_graphs, \
-    get_all_unipartite_undirected_graphs
+    get_all_unipartite_undirected_graphs, get_graphs_by_graph_num_list
 from konect_scraper.util import \
     create_log_dir_if_not_exists, init_logger, valid_orderings, valid_pr, get_category, get_pr_struct_size, \
     get_unimputed_features, get_directed, get_n, get_m, get_n_vertices, get_n_edges, convert_size
@@ -72,10 +72,24 @@ def main(args):
     
     if bipartite:
         graph_type = 'bipartite'
+    
 
+    
     graph_ns = list(map(int, args.graph_numbers))
 
-    rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
+    logging.info(f"{args.graph_num_list=}")
+    graph_n_list = list(map(int, args.graph_num_list[0].split(' ')))
+
+    if graph_n_list:
+        rows = get_graphs_by_graph_num_list(graph_n_list, graph_type)
+        logging.info(f"Given graph num list: {graph_n_list}\n")
+        logging.info("Graph names:")
+        for r in rows:
+            logging.info(f"\t{r['graph_name']}")
+    else:
+        rows = get_graphs_by_graph_numbers(graph_ns, graph_type)
+
+    
     df = rows_to_df(rows)
     rows = get_all_graphs_by_graph_names(df['graph_name'].values)
     
@@ -191,9 +205,14 @@ if __name__ == '__main__':
                         help='Whether to download and preprocess Bipartite graphs.\n')
 
     parser.add_argument('-g', '--graph-numbers', nargs='+', required=True,
-                        help='If specified, only download and scrape these graphs\n'
+                        help='Only download and scrape these graphs\n'
                         'e.g. `--directed -g 0 100` would download all directed graphs whose graph number'
                         'is [0, 100) ')
+
+    parser.add_argument('-s', '--graph-num-list', nargs='+', required=False,
+                        help='If specified, only download and scrape these graphs\n'
+                        'e.g. `--directed -g 0 15 100` would download all directed graphs whose graph number'
+                        'isin(set(0, 5, 100)) ')
 
     parser.add_argument('-a', '--data-dir', required=True,
                         help="Absolute path to the data directory containing graphs.db and all graph files.")

@@ -53,11 +53,11 @@ def process(graph_name, io_modes, overwrite):
     logging.info(f"Computing {graph_name}'s PageRank")
     save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
 
-    logging.info(f"Preprocessing {graph_name} for peregrine..")
-    save_peregrine(compressed_graph_path_with_extension, graph_dir)
+    # logging.info(f"Preprocessing {graph_name} for peregrine..")
+    # save_peregrine(compressed_graph_path_with_extension, graph_dir)
 
-    logging.info(f"Preprocessing {graph_name} for webgraph..")
-    save_webgraph(compressed_graph_path_with_extension, graph_dir)
+    # logging.info(f"Preprocessing {graph_name} for webgraph..")
+    # save_webgraph(compressed_graph_path_with_extension, graph_dir)
 
     logging.info(f"Preprocessing {graph_name} for gpop..")
     save_gpop(compressed_graph_path_with_extension, graph_dir)

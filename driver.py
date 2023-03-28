@@ -42,8 +42,20 @@ def construct_main_args_from_config(args):
         else:
             args += [f'--no-{bool_arg}']
 
-    mn_graph_n = data['graph-numbers']['min']
-    mx_graph_n = data['graph-numbers']['max']
+    graph_num_list = []
+    if data['graph-num-list']:  
+        mn_graph_n = 0
+        mx_graph_n = 0
+        for n in data['graph-num-list']:
+            graph_num_list.append(n)
+
+        print(f"{graph_num_list=}")
+        graph_n_list_str = ' '.join(map(str, graph_num_list))
+        args += [f'--graph-num-list', f"{graph_n_list_str}"]
+    else:
+        mn_graph_n = data['graph-numbers']['min']
+        mx_graph_n = data['graph-numbers']['max']
+
     args += [f'--graph-numbers', str(mn_graph_n), str(mx_graph_n)]
 
     return args
