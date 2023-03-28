@@ -37,6 +37,11 @@ This project's build relies on:
 
 ## Python
 
+### Install Python3.10 virtualenv
+
+> sudo apt install python3.10-venv
+
+### Create a virtual env
 Recommended to create a `virtualenv >= Python3.10`.  
 `$ virtualenv --python="/usr/bin/python3.10" "./venv"`  
 `$ pip install -r requirements.txt`
@@ -44,6 +49,9 @@ Recommended to create a `virtualenv >= Python3.10`.
 See [requirements.txt](./requirements.txt)
 
 ## C++
+
+### Ninja
+You need to install Ninja from [here](https://ninja-build.org/)
 
 ### g++11
 ```
