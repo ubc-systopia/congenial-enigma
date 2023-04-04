@@ -4,7 +4,7 @@ from pathlib import Path
 from konect_scraper import config
 from konect_scraper.download_and_extract import compress
 from konect_scraper.util import get_directed, get_size, get_size_in_memory, get_volume, save_connected_component, save_gpop, \
-    save_ground_truth_pr, set_n_m, single_val_numeric_set, save_peregrine, save_webgraph
+    save_ground_truth_pr, save_ground_truth_cc, set_n_m, single_val_numeric_set, save_peregrine, save_webgraph
 import networkx as nx
 import igraph as ig
 import numpy as np
@@ -52,6 +52,7 @@ def process(graph_name, io_modes, overwrite):
     # save the compressed edgelist's PageRank for verification of
     logging.info(f"Computing {graph_name}'s PageRank")
     save_ground_truth_pr(compressed_graph_path_with_extension, graph_name)
+    save_ground_truth_cc(compressed_graph_path_with_extension, graph_name)
 
     # logging.info(f"Preprocessing {graph_name} for peregrine..")
     # save_peregrine(compressed_graph_path_with_extension, graph_dir)

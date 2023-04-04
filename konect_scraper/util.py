@@ -627,6 +627,34 @@ def get_unimputed_features(graph_names):
     return res
 
 
+
+def save_ground_truth_cc(edgelist_path, graph_name):
+    """Run GapBS' Shiloach-Vishkin on the graph specified
+    Saves the Ground-Truth PageRank values in a binary file in 
+    the graph's directory (for future verification)
+
+    Args:
+        edgelist_path (str): path to the graph's text edge list
+        graph_name (str): the graph's (konect) name/label
+    """
+    settings = config.settings
+    cc_exec = settings['compute_ccs_executable']
+    cc_filename = settings['cc_file_name']
+    graphs_dir = settings['graphs_dir']
+    graph_dir = os.path.join(graphs_dir, graph_name)
+    cc_path = os.path.join(graph_dir, cc_filename)
+
+    args = [
+        cc_exec,
+        '-f', edgelist_path,
+        '-o', cc_path
+
+    ]
+    logging.info(f"Executing: {' '.join(args)}")
+    res = subprocess.check_output(args)
+
+    return
+
 def save_ground_truth_pr(edgelist_path, graph_name):
     """Run GapBS' Pagerank on the graph specified
     Sideffect - Saves the Ground-Truth PageRank values in a binary file in 

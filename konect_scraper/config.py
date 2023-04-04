@@ -76,6 +76,7 @@ def init(input_data_dir=None):
     orig_el_file_name = f"orig.{edgelist_file_suffix}"
     compressed_el_file_name = "comp"
     pagerank_file_name = "pr"
+    cc_file_name = "cc"
     # cmake_build_type = 'Debug'
     cmake_build_type = 'Release'
     cmake_build_dir = f"cmake-build-{cmake_build_type.lower()}"
@@ -90,8 +91,7 @@ def init(input_data_dir=None):
         graph_preprocess_dir, cmake_build_dir, "cuthill_mckee")
     convert_map_to_bin_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "convert_map_to_binary")
-    compute_ccs_executable = os.path.join(
-        graph_preprocess_dir, cmake_build_dir, "compute_ccs")
+    
     stats_executable = os.path.join(
         graph_preprocess_dir, cmake_build_dir, "stats")
 
@@ -110,6 +110,10 @@ def init(input_data_dir=None):
 
     # abseil and parallel slashburn
     par_slashburn_dir = os.path.join(repo_root, 'par_slashburn')
+
+    compute_ccs_executable = os.path.join(
+        par_slashburn_dir, cmake_build_dir, "compute_ccs")
+
     abseil_repo_dir = os.path.join(par_slashburn_dir, 'abseil-cpp')
     abseil_install_include_dir = os.path.join(
         par_slashburn_dir, 'install', 'include')
@@ -207,6 +211,7 @@ def init(input_data_dir=None):
         "orig_el_file_name": orig_el_file_name,
         "compressed_el_file_name": compressed_el_file_name,
         "pagerank_file_name": pagerank_file_name,
+        "cc_file_name": cc_file_name,
 
         # file suffixes
         "edgelist_file_suffix": edgelist_file_suffix,

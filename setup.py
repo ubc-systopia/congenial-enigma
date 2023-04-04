@@ -197,7 +197,7 @@ def main(args):
     res = subprocess.check_output(args, cwd=par_slashburn_dir)
     print(res.decode('utf-8'))
 
-    for target in ['par_slashburn', 'pr']:
+    for target in ['par_slashburn', 'pr', 'compute_ccs']:
         args = [
             cmake_executable,
             "--build", os.path.join(par_slashburn_dir, cmake_build_dir),

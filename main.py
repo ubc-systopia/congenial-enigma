@@ -76,7 +76,6 @@ def main(args):
 
     
     graph_ns = list(map(int, args.graph_numbers))
-
     logging.info(f"{args.graph_num_list=}")
     graph_n_list = list(map(int, args.graph_num_list[0].split(' ')))
 

@@ -64,7 +64,7 @@ def compute_stats(graph_name):
     graphs_dir = config.settings['graphs_dir']
 
     logging.info(f"Computing {graph_name}'s cc stats, deg arrays, and csr..")
-    compute_cpp_stats(graph_name, db_path, n)
+    # compute_cpp_stats(graph_name, db_path, n)
 
     logging.info(f"Computing {graph_name}'s algebraic stats..")
     stats.update(compute_scipy_stats(graph_name))

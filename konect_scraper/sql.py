@@ -80,12 +80,15 @@ def get_graphs_by_graph_num_list(ns, graph_type):
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rrows = []
+    print(f"{ns=}")
     for n in ns:
+        print(f"{n=}")
         sql = f"select * from {graph_type} where graph_number = {n}"
         cursor = conn.execute(sql)
         rows = cursor.fetchall()
         rrows.append(rows[0])
 
+    print(f"{rrows=}")
     return rrows
 
 def get_graphs_by_graph_numbers(ns, graph_type):
